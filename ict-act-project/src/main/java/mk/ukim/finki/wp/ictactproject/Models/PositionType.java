@@ -6,5 +6,5 @@ public enum PositionType {
     BOARD_MEMBER,
     FINANCE_BOARD,
     MEMBER,
-    GUEST
+    GUEST;
 }

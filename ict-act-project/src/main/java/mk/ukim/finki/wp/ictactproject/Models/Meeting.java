@@ -28,4 +28,15 @@ public class Meeting {
 
     @OneToOne
     private MeetingReport meetingReport;
+
+    private boolean finished = false;
+    public Meeting() {}
+
+    public Meeting(String topic, String room, LocalDateTime dateAndTime, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
+        this.topic = topic;
+        this.room = room;
+        this.dateAndTime = dateAndTime;
+        this.meetingType = meetingType;
+        this.discussionPoints = discussionPoints;
+    }
 }

@@ -16,14 +16,21 @@ public class DiscussionPoint {
 
     private String discussion;
 
-    @ManyToMany
+    @OneToMany
     private List<Member> votesYes;
 
-    @ManyToMany
+    @OneToMany
     private List<Member> votesNo;
 
-    @ManyToMany
+    @OneToMany
     private List<Member> abstained;
 
     private boolean confirmed;
+
+    public DiscussionPoint() {
+    }
+
+    public DiscussionPoint(String topic) {
+        this.topic = topic;
+    }
 }

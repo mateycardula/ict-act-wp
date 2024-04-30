@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>All Meetings</title>
+    <!-- Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<!-- Section-->
+<section class="py-5">
+    <div class="container">
+        <!-- Filter Section-->
+        <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 row-cols-sm-1 justify-content-start bg-light p-3">
+            <div class="col-md-8"> <!-- class="col-md-10" -->
+                <form class="">
+                    <h4 class="mb-3">Filter meetings</h4>
+                    <input class="form-control me-2 m-1" type="search" placeholder="Search by Name" aria-label="Name">
+                    <div class="d-flex align-items-center m-1">
+                        <span>From</span>
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date">
+                        <span>To</span>
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date">
+                    </div>
+                    <div class="btn-group m-1" role="group" aria-label="Basic checkbox toggle button group">
+                        <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="btncheck1">Type 1</label>
+
+                        <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="btncheck2">Type 2</label>
+
+                        <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="btncheck3">Type 3</label>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary m-1 col-3" type="submit">Filter</button>
+                </form>
+            </div>
+        </div>
+        <!-- Create meeting button if ADMIN-->
+        <div class="row justify-content-center m-3">
+            <button class="btn btn-success m-1 col-3" type="submit">Create new Meeting</button>
+        </div>
+
+        <!-- Meeting Cards-->
+        <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 row-cols-sm-1 justify-content-start bg-light pt-4">
+            <div class="col mb-5" th:each="meeting: ${meetings}">
+                <div class="card h-100">
+                    <!-- TODO: If finished/in_progress show this badge-->
+<!--                    <div class="badge bg-warning text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
+<!--                         th:if="${meeting.dateAndTime.isBefore(#dates.createNow())}">In progress</div>-->
+<!--                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
+<!--                         th:if="${meeting.dateAndTime.isBefore(#dates.createNow()) && meeting.finished}">Finished</div>-->
+<!--                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
+<!--                         th:if="${meeting.dateAndTime.isAfter(#dates.createNow())}"></div>-->
+                    <!-- Meeting Details-->
+                    <div class="card-body p-4">
+                        <div class="">
+                            <!-- Meeting name-->
+                            <h5 class="fw-bolder" th:text="${meeting.getTopic()}"></h5>
+                            <!-- Text Placeholder-->
+                            <div class="small mb-2 mt-5">
+                                <div class="">
+                                    <b>Date: </b>
+                                    <span th:text="${meeting.dateAndTime.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateAndTime, 'MMMM')} + ' ' + ${meeting.dateAndTime.year}"></span>
+                                </div>
+                                <div class="">
+                                    <b>Time: </b>
+                                    <span th:text="${#temporals.format(meeting.dateAndTime, 'HH:mm')}"></span>
+                                </div>
+
+                                <div class=""><b>Location: </b><span th:text="${meeting.getRoom()}"></span></div>
+                                <div class=""><b>Type: </b><span th:text="${meeting.getMeetingType()}"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" href="#">Info</a></div>
+                        <div class="text-center p-2"><a class="btn btn-success mt-auto" href="#">Attend</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

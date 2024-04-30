@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create new Meeting</title>
+  <!-- Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center m-4 bg-light p-4">
+    <div class="col-md-8"> <!-- class="col-md-10" -->
+      <form class="" action="/meetings/add" method="post">
+        <h4 class="mb-3">Create new Meeting</h4>
+
+        <label for="topic">Topic</label>
+        <input name="topic" class="form-control mb-3" type="search" placeholder="Meeting topic" aria-label="Name" id="topic">
+
+        <label for="room">Room</label>
+        <input name="room" class="form-control mb-3" type="search" placeholder="Meeting room" aria-label="Room" id="room">
+
+        <label for="dateAndTime">Date and Time</label>
+        <input name="dateAndTime" class="form-control mb-3" type="datetime-local" aria-label="Date" id="dateAndTime">
+
+        <p>Meeting type</p>
+        <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
+<!--          TODO: Thymeleaf with th:each-->
+            <div th:each="type: ${types}">
+                <input type="radio" class="btn-check" th:value="${type.name()}" autocomplete="off" name="type" th:id="${'type_' + type.name()}">
+                <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
+            </div>
+
+        </div>
+
+        <br>
+
+        <label for="discussionPoints">Discussion points</label>
+        <p><em>Add different discussion points separated by " ; "</em></p>
+<!--          TODO: make it fancy-->
+        <textarea class="form-control" id="discussionPoints" rows="4" name="discussionPoints"></textarea>
+
+        <br>
+
+        <button class="btn btn-primary m-1 col-3" type="submit">Create</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

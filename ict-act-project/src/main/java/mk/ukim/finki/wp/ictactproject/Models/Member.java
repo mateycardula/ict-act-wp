@@ -22,4 +22,6 @@ public class Member {
 
     @ManyToMany
     private List<Position> positions;
+
+    private PositionType role;
 }
