@@ -29,13 +29,15 @@ public class MeetingController {
     @GetMapping
     private String listAllMeetings(Model model){
         model.addAttribute("meetings", meetingService.listAll());
-        return "all-meetings";
+        model.addAttribute("bodyContent", "all-meetings");
+        return "master-template";
     }
 
     @GetMapping("/add")
     private String createMeetingForm(Model model){
         model.addAttribute("types", MeetingType.values());
-        return "create-new-meeting";
+        model.addAttribute("bodyContent", "create-new-meeting");
+        return "master-template";
     }
 
     @PostMapping("/add")

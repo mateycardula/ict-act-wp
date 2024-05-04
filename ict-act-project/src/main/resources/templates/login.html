@@ -1,0 +1,17 @@
+<div class="container-login" xmlns:th="http://www.thymeleaf.org">
+  <form class="form-signin" method="post" action="/login">
+    <h1 class="h3 mb-3 font-weight-normal">Please Log in</h1>
+    <label for="username" class="sr-only">Username</label>
+    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+    <label for="inputPasswordLogin" class="sr-only">Password</label>
+    <input type="password" id="inputPasswordLogin" name="password" class="form-control" placeholder="Password" required>
+
+    <button class="btn btn-lg btn-primary btn-block btn-login-signup" type="submit" id="yourButtonId">Login</button>
+
+    <a href="/signup" id="signup-link" class="linkLoginSignup">Don't have an account? Sign up!</a>
+
+    <div style="color: red">
+      <span th:if="${hasError}" th:text="${error}"></span>
+    </div>
+  </form>
+</div>
