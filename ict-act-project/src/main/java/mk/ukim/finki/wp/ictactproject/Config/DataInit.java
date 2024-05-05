@@ -23,18 +23,18 @@ public class DataInit {
     }
     @PostConstruct
     void init(){
-        List<DiscussionPoint> dp1 = new ArrayList<>(),dp2 = new ArrayList<>();
-
-        for(int i=0; i<5; i++){
-            DiscussionPoint discussionPoint = new DiscussionPoint();
-            discussionPoint.setTopic("Topic " + i);
-            discussionPointsRepository.save(discussionPoint);
-
-            if(i<=2) dp1.add(discussionPoint);
-            else dp2.add(discussionPoint);
-        }
-
-        LocalDateTime date = LocalDateTime.now();
+//        List<DiscussionPoint> dp1 = new ArrayList<>(),dp2 = new ArrayList<>();
+//
+//        for(int i=0; i<5; i++){
+//            DiscussionPoint discussionPoint = new DiscussionPoint();
+//            discussionPoint.setTopic("Topic " + i);
+//            discussionPointsRepository.save(discussionPoint);
+//
+//            if(i<=2) dp1.add(discussionPoint);
+//            else dp2.add(discussionPoint);
+//        }
+//
+//        LocalDateTime date = LocalDateTime.now();
 
 //        meetingService.create("Meeting 1", "TMF 215", date, MeetingType.BOARD_MEETING, dp1);
 //        meetingService.create("Meeting 2", "B3.2", date, MeetingType.GENERAL_ASSEMBLY, dp2);

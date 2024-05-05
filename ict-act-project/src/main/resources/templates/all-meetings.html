@@ -72,6 +72,7 @@
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                         <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" href="#">Info</a></div>
                         <div class="text-center p-2"><a class="btn btn-success mt-auto" href="#">Attend</a></div>
+                        <div class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
                     </div>
 
                 </div>

@@ -1,12 +1,14 @@
 package mk.ukim.finki.wp.ictactproject.Models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 @Entity
+@AllArgsConstructor
 public class DiscussionPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,12 @@ public class DiscussionPoint {
     public DiscussionPoint() {
     }
 
-    public DiscussionPoint(String topic) {
+    public DiscussionPoint(String topic, String discussion, List<Member> votesYes, List<Member> votesNo, List<Member> abstained, boolean confirmed) {
         this.topic = topic;
+        this.discussion = discussion;
+        this.votesYes = votesYes;
+        this.votesNo = votesNo;
+        this.abstained = abstained;
+        this.confirmed = confirmed;
     }
 }
