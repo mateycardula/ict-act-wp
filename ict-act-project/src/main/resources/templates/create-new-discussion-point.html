@@ -12,14 +12,11 @@
 <div class="container">
   <div class="row justify-content-center m-4 bg-light p-4">
     <div class="col-md-8"> <!-- class="col-md-10" -->
-      <form class="" th:action="@{'/discussion/add?meetingId=' + ${meeting.getId()}}" method="post">
+      <form class="" th:action="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}" method="post">
         <h4 class="mb-3">Create new Discussion Point</h4>
 
         <label for="topic">Topic</label>
         <input name="topic" class="form-control mb-3" type="search" placeholder="Meeting topic" aria-label="Name" id="topic">
-
-        <label for="discussion">Discussion</label>
-        <input name="discussion" class="form-control mb-3" type="search" placeholder="Meeting room" aria-label="Room" id="discussion">
 
         <button class="btn btn-primary m-1 col-3" type="submit">Create</button>
       </form>

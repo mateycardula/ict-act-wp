@@ -18,13 +18,13 @@ public class DiscussionPoint {
 
     private String discussion;
 
-    @OneToMany
+    @ManyToMany
     private List<Member> votesYes;
 
-    @OneToMany
+    @ManyToMany
     private List<Member> votesNo;
 
-    @OneToMany
+    @ManyToMany
     private List<Member> abstained;
 
     private boolean confirmed;

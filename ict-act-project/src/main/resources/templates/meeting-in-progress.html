@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${meeting.getTopic()}">Title</title>
+</head>
+<body>
+<div class="container">
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Topic</th>
+            <th scope="col">Voted Yes</th>
+            <th scope="col">Voted No</th>
+            <th scope="col">Discussion</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="point: ${meeting.getDiscussionPoints()}">
+            <td th:text="${point.getTopic()}"></td>
+            <td th:if="${membersVotedYes[point.getId()].empty}">
+                <div>
+                    <form th:action="@{'/discussion-point/vote/yes/' + ${point.getId()}}" method="post">
+                        <div class="form-group">
+                            <div class="form-check form-check-inline" th:each="member: ${members}">
+                                <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
+                                       th:value="${member.getId()}" name="memberIds">
+                                <label class="form-check-label" th:for="${member.getId()}"
+                                       th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary m-1 col-3" type="submit">Vote Yes</button>
+                    </form>
+                </div>
+            </td>
+            <td th:unless="${membersVotedYes[point.getId()].empty}">
+                <div>
+                    <ul>
+                        <li th:each="member: ${membersVotedYes[point.getId()]}" th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></li>
+                    </ul>
+                </div>
+            </td>
+            <td th:if="${membersVotedNo[point.getId()].empty}">
+                <div>
+                    <form th:action="@{'/discussion-point/vote/no/' + ${point.getId()}}" method="post">
+                        <div class="form-group">
+                            <div class="form-check form-check-inline" th:each="member: ${members}">
+                                <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
+                                       th:value="${member.getId()}" name="memberIds">
+                                <label class="form-check-label" th:for="${member.getId()}"
+                                       th:text="@{${member.getName()} + ${member.getSurname()}}"></label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary m-1 col-3" type="submit">Vote No</button>
+                    </form>
+                </div>
+            </td>
+            <td th:unless="${membersVotedNo[point.getId()].empty}">
+                <div>
+                    <ul>
+                        <li th:each="member: ${membersVotedNo[point.getId()]}" th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></li>
+                    </ul>
+                </div>
+            </td>
+            <td th:if="${#strings.isEmpty(discussions[point.getId()])}">
+                <div>
+                    <form th:action="@{'/discussion-point/add/discussion/' + ${point.getId()}}" method="post">
+                        <div class="form-group">
+                            <label for="discussion">Discussion</label>
+                            <textarea class="form-control" id="discussion" rows="3" name="discussion"></textarea>
+                        </div>
+                        <button class="btn btn-primary m-1 col-3" type="submit">Save discussion</button>
+                    </form>
+                </div>
+            </td>
+            <td th:unless="${#strings.isEmpty(discussions[point.getId()])}">
+                <div>
+                    <p th:text="${discussions[point.getId()]}"></p>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+  <div class="text-center p-2"><a class="btn btn-success mt-auto" href="#">Finish</a></div>
+</div>
+</body>
+</html>

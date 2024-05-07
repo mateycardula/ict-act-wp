@@ -1,27 +1,28 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
-import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
+import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
+import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/meetings")
 public class MeetingController {
     private final MeetingService meetingService;
+    private final MemberService memberService;
 
-    public MeetingController(MeetingService meetingService) {
+    public MeetingController(MeetingService meetingService, MemberService memberService) {
         this.meetingService = meetingService;
+        this.memberService = memberService;
     }
 
     @GetMapping
@@ -55,6 +56,24 @@ public class MeetingController {
         Meeting meeting = meetingService.findMeetingById(id);
         model.addAttribute("meeting", meeting);
         model.addAttribute("bodyContent", "meeting-info");
+        return "master-template";
+    }
+
+    @GetMapping("/in-progress/{id}")
+    private String meetingInProgressPage(Model model, @PathVariable Long id) {
+        Meeting meeting = meetingService.findMeetingById(id);
+        List<Member> members = memberService.getAll();
+        Map<Long, List<Member>> membersVotedYes = meetingService.getMembersVotedYes(id);
+        Map<Long, List<Member>> membersVotedNo = meetingService.getMembersVotedNo(id);
+        Map<Long, String> discussions = meetingService.getDiscussions(id);
+
+        model.addAttribute("meeting", meeting);
+        model.addAttribute("members", members);
+        model.addAttribute("membersVotedYes", membersVotedYes);
+        model.addAttribute("membersVotedNo", membersVotedNo);
+        model.addAttribute("discussions", discussions);
+        model.addAttribute("bodyContent", "meeting-in-progress");
+
         return "master-template";
     }
 }

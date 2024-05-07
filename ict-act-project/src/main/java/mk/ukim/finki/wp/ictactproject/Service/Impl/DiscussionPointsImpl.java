@@ -2,19 +2,26 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidArgumentsException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
+import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class DiscussionPointsImpl implements DiscussionPointsService {
     private final DiscussionPointsRepository discussionPointsRepository;
+    private final MemberRepository memberRepository;
 
-    public DiscussionPointsImpl(DiscussionPointsRepository discussionPointsRepository) {
+    public DiscussionPointsImpl(DiscussionPointsRepository discussionPointsRepository, MemberRepository memberRepository) {
         this.discussionPointsRepository = discussionPointsRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -25,6 +32,35 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         Boolean confirmed = false;
 
         DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, votesYes, votesNo, votesAbstained, confirmed);
+        return discussionPointsRepository.save(discussionPoint);
+    }
+
+    @Override
+    public DiscussionPoint voteYes(Long[] memberIds, Long discussionPointId) {
+        List<Long> memberIdsList = Arrays.asList(memberIds);
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
+        List<Member> members = memberIdsList.stream()
+                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
+                .toList();
+        discussionPoint.getVotesYes().addAll(members);
+        return discussionPointsRepository.save(discussionPoint);
+    }
+
+    @Override
+    public DiscussionPoint voteNo(Long[] memberIds, Long discussionPointId) {
+        List<Long> memberIdsList = Arrays.asList(memberIds);
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
+        List<Member> members = memberIdsList.stream()
+                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
+                .toList();
+        discussionPoint.getVotesNo().addAll(members);
+        return discussionPointsRepository.save(discussionPoint);
+    }
+
+    @Override
+    public DiscussionPoint addDiscussion(String discussion, Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
+        discussionPoint.setDiscussion(discussion);
         return discussionPointsRepository.save(discussionPoint);
     }
 }

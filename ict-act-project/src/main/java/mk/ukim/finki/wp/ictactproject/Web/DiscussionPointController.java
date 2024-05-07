@@ -6,13 +6,12 @@ import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
-@RequestMapping("/discussion")
+@RequestMapping("/discussion-point")
 public class DiscussionPointController {
     private final DiscussionPointsService discussionPointsService;
     private final MeetingService meetingService;
@@ -32,12 +31,33 @@ public class DiscussionPointController {
     }
 
     @PostMapping("/add")
-    public String createDiscussionPoint(Model model, @RequestParam Long meetingId, @RequestParam String topic, @RequestParam String discussion) {
+    public String createDiscussionPoint(Model model, @RequestParam Long meetingId, @RequestParam String topic) {
         Meeting meeting = meetingService.findMeetingById(meetingId);
-        DiscussionPoint discussionPoint = discussionPointsService.create(topic, discussion);
+        DiscussionPoint discussionPoint = discussionPointsService.create(topic, "");
 
         meetingService.addDiscussionPoint(discussionPoint, meeting);
 
         return "redirect:/meetings";
+    }
+
+    @PostMapping("/vote/yes/{discussionPointId}")
+    public String voteYesForDiscussionPoint(Model model, @RequestParam Long[] memberIds, @PathVariable Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsService.voteYes(memberIds, discussionPointId);
+        Meeting meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+        return "redirect:/meetings/in-progress/" + meeting.getId();
+    }
+
+    @PostMapping("/vote/no/{discussionPointId}")
+    public String voteNoForDiscussionPoint(Model model, @RequestParam Long[] memberIds, @PathVariable Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsService.voteNo(memberIds, discussionPointId);
+        Meeting meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+        return "redirect:/meetings/in-progress/" + meeting.getId();
+    }
+
+    @PostMapping("/add/discussion/{discussionPointId}")
+    public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsService.addDiscussion(discussion, discussionPointId);
+        Meeting meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+        return "redirect:/meetings/in-progress/" + meeting.getId();
     }
 }
