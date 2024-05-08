@@ -8,7 +8,7 @@ import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotEx
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
-import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
+import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +19,12 @@ import java.util.*;
 public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final DiscussionPointsRepository discussionPointsRepository;
-    private final DiscussionPointsService discussionPointsService;
+    private final MemberRepository memberRepository;
 
-    public MeetingServiceImpl(MeetingRepository meetingRepository, DiscussionPointsRepository discussionPointsRepository, DiscussionPointsService discussionPointsService) {
+    public MeetingServiceImpl(MeetingRepository meetingRepository, DiscussionPointsRepository discussionPointsRepository, MemberRepository memberRepository) {
         this.meetingRepository = meetingRepository;
         this.discussionPointsRepository = discussionPointsRepository;
-        this.discussionPointsService = discussionPointsService;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Map<Long,List<Member>> getMembersVotedYes(Long id) {
+    public Map<Long, List<Member>> getMembersVotedYes(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
         Map<Long, List<Member>> mapOfVoters = new HashMap<>();
@@ -79,7 +79,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Map<Long,List<Member>> getMembersVotedNo(Long id) {
+    public Map<Long, List<Member>> getMembersVotedNo(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
         Map<Long, List<Member>> mapOfVoters = new HashMap<>();
@@ -104,5 +104,27 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         return mapOfDiscussions;
+    }
+
+    @Override
+    public Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo) {
+        Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
+        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
+        Map<Long, List<Member>> mapOfMembers = new HashMap<>();
+        for (DiscussionPoint discussionPoint : discussionPoints) {
+            Long discussionPointId = discussionPoint.getId();
+            List<Member> membersAlreadyVotedYesForDiscussionPoint = membersVotedYes.get(discussionPointId);
+            List<Member> membersAlreadyVotedNoForDiscussionPoint = membersVotedNo.get(discussionPointId);
+            List<Member> membersAlreadyVotedForDiscussionPoint = new ArrayList<>();
+            membersAlreadyVotedForDiscussionPoint.addAll(membersAlreadyVotedYesForDiscussionPoint);
+            membersAlreadyVotedForDiscussionPoint.addAll(membersAlreadyVotedNoForDiscussionPoint);
+            List<Member> members = memberRepository.findAll();
+            List<Member> membersThatHaveNotVoted = members.stream()
+                    .filter(i -> !membersAlreadyVotedForDiscussionPoint.contains(i))
+                    .toList();
+            mapOfMembers.put(discussionPointId, membersThatHaveNotVoted);
+        }
+
+        return mapOfMembers;
     }
 }

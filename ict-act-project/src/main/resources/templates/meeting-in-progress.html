@@ -22,7 +22,7 @@
                 <div>
                     <form th:action="@{'/discussion-point/vote/yes/' + ${point.getId()}}" method="post">
                         <div class="form-group">
-                            <div class="form-check form-check-inline" th:each="member: ${members}">
+                            <div class="form-check form-check-inline" th:each="member: ${members[point.getId()]}">
                                 <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
                                        th:value="${member.getId()}" name="memberIds">
                                 <label class="form-check-label" th:for="${member.getId()}"
@@ -44,7 +44,7 @@
                 <div>
                     <form th:action="@{'/discussion-point/vote/no/' + ${point.getId()}}" method="post">
                         <div class="form-group">
-                            <div class="form-check form-check-inline" th:each="member: ${members}">
+                            <div class="form-check form-check-inline" th:each="member: ${members[point.getId()]}">
                                 <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
                                        th:value="${member.getId()}" name="memberIds">
                                 <label class="form-check-label" th:for="${member.getId()}"
