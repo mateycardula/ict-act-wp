@@ -78,4 +78,10 @@ public class MeetingController {
 
         return "master-template";
     }
+
+    @PostMapping("/finish/{id}")
+    private String finishMeeting(Model model, @PathVariable Long id) {
+        Meeting meeting = meetingService.finishMeeting(id);
+        return "redirect:/meetings/details/" + id;
+    }
 }

@@ -127,4 +127,30 @@ public class MeetingServiceImpl implements MeetingService {
 
         return mapOfMembers;
     }
+
+    @Override
+    public Meeting finishMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
+        List<Member> members = memberRepository.findAll();
+        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
+
+        for (DiscussionPoint discussionPoint : discussionPoints) {
+            List<Member> membersVotedYes = discussionPoint.getVotesYes();
+            List<Member> membersVotedNo = discussionPoint.getVotesNo();
+            List<Member> membersAbstained = members.stream()
+                    .filter(i -> !membersVotedYes.contains(i))
+                    .filter(i -> !membersVotedNo.contains(i))
+                    .toList();
+            discussionPoint.setAbstained(membersAbstained);
+
+            int votesYes = membersVotedYes.size();
+            int votesNo = membersVotedNo.size();
+            discussionPoint.setConfirmed(votesYes > votesNo);
+
+//            discussionPointsRepository.save(discussionPoint);
+        }
+
+        meeting.setFinished(true);
+        return meetingRepository.save(meeting);
+    }
 }
