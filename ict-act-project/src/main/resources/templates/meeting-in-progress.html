@@ -35,6 +35,7 @@
             </td>
             <td th:unless="${membersVotedYes[point.getId()].empty}">
                 <div>
+                    <a th:href="@{'/discussion-point/edit/votes/yes/' + ${point.getId()}}">Edit</a>
                     <ul>
                         <li th:each="member: ${membersVotedYes[point.getId()]}"
                             th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></li>
@@ -58,6 +59,7 @@
             </td>
             <td th:unless="${membersVotedNo[point.getId()].empty}">
                 <div>
+                    <a th:href="@{'/discussion-point/edit/votes/no/' + ${point.getId()}}">Edit</a>
                     <ul>
                         <li th:each="member: ${membersVotedNo[point.getId()]}"
                             th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></li>
@@ -76,6 +78,7 @@
                 </div>
             </td>
             <td th:unless="${#strings.isEmpty(discussions[point.getId()])}">
+                <a th:href="@{'/discussion-point/edit/discussion/' + ${point.getId()}}">Edit</a>
                 <div>
                     <p th:text="${discussions[point.getId()]}"></p>
                 </div>

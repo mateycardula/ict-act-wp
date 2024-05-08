@@ -21,4 +21,7 @@ public interface MeetingService {
     Map<Long, String> getDiscussions(Long id);
     Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo);
     Meeting finishMeeting(Long meetingId);
+    List<Member> getMembersForEditVotes(DiscussionPoint discussionPoint);
+    List<Member> getMembersThatVotedYes(Long id);
+    List<Member> getMembersThatVotedNo(Long id);
 }

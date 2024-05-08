@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,13 +63,11 @@ public class MeetingController {
     @GetMapping("/in-progress/{id}")
     private String meetingInProgressPage(Model model, @PathVariable Long id) {
         Meeting meeting = meetingService.findMeetingById(id);
-        //List<Member> members = memberService.getAll();
         Map<Long, List<Member>> membersVotedYes = meetingService.getMembersVotedYes(id);
         Map<Long, List<Member>> membersVotedNo = meetingService.getMembersVotedNo(id);
         Map<Long, List<Member>> members = meetingService.getAllMembersForMeeting(id, membersVotedYes, membersVotedNo);
 
         Map<Long, String> discussions = meetingService.getDiscussions(id);
-
         model.addAttribute("meeting", meeting);
         model.addAttribute("members", members);
         model.addAttribute("membersVotedYes", membersVotedYes);
