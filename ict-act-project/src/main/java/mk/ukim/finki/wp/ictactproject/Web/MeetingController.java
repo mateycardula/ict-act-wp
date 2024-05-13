@@ -30,6 +30,7 @@ public class MeetingController {
     private String listAllMeetings(Model model){
         model.addAttribute("meetings", meetingService.listAll());
         model.addAttribute("bodyContent", "all-meetings");
+
         return "master-template";
     }
 
