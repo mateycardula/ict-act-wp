@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,16 +28,10 @@ public class MeetingController {
     @GetMapping
     private String listAllMeetings(Model model,
                                    @RequestParam(required = false) String name,
-                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateTo,
-                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateFrom,
-                                   @RequestParam(required = false) List<String> type) {
-        List<Meeting> meetings = new ArrayList<>();
-        if (name == null && dateFrom == null && dateTo == null && type == null) {
-            meetings = meetingService.listAll();
-        } else {
-            //todo
-        }
-        model.addAttribute("meetings", meetings);
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo,
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+                                   @RequestParam(required = false) List<MeetingType> type) {
+        model.addAttribute("meetings", meetingService.filter(name, dateFrom, dateTo, type));
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
 

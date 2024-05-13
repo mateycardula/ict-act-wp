@@ -9,9 +9,9 @@
                     <input class="form-control me-2 m-1" type="search" placeholder="Search by Name" aria-label="Name" name="name">
                     <div class="d-flex align-items-center m-1">
                         <span>From</span>
-                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateFrom">
+                        <input class="form-control me-2 m-1" type="datetime-local" aria-label="Date" name="dateFrom">
                         <span>To</span>
-                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateTo">
+                        <input class="form-control me-2 m-1" type="datetime-local" aria-label="Date" name="dateTo">
                     </div>
                     <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
                         <!--          TODO: Thymeleaf with th:each-->
@@ -53,11 +53,11 @@
                             <div class="small mb-2 mt-5">
                                 <div class="">
                                     <b>Date: </b>
-                                    <span th:text="${meeting.dateAndTime.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateAndTime, 'MMMM')} + ' ' + ${meeting.dateAndTime.year}"></span>
+                                    <span th:text="${meeting.dateOfMeeting.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateOfMeeting, 'MMMM')} + ' ' + ${meeting.dateOfMeeting.year}"></span>
                                 </div>
                                 <div class="">
                                     <b>Time: </b>
-                                    <span th:text="${#temporals.format(meeting.dateAndTime, 'HH:mm')}"></span>
+                                    <span th:text="${#temporals.format(meeting.dateOfMeeting, 'HH:mm')}"></span>
                                 </div>
 
                                 <div class=""><b>Location: </b><span th:text="${meeting.getRoom()}"></span></div>

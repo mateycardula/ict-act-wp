@@ -12,8 +12,12 @@ import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
@@ -176,5 +180,14 @@ public class MeetingServiceImpl implements MeetingService {
     public List<Member> getMembersThatVotedNo(Long id) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
         return discussionPoint.getVotesNo();
+    }
+
+    @Override
+    public List<Meeting> filter(String name, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type) {
+        if (dateFrom != null && dateTo != null) {
+            return meetingRepository.findByDateOfMeetingBetween(dateFrom, dateTo);
+        }
+
+        return meetingRepository.findAll();
     }
 }
