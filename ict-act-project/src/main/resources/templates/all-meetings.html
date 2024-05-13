@@ -1,17 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>All Meetings</title>
-    <!-- Bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
 <!-- Section-->
 <section class="py-5">
     <div class="container">
@@ -42,9 +28,10 @@
                 </form>
             </div>
         </div>
-        <!-- Create meeting button if ADMIN-->
+
+        <!-- TODO: Create meeting button if ADMIN-->
         <div class="row justify-content-center m-3">
-            <button class="btn btn-success m-1 col-3" type="submit">Create new Meeting</button>
+            <a href="/meetings/add"><button class="btn btn-success m-1 col-3" type="submit">Create new Meeting</button></a>
         </div>
 
         <!-- Meeting Cards-->
@@ -58,6 +45,7 @@
 <!--                         th:if="${meeting.dateAndTime.isBefore(#dates.createNow()) && meeting.finished}">Finished</div>-->
 <!--                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
 <!--                         th:if="${meeting.dateAndTime.isAfter(#dates.createNow())}"></div>-->
+
                     <!-- Meeting Details-->
                     <div class="card-body p-4">
                         <div class="">
@@ -79,16 +67,16 @@
                             </div>
                         </div>
                     </div>
+
                     <!-- Actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" href="#">Info</a></div>
+                        <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" th:href="@{'/meetings/details/' + ${meeting.getId()}}">Info</a></div>
                         <div class="text-center p-2"><a class="btn btn-success mt-auto" href="#">Attend</a></div>
+                        <div class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-</body>
-</html>

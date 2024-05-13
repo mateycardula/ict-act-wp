@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit votes</title>
+</head>
+<body>
+<div class="container">
+    <form th:action="@{'/discussion-point/edit/votes/no/' + ${point.getId()}}" method="post">
+        <div class="form-group">
+            <div class="form-check form-check-inline" th:each="member: ${toCheck}">
+                <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
+                       th:value="${member.getId()}" name="memberIds" checked>
+                <label class="form-check-label" th:for="${member.getId()}"
+                       th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></label>
+            </div>
+            <div class="form-check form-check-inline" th:each="member: ${members}">
+                <input class="form-check-input" type="checkbox" th:id="${member.getId()}"
+                       th:value="${member.getId()}" name="memberIds">
+                <label class="form-check-label" th:for="${member.getId()}"
+                       th:text="@{${member.getName()} + ' ' + ${member.getSurname()}}"></label>
+            </div>
+        </div>
+        <button class="btn btn-primary m-1 col-3" type="submit">Edit votes</button>
+    </form>
+</div>
+</body>
+</html>

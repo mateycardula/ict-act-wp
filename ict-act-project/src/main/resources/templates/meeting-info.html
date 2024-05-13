@@ -16,16 +16,16 @@
                 <!-- Post header-->
                 <header class="mb-4">
                     <!-- Post title-->
-                    <h1 class="fw-bolder mb-1">Title PLACEHOLDER</h1>
+                    <h1 class="fw-bolder mb-1" th:text="${meeting.getTopic()}">Title PLACEHOLDER</h1>
                     <!-- Post meta content-->
-                    <div class="text-muted fst-italic mb-2">MEETING DATE; TIME; LOCATION - PLACEHOLDER</div>
+                    <div class="text-muted fst-italic mb-2"><span th:text="${meeting.getDateAndTime()}">MEETING DATE; TIME;</span> <span th:text="${meeting.getRoom()}">LOCATION - PLACEHOLDER</span></div>
                     <!-- Post categories-->
                     <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 1 PLACEHOLDER</a>
                     <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 2 PLACEHOLDER</a>
                 </header>
 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <button class="btn btn-success col-4 btn-sm">Enter Meeting</button>
+                    <a th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}"><button class="btn btn-success col-4 btn-sm">Enter Meeting</button></a>
                 </div>
                 <!-- Post content-->
                 <section class="mb-5">

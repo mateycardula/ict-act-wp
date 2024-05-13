@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit discussion</title>
+</head>
+<body>
+<div class="container">
+    <form th:action="@{'/discussion-point/edit/discussion/' + ${point.getId()}}" method="post">
+        <div class="form-group">
+            <div class="mb-3">
+                <label for="discussion" class="form-label">Discussion</label>
+                <textarea class="form-control" id="discussion" rows="3" th:text="${discussion}" name="discussion"></textarea>
+            </div>
+        </div>
+        <button class="btn btn-primary m-1 col-3" type="submit">Edit discussion</button>
+    </form>
+</div>
+</body>
+</html>

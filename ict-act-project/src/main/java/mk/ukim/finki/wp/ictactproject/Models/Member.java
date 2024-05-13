@@ -23,5 +23,9 @@ public class Member {
     @ManyToMany
     private List<Position> positions;
 
+    private String email;
+
+    private String password;
+
     private PositionType role;
 }

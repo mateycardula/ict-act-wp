@@ -2,10 +2,12 @@ package mk.ukim.finki.wp.ictactproject.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Position {
     @Id
@@ -15,7 +17,7 @@ public class Position {
     @Enumerated(EnumType.STRING)
     private PositionType positionType;
 
-    private LocalDate from;
+    private LocalDate fromDate;
 
-    private LocalDate to;
+    private LocalDate toDate;
 }
