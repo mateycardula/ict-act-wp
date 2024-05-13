@@ -12,12 +12,8 @@ import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
@@ -184,10 +180,32 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public List<Meeting> filter(String name, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type) {
-        if (dateFrom != null && dateTo != null) {
-            return meetingRepository.findByDateOfMeetingBetween(dateFrom, dateTo);
+        Set<Meeting> meetings = new HashSet<>(meetingRepository.findAll());
+        Set<Meeting> dateFilterFrom = new HashSet<>();
+        Set<Meeting> dateFilterTo = new HashSet<>();
+        Set<Meeting> topicFilter = new HashSet<>();
+        Set<Meeting> typeFilter = new HashSet<>();
+        if (dateFrom != null) {
+            dateFilterFrom.addAll(meetingRepository.findByDateOfMeetingAfter(dateFrom));
+            meetings.retainAll(dateFilterFrom);
         }
 
-        return meetingRepository.findAll();
+        if (dateTo != null) {
+            dateFilterTo.addAll(meetingRepository.findByDateOfMeetingBefore(dateTo));
+            meetings.retainAll(dateFilterTo);
+        }
+
+        if (name != null && !name.isEmpty()) {
+            topicFilter.addAll(meetingRepository.findAllByTopicContains(name));
+            meetings.retainAll(topicFilter);
+        }
+
+        if (type != null) {
+            typeFilter.addAll(meetingRepository.findByMeetingTypeIn(type));
+            meetings.retainAll(typeFilter);
+        }
+
+        return meetings.stream().toList();
+
     }
 }
