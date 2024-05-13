@@ -27,15 +27,26 @@ public class MeetingController {
     }
 
     @GetMapping
-    private String listAllMeetings(Model model){
-        model.addAttribute("meetings", meetingService.listAll());
+    private String listAllMeetings(Model model,
+                                   @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateTo,
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateFrom,
+                                   @RequestParam(required = false) List<String> type) {
+        List<Meeting> meetings = new ArrayList<>();
+        if (name == null && dateFrom == null && dateTo == null && type == null) {
+            meetings = meetingService.listAll();
+        } else {
+            //todo
+        }
+        model.addAttribute("meetings", meetings);
+        model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
 
         return "master-template";
     }
 
     @GetMapping("/add")
-    private String createMeetingForm(Model model){
+    private String createMeetingForm(Model model) {
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "create-new-meeting");
         return "master-template";
@@ -45,7 +56,7 @@ public class MeetingController {
     private String createMeeting(@RequestParam String topic,
                                  @RequestParam String room,
                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
-                                 @RequestParam MeetingType type){
+                                 @RequestParam MeetingType type) {
 
 //        List<String> topics = Arrays.stream(discussionPoints.split(";")).toList();
 
