@@ -75,7 +75,6 @@ public class MeetingController {
         model.addAttribute("membersVotedNo", membersVotedNo);
         model.addAttribute("discussions", discussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
-
         return "master-template";
     }
 
