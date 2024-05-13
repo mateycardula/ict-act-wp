@@ -18,7 +18,7 @@ public class Meeting {
 
     private String room;
 
-    private LocalDateTime dateAndTime;
+    private LocalDateTime dateOfMeeting;
 
     @Enumerated(EnumType.STRING)
     private MeetingType meetingType;
@@ -32,10 +32,10 @@ public class Meeting {
     private boolean finished = false;
     public Meeting() {}
 
-    public Meeting(String topic, String room, LocalDateTime dateAndTime, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
+    public Meeting(String topic, String room, LocalDateTime dateOfMeeting, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
         this.topic = topic;
         this.room = room;
-        this.dateAndTime = dateAndTime;
+        this.dateOfMeeting = dateOfMeeting;
         this.meetingType = meetingType;
         this.discussionPoints = discussionPoints;
     }
