@@ -9,17 +9,15 @@
                     <input class="form-control me-2 m-1" type="search" placeholder="Search by Name" aria-label="Name" name="name">
                     <div class="d-flex align-items-center m-1">
                         <span>From</span>
-                        <input class="form-control me-2 m-1" type="datetime-local" aria-label="Date" name="dateFrom">
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateFrom">
                         <span>To</span>
-                        <input class="form-control me-2 m-1" type="datetime-local" aria-label="Date" name="dateTo">
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateTo">
                     </div>
                     <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
-                        <!--          TODO: Thymeleaf with th:each-->
                         <div th:each="type: ${types}">
                             <input type="checkbox" class="btn-check" th:value="${type.name()}" autocomplete="off" name="type" th:id="${'type_' + type.name()}">
                             <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
                         </div>
-
                     </div>
                     <br>
                     <button class="btn btn-primary m-1 col-3" type="submit">Filter</button>
