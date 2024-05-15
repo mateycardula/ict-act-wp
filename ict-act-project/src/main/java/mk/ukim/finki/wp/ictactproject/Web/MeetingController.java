@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,15 +27,23 @@ public class MeetingController {
     }
 
     @GetMapping
-    private String listAllMeetings(Model model){
-        model.addAttribute("meetings", meetingService.listAll());
+    private String listAllMeetings(Model model,
+                                   @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
+                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+                                   @RequestParam(required = false) List<MeetingType> type) {
+        LocalDateTime dateTimeFrom = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime dateTimeTo = dateTo != null ? dateTo.plusDays(1).atStartOfDay().minusNanos(1) : null;
+
+        model.addAttribute("meetings", meetingService.filter(name, dateTimeFrom, dateTimeTo, type));
+        model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
 
         return "master-template";
     }
 
     @GetMapping("/add")
-    private String createMeetingForm(Model model){
+    private String createMeetingForm(Model model) {
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "create-new-meeting");
         return "master-template";
@@ -45,7 +53,7 @@ public class MeetingController {
     private String createMeeting(@RequestParam String topic,
                                  @RequestParam String room,
                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
-                                 @RequestParam MeetingType type){
+                                 @RequestParam MeetingType type) {
 
 //        List<String> topics = Arrays.stream(discussionPoints.split(";")).toList();
 

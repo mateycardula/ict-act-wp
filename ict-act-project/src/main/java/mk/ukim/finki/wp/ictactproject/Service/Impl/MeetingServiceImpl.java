@@ -177,4 +177,35 @@ public class MeetingServiceImpl implements MeetingService {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
         return discussionPoint.getVotesNo();
     }
+
+    @Override
+    public List<Meeting> filter(String name, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type) {
+        Set<Meeting> meetings = new HashSet<>(meetingRepository.findAll());
+        Set<Meeting> dateFilterFrom = new HashSet<>();
+        Set<Meeting> dateFilterTo = new HashSet<>();
+        Set<Meeting> topicFilter = new HashSet<>();
+        Set<Meeting> typeFilter = new HashSet<>();
+        if (dateFrom != null) {
+            dateFilterFrom.addAll(meetingRepository.findByDateOfMeetingAfter(dateFrom));
+            meetings.retainAll(dateFilterFrom);
+        }
+
+        if (dateTo != null) {
+            dateFilterTo.addAll(meetingRepository.findByDateOfMeetingBefore(dateTo));
+            meetings.retainAll(dateFilterTo);
+        }
+
+        if (name != null && !name.isEmpty()) {
+            topicFilter.addAll(meetingRepository.findAllByTopicContains(name));
+            meetings.retainAll(topicFilter);
+        }
+
+        if (type != null) {
+            typeFilter.addAll(meetingRepository.findByMeetingTypeIn(type));
+            meetings.retainAll(typeFilter);
+        }
+
+        return meetings.stream().toList();
+
+    }
 }

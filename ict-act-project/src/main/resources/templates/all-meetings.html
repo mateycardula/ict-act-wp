@@ -4,24 +4,20 @@
         <!-- Filter Section-->
         <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 row-cols-sm-1 justify-content-start bg-light p-3">
             <div class="col-md-8"> <!-- class="col-md-10" -->
-                <form class="">
+                <form method="get" action="/meetings" class="">
                     <h4 class="mb-3">Filter meetings</h4>
-                    <input class="form-control me-2 m-1" type="search" placeholder="Search by Name" aria-label="Name">
+                    <input class="form-control me-2 m-1" type="search" placeholder="Search by Name" aria-label="Name" name="name">
                     <div class="d-flex align-items-center m-1">
                         <span>From</span>
-                        <input class="form-control me-2 m-1" type="date" aria-label="Date">
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateFrom">
                         <span>To</span>
-                        <input class="form-control me-2 m-1" type="date" aria-label="Date">
+                        <input class="form-control me-2 m-1" type="date" aria-label="Date" name="dateTo">
                     </div>
-                    <div class="btn-group m-1" role="group" aria-label="Basic checkbox toggle button group">
-                        <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
-                        <label class="btn btn-outline-dark" for="btncheck1">Type 1</label>
-
-                        <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
-                        <label class="btn btn-outline-dark" for="btncheck2">Type 2</label>
-
-                        <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
-                        <label class="btn btn-outline-dark" for="btncheck3">Type 3</label>
+                    <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
+                        <div th:each="type: ${types}">
+                            <input type="checkbox" class="btn-check" th:value="${type.name()}" autocomplete="off" name="type" th:id="${'type_' + type.name()}">
+                            <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
+                        </div>
                     </div>
                     <br>
                     <button class="btn btn-primary m-1 col-3" type="submit">Filter</button>
@@ -55,11 +51,11 @@
                             <div class="small mb-2 mt-5">
                                 <div class="">
                                     <b>Date: </b>
-                                    <span th:text="${meeting.dateAndTime.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateAndTime, 'MMMM')} + ' ' + ${meeting.dateAndTime.year}"></span>
+                                    <span th:text="${meeting.dateOfMeeting.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateOfMeeting, 'MMMM')} + ' ' + ${meeting.dateOfMeeting.year}"></span>
                                 </div>
                                 <div class="">
                                     <b>Time: </b>
-                                    <span th:text="${#temporals.format(meeting.dateAndTime, 'HH:mm')}"></span>
+                                    <span th:text="${#temporals.format(meeting.dateOfMeeting, 'HH:mm')}"></span>
                                 </div>
 
                                 <div class=""><b>Location: </b><span th:text="${meeting.getRoom()}"></span></div>
