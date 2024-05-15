@@ -14,4 +14,5 @@ public interface DiscussionPointsService {
     DiscussionPoint editVoteYes(Long[] memberIds, Long id);
     DiscussionPoint deleteVotesYes(Long id);
     DiscussionPoint deleteVotesNo(Long id);
+    void deleteDiscussion(Long id);
 }

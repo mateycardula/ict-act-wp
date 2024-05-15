@@ -23,7 +23,7 @@ public class Meeting {
     @Enumerated(EnumType.STRING)
     private MeetingType meetingType;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     private List<DiscussionPoint> discussionPoints;
 
     @OneToOne

@@ -106,4 +106,9 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         discussionPoint.setVotesNo(new ArrayList<>());
         return discussionPointsRepository.save(discussionPoint);
     }
+
+    @Override
+    public void deleteDiscussion(Long id) {
+
+    }
 }
