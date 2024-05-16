@@ -27,11 +27,14 @@ public class AuthServiceImpl implements AuthService {
 
         Member user = memberRepository.findByEmail(email).orElseThrow(InvalidEmailOrPasswordException::new);
 
-        String pw=user.getPassword();
+        String pw = user.getPassword();
         if (passwordEncoder.matches(password, pw)) {
             return user;
         }
 
         return null;
+
+//        return memberRepository.findByEmailAndPassword(email, password)
+//                .orElseThrow(InvalidUserCredentialsException::new);
     }
 }

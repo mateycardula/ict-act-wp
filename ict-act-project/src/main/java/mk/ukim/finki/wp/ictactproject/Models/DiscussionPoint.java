@@ -40,4 +40,8 @@ public class DiscussionPoint {
         this.abstained = abstained;
         this.confirmed = confirmed;
     }
+
+    public DiscussionPoint(String topic) {
+        this.topic = topic;
+    }
 }
