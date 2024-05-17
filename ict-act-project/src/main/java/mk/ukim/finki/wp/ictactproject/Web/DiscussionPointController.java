@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/discussion-point")
@@ -91,18 +90,6 @@ public class DiscussionPointController {
         return "master-template";
     }
 
-    @GetMapping("/edit/discussion/{id}")
-    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
-        DiscussionPoint discussionPoint = discussionPointsService.getDiscussionPointById(id);
-        String discussion = discussionPoint.getDiscussion();
-
-        model.addAttribute("point", discussionPoint);
-        model.addAttribute("discussion", discussion);
-        model.addAttribute("bodyContent", "edit-discussion");
-
-        return "master-template";
-    }
-
     @PostMapping("/edit/votes/yes/{id}")
     public String editVotesYes(@PathVariable Long id, @RequestParam(required = false) Long[] memberIds) {
         if(memberIds == null) {
@@ -125,10 +112,25 @@ public class DiscussionPointController {
         return "redirect:/meetings/in-progress/" + meeting.getId();
     }
 
+    @GetMapping("/edit/discussion/{id}")
+    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
+        DiscussionPoint discussionPoint = discussionPointsService.getDiscussionPointById(id);
+        String discussionText = discussionPoint.getDiscussion();
+
+        model.addAttribute("discussionPoint", discussionPoint);
+        model.addAttribute("discussionText", discussionText);
+        model.addAttribute("bodyContent", "edit-discussion");
+
+        return "master-template";
+    }
+
     @PostMapping("/edit/discussion/{id}")
-    public String editDiscussion(@PathVariable Long id, @RequestParam(required = false) String discussion) {
-        DiscussionPoint discussionPoint = discussionPointsService.addDiscussion(discussion, id);
+    public String editDiscussion(Model model, @PathVariable Long id,
+                                 @RequestParam(required = false) String discussionText){
         Meeting meeting = meetingService.findMeetingByDiscussionPoint(id);
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+
+        discussionPointsService.editDiscussion(meeting, id, discussionText);
+
+        return "redirect:/meetings/details/"+meeting.getId();
     }
 }

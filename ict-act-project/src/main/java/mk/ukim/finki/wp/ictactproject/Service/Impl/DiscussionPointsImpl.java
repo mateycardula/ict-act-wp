@@ -1,11 +1,12 @@
 package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
+import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidArgumentsException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
+import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,12 @@ import java.util.List;
 public class DiscussionPointsImpl implements DiscussionPointsService {
     private final DiscussionPointsRepository discussionPointsRepository;
     private final MemberRepository memberRepository;
+    private final MeetingRepository meetingRepository;
 
-    public DiscussionPointsImpl(DiscussionPointsRepository discussionPointsRepository, MemberRepository memberRepository) {
+    public DiscussionPointsImpl(DiscussionPointsRepository discussionPointsRepository, MemberRepository memberRepository, MeetingRepository meetingRepository) {
         this.discussionPointsRepository = discussionPointsRepository;
         this.memberRepository = memberRepository;
+        this.meetingRepository = meetingRepository;
     }
 
     @Override
@@ -95,20 +98,38 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
     @Override
     public DiscussionPoint deleteVotesYes(Long id) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id)
+                .orElseThrow(DiscussionPointDoesNotExist::new);
         discussionPoint.setVotesYes(new ArrayList<>());
         return discussionPointsRepository.save(discussionPoint);
     }
 
     @Override
     public DiscussionPoint deleteVotesNo(Long id) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id)
+                .orElseThrow(DiscussionPointDoesNotExist::new);
         discussionPoint.setVotesNo(new ArrayList<>());
         return discussionPointsRepository.save(discussionPoint);
     }
 
     @Override
-    public void deleteDiscussion(Long id) {
+    public void editDiscussion(Meeting meeting, Long discussionPointId, String discussion) {
+        DiscussionPoint dp = meeting.getDiscussionPoints()
+                .stream().filter(item -> item.getId().equals(discussionPointId))
+                .findFirst()
+                .orElseThrow(DiscussionPointDoesNotExist::new);
 
+        dp.setDiscussion(discussion);
+        discussionPointsRepository.save(dp);
+    }
+
+    @Override
+    public void deleteDiscussion(Meeting meeting, Long dpId) {
+        DiscussionPoint dp = discussionPointsRepository.findById(dpId)
+                .orElseThrow(DiscussionPointDoesNotExist::new);
+        meeting.getDiscussionPoints().remove(dp);
+
+        meetingRepository.save(meeting);
+        discussionPointsRepository.delete(dp);
     }
 }

@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Web;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,10 +21,12 @@ import java.util.Map;
 public class MeetingController {
     private final MeetingService meetingService;
     private final MemberService memberService;
+    private final DiscussionPointsService discussionPointsService;
 
-    public MeetingController(MeetingService meetingService, MemberService memberService) {
+    public MeetingController(MeetingService meetingService, MemberService memberService, DiscussionPointsService discussionPointsService) {
         this.meetingService = meetingService;
         this.memberService = memberService;
+        this.discussionPointsService = discussionPointsService;
     }
 
     @GetMapping
@@ -90,5 +93,14 @@ public class MeetingController {
     private String finishMeeting(Model model, @PathVariable Long id) {
         Meeting meeting = meetingService.finishMeeting(id);
         return "redirect:/meetings/details/" + id;
+    }
+
+    @PostMapping("/delete/discussion/{id}")
+    public String deleteDiscussion(Model model, @PathVariable Long id) {
+
+        Meeting meeting = meetingService.findMeetingByDiscussionPoint(id);
+        discussionPointsService.deleteDiscussion(meeting, id);
+
+        return "redirect:/meetings/details/"+meeting.getId();
     }
 }
