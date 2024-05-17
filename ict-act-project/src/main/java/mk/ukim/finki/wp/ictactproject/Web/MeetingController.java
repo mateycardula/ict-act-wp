@@ -92,4 +92,31 @@ public class MeetingController {
         Meeting meeting = meetingService.finishMeeting(id);
         return "redirect:/meetings/details/" + id;
     }
+
+    @GetMapping("/delete/{id}")
+    public String deleteMeeting(Model model, @PathVariable Long id) {
+        // TODO: CHECK IF THE LOGGED IN USER IS THE PRESIDENT/VICE PRESIDENT
+        meetingService.deleteMeeting(id);
+        return "redirect:/meetings";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String getEditPage(Model model, @PathVariable Long id) {
+        Meeting meeting = meetingService.findMeetingById(id);
+        model.addAttribute("meeting", meeting);
+        model.addAttribute("types", MeetingType.values());
+        model.addAttribute("bodyContent", "edit-meeting");
+        return "master-template";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editMeeting(Model model,
+                              @PathVariable Long id,
+                              @RequestParam String topic,
+                              @RequestParam String room,
+                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
+                              @RequestParam MeetingType type) {
+        Meeting meeting = meetingService.editMeeting(id, topic, room, dateAndTime, type);
+        return "redirect:/meetings";
+    }
 }
