@@ -208,4 +208,19 @@ public class MeetingServiceImpl implements MeetingService {
         return meetings.stream().toList();
 
     }
+
+    @Override
+    public void deleteMeeting(Long id) {
+        meetingRepository.deleteById(id);
+    }
+
+    @Override
+    public Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type) {
+        Meeting meeting = this.findMeetingById(id);
+        meeting.setTopic(topic);
+        meeting.setRoom(room);
+        meeting.setDateOfMeeting(dateAndTime);
+        meeting.setMeetingType(type);
+        return meetingRepository.save(meeting);
+    }
 }

@@ -38,4 +38,6 @@ public interface MeetingService {
     List<Member> getMembersThatVotedNo(Long id);
 
     List<Meeting> filter(String topic, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type);
+    void deleteMeeting(Long id);
+    Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type);
 }
