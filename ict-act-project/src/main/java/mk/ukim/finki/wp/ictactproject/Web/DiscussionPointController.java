@@ -39,7 +39,7 @@ public class DiscussionPointController {
 
         meetingService.addDiscussionPoint(discussionPoint, meeting);
 
-        return "redirect:/meetings";
+        return "redirect:/discussion-point/add?meetingId="+meetingId;
     }
 
     @PostMapping("/vote/yes/{discussionPointId}")
