@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title>Meeting Info</title>
     <!-- Bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
 <div class="container mt-5">
@@ -18,46 +19,65 @@
                     <!-- Post title-->
                     <h1 class="fw-bolder mb-1" th:text="${meeting.getTopic()}">Title PLACEHOLDER</h1>
                     <!-- Post meta content-->
-                    <div class="text-muted fst-italic mb-2"><span th:text="${meeting.getDateOfMeeting}">MEETING DATE; TIME;</span> <span th:text="${meeting.getRoom()}">LOCATION - PLACEHOLDER</span></div>
+                    <div class="text-muted fst-italic mb-2"><span th:text="${meeting.getDateOfMeeting}">MEETING DATE; TIME;</span>
+                        <span th:text="${meeting.getRoom()}">LOCATION - PLACEHOLDER</span></div>
                     <!-- Post categories-->
                     <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 1 PLACEHOLDER</a>
                     <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 2 PLACEHOLDER</a>
                 </header>
-<!--                TODO:If Not started/In progress-->
+                <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}"><button class="btn btn-success col-4 btn-sm">Enter Meeting</button></a>
+                    <a th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}">
+                        <button class="btn btn-success col-4 btn-sm">Enter Meeting</button>
+                    </a>
                 </div>
                 <!-- Post content-->
                 <section class="mb-5">
                     <h4 class="fw-bolder mb-4 mt-5">Description</h4>
-                    <p class="fs-5 mb-4">DESCRIPTION PLACEHOLDER! Science is an enterprise that should be cherished as an activity of the free human mind. Because it transforms who we are, how we live, and it gives us an understanding of our place in the universe.</p>
+                    <p class="fs-5 mb-4">DESCRIPTION PLACEHOLDER! Science is an enterprise that should be cherished as
+                        an activity of the free human mind. Because it transforms who we are, how we live, and it gives
+                        us an understanding of our place in the universe.</p>
                     <h4 class="fw-bolder mb-4 mt-5">Discussion points</h4>
                     <ul class="list-group list-group-flush">
                         <li th:each="dp : ${meeting.discussionPoints}" class="list-group-item">
-                            <span th:text="${dp.topic}"></span>
+                            <div style="display: flex; align-items: center;">
+                                <span th:text="${dp.topic}"></span>
+                                <span style="flex-grow: 1; border-bottom: 1px solid #ccc; margin-left: 10px; margin-right: 10px;"></span>
+                                <span style="color: #999; flex-grow: 10;" th:text="${dp.discussion}"></span>
+                            </div>
                             <b th:if="${meeting.finished}">
                                 <span th:if="!${dp.confirmed}" class="text-danger fst-italic">(Denied)</span>
                                 <span th:if="${dp.confirmed}" class="text-success fst-italic">(Accepted)</span>
                             </b>
+                            <form th:action="@{'/meetings/delete/discussion/'+${dp.id}}" method="post"
+                                  class="float-end me-2">
+                                <input type="hidden" name="_method" value="POST"/>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            <a th:href="@{/discussion-point/edit/discussion/{id}(id=${dp.id})}"
+                               class="btn btn-sm btn-outline-primary float-end">Edit Discussion</a>
                         </li>
-
-<!--                        <li th:each="dp : ${meeting.discussionPoints}" class="list-group-item"><span th:text="${dp.topic} "></span> <b th:if="${meeting.finished} && !dp.confirmed" class="text-danger fst-italic">(Denied)</b> <b th:if="${meeting.finished} && dp.confirmed" class="text-success fst-italic">(Accepted)</b></li> &lt;!&ndash; ONLY IF THE MEETING IS FINISHED &ndash;&gt;-->
-<!--                        <li class="list-group-item">A second item <b class="text-danger fst-italic">(Denied)</b></li>-->
-<!--                        <li class="list-group-item">A third item <b class="text-success fst-italic">(Accepted)</b></li> &lt;!&ndash; ONLY IF THE MEETING IS FINISHED &ndash;&gt;-->
-<!--                        <li class="list-group-item">A fourth item <b class="text-danger fst-italic">(Denied)</b></li>-->
-<!--                        <li class="list-group-item">And a fifth one <b class="text-danger fst-italic">(Denied)</b></li>-->
                     </ul>
                 </section>
+
             </article>
         </div>
         <div class="col-lg-4 bg-light">
             <h4 class="fw-bolder mb-4 mt-5">Meeting Notes</h4>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Note 1: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b class="text-danger fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 2: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba</li>
-                <li class="list-group-item">Note 3: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b class="text-success fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 4: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba</li>
-                <li class="list-group-item">Note 5: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba</li>
+                <li class="list-group-item">Note 1: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
+                        class="text-danger fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
+                <li class="list-group-item">Note 2: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
+                    eakbkeba
+                </li>
+                <li class="list-group-item">Note 3: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
+                        class="text-success fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
+                <li class="list-group-item">Note 4: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
+                    eakbkeba
+                </li>
+                <li class="list-group-item">Note 5: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
+                    eakbkeba
+                </li>
             </ul>
         </div>
     </div>

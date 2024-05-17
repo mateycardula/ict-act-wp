@@ -16,15 +16,16 @@ public class DiscussionPoint {
 
     private String topic;
 
+    @Column(length = 999)
     private String discussion;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     private List<Member> votesYes;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     private List<Member> votesNo;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     private List<Member> abstained;
 
     private boolean confirmed;
