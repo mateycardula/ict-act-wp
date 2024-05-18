@@ -75,15 +75,13 @@ public class MeetingController {
     @GetMapping("/in-progress/{id}")
     private String meetingInProgressPage(Model model, @PathVariable Long id) {
         Meeting meeting = meetingService.findMeetingById(id);
-        Map<Long, List<Member>> membersVotedYes = meetingService.getMembersVotedYes(id);
-        Map<Long, List<Member>> membersVotedNo = meetingService.getMembersVotedNo(id);
-        Map<Long, List<Member>> members = meetingService.getAllMembersForMeeting(id, membersVotedYes, membersVotedNo);
+        Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
+        Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
 
         Map<Long, String> discussions = meetingService.getDiscussions(id);
         model.addAttribute("meeting", meeting);
-        model.addAttribute("members", members);
-        model.addAttribute("membersVotedYes", membersVotedYes);
-        model.addAttribute("membersVotedNo", membersVotedNo);
+        model.addAttribute("votesYes", membersVotedYes);
+        model.addAttribute("votesNo", membersVotedNo);
         model.addAttribute("discussions", discussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
 

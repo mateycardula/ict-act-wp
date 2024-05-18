@@ -42,15 +42,15 @@ public class DiscussionPointController {
     }
 
     @PostMapping("/vote/yes/{discussionPointId}")
-    public String voteYesForDiscussionPoint(Model model, @RequestParam Long[] memberIds, @PathVariable Long discussionPointId) {
-        DiscussionPoint discussionPoint = discussionPointsService.voteYes(memberIds, discussionPointId);
+    public String voteYesForDiscussionPoint(Model model, @RequestParam Long votes, @PathVariable Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsService.voteYes(votes, discussionPointId);
         Meeting meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
         return "redirect:/meetings/in-progress/" + meeting.getId();
     }
 
     @PostMapping("/vote/no/{discussionPointId}")
-    public String voteNoForDiscussionPoint(Model model, @RequestParam Long[] memberIds, @PathVariable Long discussionPointId) {
-        DiscussionPoint discussionPoint = discussionPointsService.voteNo(memberIds, discussionPointId);
+    public String voteNoForDiscussionPoint(Model model, @RequestParam Long votes, @PathVariable Long discussionPointId) {
+        DiscussionPoint discussionPoint = discussionPointsService.voteNo(votes, discussionPointId);
         Meeting meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
         return "redirect:/meetings/in-progress/" + meeting.getId();
     }
@@ -65,12 +65,10 @@ public class DiscussionPointController {
     @GetMapping("/edit/votes/yes/{id}")
     public String getEditPageForVotingYes(Model model, @PathVariable Long id) {
         DiscussionPoint discussionPoint = discussionPointsService.getDiscussionPointById(id);
-        List<Member> membersToShow = meetingService.getMembersForEditVotes(discussionPoint);
-        List<Member> membersToCheck = meetingService.getMembersThatVotedYes(id);
+        Long votesYes = discussionPoint.getVotesYes();
 
         model.addAttribute("point", discussionPoint);
-        model.addAttribute("members", membersToShow);
-        model.addAttribute("toCheck", membersToCheck);
+        model.addAttribute("votes", votesYes);
         model.addAttribute("bodyContent", "edit-votes-yes");
 
         return "master-template";
@@ -79,34 +77,32 @@ public class DiscussionPointController {
     @GetMapping("/edit/votes/no/{id}")
     public String getEditPageForVotingNo(Model model, @PathVariable Long id) {
         DiscussionPoint discussionPoint = discussionPointsService.getDiscussionPointById(id);
-        List<Member> membersToShow = meetingService.getMembersForEditVotes(discussionPoint);
-        List<Member> membersToCheck = meetingService.getMembersThatVotedNo(id);
+        Long votesNo = discussionPoint.getVotesNo();
 
         model.addAttribute("point", discussionPoint);
-        model.addAttribute("members", membersToShow);
-        model.addAttribute("toCheck", membersToCheck);
+        model.addAttribute("votes", votesNo);
         model.addAttribute("bodyContent", "edit-votes-no");
 
         return "master-template";
     }
 
     @PostMapping("/edit/votes/yes/{id}")
-    public String editVotesYes(@PathVariable Long id, @RequestParam(required = false) Long[] memberIds) {
-        if(memberIds == null) {
+    public String editVotesYes(@PathVariable Long id, @RequestParam(required = false) Long votes) {
+        if(votes == null) {
             DiscussionPoint discussionPoint = discussionPointsService.deleteVotesYes(id);
         } else {
-            DiscussionPoint discussionPoint = discussionPointsService.editVoteYes(memberIds, id);
+            DiscussionPoint discussionPoint = discussionPointsService.voteYes(votes, id);
         }
         Meeting meeting = meetingService.findMeetingByDiscussionPoint(id);
         return "redirect:/meetings/in-progress/" + meeting.getId();
     }
 
     @PostMapping("/edit/votes/no/{id}")
-    public String editVotesNo(@PathVariable Long id, @RequestParam(required = false) Long[] memberIds) {
-        if(memberIds == null) {
+    public String editVotesNo(@PathVariable Long id, @RequestParam(required = false) Long votes) {
+        if(votes == null) {
             DiscussionPoint discussionPoint = discussionPointsService.deleteVotesNo(id);
         } else {
-            DiscussionPoint discussionPoint = discussionPointsService.editVoteNo(memberIds, id);
+            DiscussionPoint discussionPoint = discussionPointsService.voteNo(votes, id);
         }
         Meeting meeting = meetingService.findMeetingByDiscussionPoint(id);
         return "redirect:/meetings/in-progress/" + meeting.getId();

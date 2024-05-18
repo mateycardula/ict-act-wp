@@ -7,12 +7,10 @@ import java.util.List;
 
 public interface DiscussionPointsService {
     DiscussionPoint create(String topic, String discussion);
-    DiscussionPoint voteYes(Long[] memberIds, Long discussionPointId);
-    DiscussionPoint voteNo(Long[] memberIds, Long discussionPointId);
+    DiscussionPoint voteYes(Long votes, Long discussionPointId);
+    DiscussionPoint voteNo(Long votes, Long discussionPointId);
     DiscussionPoint addDiscussion(String discussion, Long discussionPointId);
     DiscussionPoint getDiscussionPointById(Long id);
-    DiscussionPoint editVoteNo(Long[] memberIds, Long id);
-    DiscussionPoint editVoteYes(Long[] memberIds, Long id);
     DiscussionPoint deleteVotesYes(Long id);
     DiscussionPoint deleteVotesNo(Long id);
 

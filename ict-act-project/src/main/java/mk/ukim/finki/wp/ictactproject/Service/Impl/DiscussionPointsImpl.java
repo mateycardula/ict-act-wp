@@ -29,34 +29,23 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
     @Override
     public DiscussionPoint create(String topic, String discussion) {
-        List<Member> votesYes = new ArrayList<>();
-        List<Member> votesNo = new ArrayList<>();
-        List<Member> votesAbstained = new ArrayList<>();
         Boolean confirmed = false;
 
-        DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, votesYes, votesNo, votesAbstained, confirmed);
+        DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, null, null, null, confirmed);
         return discussionPointsRepository.save(discussionPoint);
     }
 
     @Override
-    public DiscussionPoint voteYes(Long[] memberIds, Long discussionPointId) {
-        List<Long> memberIdsList = Arrays.asList(memberIds);
+    public DiscussionPoint voteYes(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
-        List<Member> members = memberIdsList.stream()
-                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
-                .toList();
-        discussionPoint.getVotesYes().addAll(members);
+        discussionPoint.setVotesYes(votes);
         return discussionPointsRepository.save(discussionPoint);
     }
 
     @Override
-    public DiscussionPoint voteNo(Long[] memberIds, Long discussionPointId) {
-        List<Long> memberIdsList = Arrays.asList(memberIds);
+    public DiscussionPoint voteNo(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
-        List<Member> members = memberIdsList.stream()
-                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
-                .toList();
-        discussionPoint.getVotesNo().addAll(members);
+        discussionPoint.setVotesNo(votes);
         return discussionPointsRepository.save(discussionPoint);
     }
 
@@ -73,34 +62,10 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public DiscussionPoint editVoteNo(Long[] memberIds, Long id) {
-        List<Long> memberIdsList = Arrays.asList(memberIds);
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
-        List<Member> members = memberIdsList.stream()
-                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
-                .toList();
-        discussionPoint.setVotesNo(new ArrayList<>());
-        discussionPoint.getVotesNo().addAll(members);
-        return discussionPointsRepository.save(discussionPoint);
-    }
-
-    @Override
-    public DiscussionPoint editVoteYes(Long[] memberIds, Long id) {
-        List<Long> memberIdsList = Arrays.asList(memberIds);
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
-        List<Member> members = memberIdsList.stream()
-                .map(i -> memberRepository.findById(i).orElseThrow(MemberDoesNotExist::new))
-                .toList();
-        discussionPoint.setVotesYes(new ArrayList<>());
-        discussionPoint.getVotesYes().addAll(members);
-        return discussionPointsRepository.save(discussionPoint);
-    }
-
-    @Override
     public DiscussionPoint deleteVotesYes(Long id) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(id)
                 .orElseThrow(DiscussionPointDoesNotExist::new);
-        discussionPoint.setVotesYes(new ArrayList<>());
+        discussionPoint.setVotesYes(null);
         return discussionPointsRepository.save(discussionPoint);
     }
 
@@ -108,7 +73,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     public DiscussionPoint deleteVotesNo(Long id) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(id)
                 .orElseThrow(DiscussionPointDoesNotExist::new);
-        discussionPoint.setVotesNo(new ArrayList<>());
+        discussionPoint.setVotesNo(null);
         return discussionPointsRepository.save(discussionPoint);
     }
 
