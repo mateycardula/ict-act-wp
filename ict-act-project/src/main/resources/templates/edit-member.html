@@ -1,0 +1,16 @@
+<form th:action="@{'/members/edit/' + ${member.getId()}}">
+    <label for="name">Name</label>
+    <input name="name" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name" id="name" th:value="${member.getName()}">
+
+    <label for="surname">Name</label>
+    <input name="surname" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name" id="surname" th:value="${member.getSurname()}">
+
+    <label for="institution">Name</label>
+    <input name="institution" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name" id="institution" th:value="${member.getInstitution()}">
+
+
+    <div th:each="type: ${types}" class="form-check form-check-inline">
+            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}">
+            <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
+        </div>
+</form>

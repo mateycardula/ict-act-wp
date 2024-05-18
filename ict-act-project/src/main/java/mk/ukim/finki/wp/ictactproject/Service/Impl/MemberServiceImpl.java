@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -22,6 +23,11 @@ public class MemberServiceImpl implements MemberService {
     public MemberServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public Member findById(long id) {
+        return memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
     }
 
     @Override

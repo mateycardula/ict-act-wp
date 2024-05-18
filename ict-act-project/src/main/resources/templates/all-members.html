@@ -7,6 +7,7 @@
         <th scope="col">Email</th>
         <th scope="col">Institution</th>
         <th scope="col">Role</th>
+        <th scope="col">Actions</th>
 
     </tr>
     </thead>
@@ -18,6 +19,12 @@
         <td th:text="${member.email}"></td>
         <td th:text="${member.institution}"></td>
         <td th:text="${member.role}"></td>
+        <td>
+            <div th:if="${member.role.toString()} == 'NEW_USER'">
+                <a class="btn btn-success"  th:href="@{'/members/edit/{id}' (id=${member.getId()})}">Approve</a>
+                <a class="btn btn-danger" th:href="@{'/members/delete/{id}' (id=${member.getId()})}">Disapprove</a>
+            </div>
+        </td>
     </tr>
     </tbody>
 </table>

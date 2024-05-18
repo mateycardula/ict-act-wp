@@ -11,6 +11,12 @@ public enum PositionType implements GrantedAuthority {
     GUEST,
     NEW_USER;
 
+
+    @Override
+    public String toString() {
+        return name();
+    }
+
     @Override
     public String getAuthority() {
         return name();

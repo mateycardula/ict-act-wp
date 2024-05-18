@@ -47,8 +47,18 @@ public class DataInit {
         member.setRole(PositionType.PRESIDENT);
         memberRepository.save(member);
 
+       member = new Member();
+        member.setName("Name");
+        member.setSurname("Surname");
+        member.setEmail("new@user");
+        member.setPassword(passwordEncoder.encode(
+                "user"
+        ));
+        member.setRole(PositionType.NEW_USER);
+        memberRepository.save(member);
+
         for(int i=0; i<5; i++){
-            
+
             Meeting meeting = new Meeting();
             LocalDateTime date = LocalDateTime.now();
             LocalDateTime finishedDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), date.getHour(), date.getMinute());
