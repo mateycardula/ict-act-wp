@@ -30,7 +30,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
+    public Member register(String email, String password, String repeatPassword, String name, String surname, String institution) {
         if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             throw new InvalidEmailOrPasswordException();
         }
@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService {
             throw new UsernameAlreadyExistsException();
         }
 
-        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, role);
+        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
 
         return memberRepository.save(member);
     }

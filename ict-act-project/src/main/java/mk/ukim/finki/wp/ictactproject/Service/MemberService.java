@@ -9,5 +9,5 @@ import java.util.List;
 public interface MemberService extends UserDetailsService {
     List<Member> getAll();
 
-    Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role);
+    Member register(String email, String password, String repeatPassword, String name, String surname, String institution);
 }

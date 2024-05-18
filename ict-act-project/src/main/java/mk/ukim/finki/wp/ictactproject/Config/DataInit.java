@@ -37,17 +37,18 @@ public class DataInit {
   
     @PostConstruct
     void init(){
-        for(int i=0; i<5; i++){
-            Member member = new Member();
-            member.setName("Name" + i);
-            member.setSurname("Surname" + i);
-            member.setEmail("user" + i);
-            member.setPassword(passwordEncoder.encode(
-                    "p"
-            ));
-            member.setRole(PositionType.PRESIDENT);
-            memberRepository.save(member);
+        Member member = new Member();
+        member.setName("Name");
+        member.setSurname("Surname");
+        member.setEmail("admin");
+        member.setPassword(passwordEncoder.encode(
+                "admin"
+        ));
+        member.setRole(PositionType.PRESIDENT);
+        memberRepository.save(member);
 
+        for(int i=0; i<5; i++){
+            
             Meeting meeting = new Meeting();
             LocalDateTime date = LocalDateTime.now();
             LocalDateTime finishedDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), date.getHour(), date.getMinute());
