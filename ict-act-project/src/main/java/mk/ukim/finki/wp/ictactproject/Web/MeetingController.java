@@ -77,8 +77,8 @@ public class MeetingController {
         Meeting meeting = meetingService.findMeetingById(id);
         Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
         Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
-
         Map<Long, String> discussions = meetingService.getDiscussions(id);
+
         model.addAttribute("meeting", meeting);
         model.addAttribute("votesYes", membersVotedYes);
         model.addAttribute("votesNo", membersVotedNo);

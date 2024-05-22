@@ -5,6 +5,8 @@ import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsMembersAttendingException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsRemainingMembers;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -29,7 +31,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
     @Override
     public DiscussionPoint create(String topic, String discussion) {
-        Boolean confirmed = false;
+        boolean confirmed = false;
 
         DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, null, null, null, confirmed);
         return discussionPointsRepository.save(discussionPoint);
@@ -38,6 +40,15 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     @Override
     public DiscussionPoint voteYes(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
+        Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
+        Integer membersNumber = memberRepository.findAll().size();
+        if(votes > membersNumber) {
+            throw new NumberOfVotesExceedsMembersAttendingException();
+        }
+        long remainingMembers = membersNumber - discussionPoint.getVotesNo();
+        if(votes > remainingMembers) {
+            throw new NumberOfVotesExceedsRemainingMembers();
+        }
         discussionPoint.setVotesYes(votes);
         return discussionPointsRepository.save(discussionPoint);
     }
@@ -45,6 +56,15 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     @Override
     public DiscussionPoint voteNo(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
+        Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
+        Integer membersNumber = memberRepository.findAll().size();
+        if(votes > membersNumber) {
+            throw new NumberOfVotesExceedsMembersAttendingException();
+        }
+        long remainingMembers = membersNumber - discussionPoint.getVotesYes();
+        if(votes > remainingMembers) {
+            throw new NumberOfVotesExceedsRemainingMembers();
+        }
         discussionPoint.setVotesNo(votes);
         return discussionPointsRepository.save(discussionPoint);
     }
