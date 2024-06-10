@@ -45,10 +45,14 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         if(votes > membersNumber) {
             throw new NumberOfVotesExceedsMembersAttendingException();
         }
-        long remainingMembers = membersNumber - discussionPoint.getVotesNo();
-        if(votes > remainingMembers) {
-            throw new NumberOfVotesExceedsRemainingMembers();
+
+        if(discussionPoint.getVotesNo() != null) {
+            long remainingMembers = membersNumber - discussionPoint.getVotesNo();
+            if(votes > remainingMembers) {
+                throw new NumberOfVotesExceedsRemainingMembers();
+            }
         }
+
         discussionPoint.setVotesYes(votes);
         return discussionPointsRepository.save(discussionPoint);
     }
@@ -61,10 +65,14 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         if(votes > membersNumber) {
             throw new NumberOfVotesExceedsMembersAttendingException();
         }
-        long remainingMembers = membersNumber - discussionPoint.getVotesYes();
-        if(votes > remainingMembers) {
-            throw new NumberOfVotesExceedsRemainingMembers();
+
+        if(discussionPoint.getVotesYes() != null) {
+            long remainingMembers = membersNumber - discussionPoint.getVotesYes();
+            if (votes > remainingMembers) {
+                throw new NumberOfVotesExceedsRemainingMembers();
+            }
         }
+
         discussionPoint.setVotesNo(votes);
         return discussionPointsRepository.save(discussionPoint);
     }

@@ -29,6 +29,9 @@
                         </div>
                         <button class="btn btn-primary m-1 col-3" type="submit">Vote Yes</button>
                     </form>
+                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'yes')">
+                        <div th:text="${error.getErrorMessage()}" class="text-danger"></div>
+                    </block>
                 </div>
             </td>
             <td th:unless="${votesYes[point.getId()] == null}">
@@ -50,6 +53,9 @@
                         </div>
                         <button class="btn btn-primary m-1 col-3" type="submit">Vote No</button>
                     </form>
+                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'no')">
+                        <div th:text="${error.getErrorMessage()}" class="text-danger"></div>
+                    </block>
                 </div>
             </td>
             <td th:unless="${votesNo[point.getId()] == null}">
