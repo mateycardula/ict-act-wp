@@ -19,21 +19,21 @@ public class DiscussionPoint {
     @Column(length = 999)
     private String discussion;
 
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    private List<Member> votesYes;
+//    @ManyToMany(cascade = CascadeType.REMOVE)
+    private Long votesYes;
 
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    private List<Member> votesNo;
+//    @ManyToMany(cascade = CascadeType.REMOVE)
+    private Long votesNo;
 
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    private List<Member> abstained;
+//    @ManyToMany(cascade = CascadeType.REMOVE)
+    private Long abstained;
 
     private boolean confirmed;
 
     public DiscussionPoint() {
     }
 
-    public DiscussionPoint(String topic, String discussion, List<Member> votesYes, List<Member> votesNo, List<Member> abstained, boolean confirmed) {
+    public DiscussionPoint(String topic, String discussion, Long votesYes, Long votesNo, Long abstained, boolean confirmed) {
         this.topic = topic;
         this.discussion = discussion;
         this.votesYes = votesYes;

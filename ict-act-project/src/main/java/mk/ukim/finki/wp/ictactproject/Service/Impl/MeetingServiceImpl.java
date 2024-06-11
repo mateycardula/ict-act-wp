@@ -37,11 +37,6 @@ public class MeetingServiceImpl implements MeetingService {
     public Meeting create(String topic, String room, LocalDateTime dateAndTime, MeetingType meetingType) {
         List<DiscussionPoint> discussionPointList = new ArrayList<>();
 
-//        for (String dp: discussionPoints) {
-//            DiscussionPoint newDiscussionPoint = new DiscussionPoint(dp);
-//            discussionPointsRepository.save(newDiscussionPoint);
-//            discussionPointList.add(newDiscussionPoint);
-//        }
         Meeting meeting = new Meeting(topic, room, dateAndTime, meetingType, discussionPointList);
         return meetingRepository.save(meeting);
     }
@@ -65,31 +60,31 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Map<Long, List<Member>> getMembersVotedYes(Long id) {
+    public Map<Long, Long> getVotesYes(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
-        Map<Long, List<Member>> mapOfVoters = new HashMap<>();
+        Map<Long, Long> mapOfVotes = new HashMap<>();
         for (DiscussionPoint discussionPoint : discussionPoints) {
             Long discussionPointId = discussionPoint.getId();
-            List<Member> membersVotedYes = discussionPoint.getVotesYes();
-            mapOfVoters.put(discussionPointId, membersVotedYes);
+            Long votesYes = discussionPoint.getVotesYes();
+            mapOfVotes.put(discussionPointId, votesYes);
         }
 
-        return mapOfVoters;
+        return mapOfVotes;
     }
 
     @Override
-    public Map<Long, List<Member>> getMembersVotedNo(Long id) {
+    public Map<Long, Long> getVotesNo(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
-        Map<Long, List<Member>> mapOfVoters = new HashMap<>();
+        Map<Long, Long> mapOfVotes = new HashMap<>();
         for (DiscussionPoint discussionPoint : discussionPoints) {
             Long discussionPointId = discussionPoint.getId();
-            List<Member> membersVotedNo = discussionPoint.getVotesNo();
-            mapOfVoters.put(discussionPointId, membersVotedNo);
+            Long votesNo = discussionPoint.getVotesNo();
+            mapOfVotes.put(discussionPointId, votesNo);
         }
 
-        return mapOfVoters;
+        return mapOfVotes;
     }
 
     @Override
@@ -107,75 +102,33 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo) {
-        Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
-        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
-        Map<Long, List<Member>> mapOfMembers = new HashMap<>();
-        for (DiscussionPoint discussionPoint : discussionPoints) {
-            Long discussionPointId = discussionPoint.getId();
-            List<Member> membersAlreadyVotedYesForDiscussionPoint = membersVotedYes.get(discussionPointId);
-            List<Member> membersAlreadyVotedNoForDiscussionPoint = membersVotedNo.get(discussionPointId);
-            List<Member> membersAlreadyVotedForDiscussionPoint = new ArrayList<>();
-            membersAlreadyVotedForDiscussionPoint.addAll(membersAlreadyVotedYesForDiscussionPoint);
-            membersAlreadyVotedForDiscussionPoint.addAll(membersAlreadyVotedNoForDiscussionPoint);
-            List<Member> members = memberRepository.findAll();
-            List<Member> membersThatHaveNotVoted = members.stream()
-                    .filter(i -> !membersAlreadyVotedForDiscussionPoint.contains(i))
-                    .toList();
-            mapOfMembers.put(discussionPointId, membersThatHaveNotVoted);
-        }
-
-        return mapOfMembers;
-    }
-
-    @Override
     public Meeting finishMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
-        List<Member> members = memberRepository.findAll();
+        Long members = (long) memberRepository.findAll().size();
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
 
         for (DiscussionPoint discussionPoint : discussionPoints) {
-            List<Member> membersVotedYes = discussionPoint.getVotesYes();
-            List<Member> membersVotedNo = discussionPoint.getVotesNo();
-            List<Member> membersAbstained = members.stream()
-                    .filter(i -> !membersVotedYes.contains(i))
-                    .filter(i -> !membersVotedNo.contains(i))
-                    .toList();
+            Long membersVotedYes = discussionPoint.getVotesYes();
+            if(membersVotedYes == null || membersVotedYes < 0L) {
+                membersVotedYes = 0L;
+                discussionPoint.setVotesYes(membersVotedYes);
+            }
+            Long membersVotedNo = discussionPoint.getVotesNo();
+            if(membersVotedNo == null || membersVotedNo < 0L) {
+                membersVotedNo = 0L;
+                discussionPoint.setVotesNo(membersVotedNo);
+            }
+            Long membersAbstained = members - membersVotedNo - membersVotedYes;
+            if(membersAbstained < 0L) {
+                membersAbstained = 0L;
+            }
             discussionPoint.setAbstained(membersAbstained);
 
-            int votesYes = membersVotedYes.size();
-            int votesNo = membersVotedNo.size();
-            discussionPoint.setConfirmed(votesYes > votesNo);
-
-//            discussionPointsRepository.save(discussionPoint);
+            discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
         }
 
         meeting.setFinished(true);
         return meetingRepository.save(meeting);
-    }
-
-    @Override
-    public List<Member> getMembersForEditVotes(DiscussionPoint discussionPoint) {
-        List<Member> getAllMembers = memberRepository.findAll();
-        List<Member> getMembersYes = discussionPoint.getVotesYes();
-        List<Member> getMembersNo = discussionPoint.getVotesNo();
-
-        return getAllMembers.stream()
-                .filter(i -> !getMembersYes.contains(i))
-                .filter(i -> !getMembersNo.contains(i))
-                .toList();
-    }
-
-    @Override
-    public List<Member> getMembersThatVotedYes(Long id) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
-        return discussionPoint.getVotesYes();
-    }
-
-    @Override
-    public List<Member> getMembersThatVotedNo(Long id) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id).orElseThrow(DiscussionPointDoesNotExist::new);
-        return discussionPoint.getVotesNo();
     }
 
     @Override
