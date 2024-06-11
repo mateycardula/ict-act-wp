@@ -31,6 +31,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public Member findById(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception
+        return member;
+    }
+
+    @Override
     public Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
         if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             throw new InvalidEmailOrPasswordException();
@@ -50,15 +56,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member delete(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
-        memberRepository.deleteByEmail(email);
+    public Member deleteMember(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        memberRepository.deleteById(id);
 
         return member;
     }
 
     @Override
-    public Member update(Long id, String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
+    public Member editMember(Long id, String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
         Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
 
         member.setPassword(password);
