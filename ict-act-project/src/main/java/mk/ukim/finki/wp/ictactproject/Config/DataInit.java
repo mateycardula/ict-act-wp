@@ -44,7 +44,9 @@ public class DataInit {
         member.setPassword(passwordEncoder.encode(
                 "admin"
         ));
+
         member.setRole(PositionType.PRESIDENT);
+        System.out.println(member.getAuthorities());
         memberRepository.save(member);
 
        member = new Member();

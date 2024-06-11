@@ -1,5 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Config;
 
+import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,9 +38,9 @@ public class WebSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/meetings/**", "/register", "/h2/**")
+                        .requestMatchers("/", "/meetings/**", "/register", "/h2/**", "members/**")
                         .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("members/**").hasRole("PRESIDENT")
                         .anyRequest()
                         .authenticated()
                 )
