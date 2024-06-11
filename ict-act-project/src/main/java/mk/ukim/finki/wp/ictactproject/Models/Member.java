@@ -24,7 +24,7 @@ public class Member implements UserDetails {
 
     private String institution;
 
-    @ManyToMany
+    @OneToMany
     private List<Position> positions;
 
     private String email;

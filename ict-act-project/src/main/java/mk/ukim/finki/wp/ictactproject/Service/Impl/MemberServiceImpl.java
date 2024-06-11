@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -25,12 +26,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public Member findById(long id) {
+        return memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
+    }
+
+    @Override
     public List<Member> getAll() {
         return memberRepository.findAll();
     }
 
     @Override
-    public Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
+    public Member register(String email, String password, String repeatPassword, String name, String surname, String institution) {
         if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             throw new InvalidEmailOrPasswordException();
         }
@@ -43,7 +49,8 @@ public class MemberServiceImpl implements MemberService {
             throw new UsernameAlreadyExistsException();
         }
 
-        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, role);
+        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
+        System.out.println(member.getAuthorities());
 
         return memberRepository.save(member);
     }
