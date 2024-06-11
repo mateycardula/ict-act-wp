@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidUserCredentialsException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -44,6 +45,28 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, role);
+
+        return memberRepository.save(member);
+    }
+
+    @Override
+    public Member delete(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        memberRepository.deleteByEmail(email);
+
+        return member;
+    }
+
+    @Override
+    public Member update(Long id, String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role) {
+        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+
+        member.setPassword(password);
+        member.setName(name);
+        member.setSurname(surname);
+        member.setEmail(email);
+        member.setInstitution(institution);
+        member.setRole(role);
 
         return memberRepository.save(member);
     }
