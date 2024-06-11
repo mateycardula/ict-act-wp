@@ -3,6 +3,8 @@ package mk.ukim.finki.wp.ictactproject.Web;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
@@ -66,7 +68,15 @@ public class MeetingController {
 
     @GetMapping("/details/{id}")
     private String getMeetingInfo(@PathVariable Long id, Model model) {
-        Meeting meeting = meetingService.findMeetingById(id);
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingById(id);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
         model.addAttribute("meeting", meeting);
         model.addAttribute("bodyContent", "meeting-info");
         return "master-template";
@@ -74,38 +84,73 @@ public class MeetingController {
 
     @GetMapping("/in-progress/{id}")
     private String meetingInProgressPage(Model model, @PathVariable Long id) {
-        Meeting meeting = meetingService.findMeetingById(id);
-        Map<Long, List<Member>> membersVotedYes = meetingService.getMembersVotedYes(id);
-        Map<Long, List<Member>> membersVotedNo = meetingService.getMembersVotedNo(id);
-        Map<Long, List<Member>> members = meetingService.getAllMembersForMeeting(id, membersVotedYes, membersVotedNo);
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingById(id);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
 
+        Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
+        Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
         Map<Long, String> discussions = meetingService.getDiscussions(id);
+
         model.addAttribute("meeting", meeting);
-        model.addAttribute("members", members);
-        model.addAttribute("membersVotedYes", membersVotedYes);
-        model.addAttribute("membersVotedNo", membersVotedNo);
+        model.addAttribute("votesYes", membersVotedYes);
+        model.addAttribute("votesNo", membersVotedNo);
         model.addAttribute("discussions", discussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
+
+        if(model.asMap().get("hasError") != null) {
+            model.addAttribute("hasError", (Boolean)model.asMap().get("hasError"));
+            model.addAttribute("error", (DiscussionPointError)model.asMap().get("error"));
+        }
 
         return "master-template";
     }
 
     @PostMapping("/finish/{id}")
     private String finishMeeting(Model model, @PathVariable Long id) {
-        Meeting meeting = meetingService.finishMeeting(id);
+        Meeting meeting;
+        try {
+            meeting = meetingService.finishMeeting(id);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
         return "redirect:/meetings/details/" + id;
     }
 
     @GetMapping("/delete/{id}")
     public String deleteMeeting(Model model, @PathVariable Long id) {
         // TODO: CHECK IF THE LOGGED IN USER IS THE PRESIDENT/VICE PRESIDENT
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingById(id);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
         meetingService.deleteMeeting(id);
         return "redirect:/meetings";
     }
 
     @GetMapping("/edit/{id}")
     public String getEditPage(Model model, @PathVariable Long id) {
-        Meeting meeting = meetingService.findMeetingById(id);
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingById(id);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
         model.addAttribute("meeting", meeting);
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "edit-meeting");
@@ -119,7 +164,14 @@ public class MeetingController {
                               @RequestParam String room,
                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
                               @RequestParam MeetingType type) {
-        Meeting meeting = meetingService.editMeeting(id, topic, room, dateAndTime, type);
+        Meeting meeting;
+        try {
+            meeting = meetingService.editMeeting(id, topic, room, dateAndTime, type);
+        } catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
         return "redirect:/meetings";
     }
 

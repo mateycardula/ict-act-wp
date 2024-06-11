@@ -21,21 +21,21 @@ public interface MeetingService {
 
     Meeting findMeetingByDiscussionPoint(Long discussionPointId);
 
-    Map<Long, List<Member>> getMembersVotedYes(Long id);
+    Map<Long, Long> getVotesYes(Long id);
 
-    Map<Long, List<Member>> getMembersVotedNo(Long id);
+    Map<Long, Long> getVotesNo(Long id);
 
     Map<Long, String> getDiscussions(Long id);
 
-    Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo);
+//    Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo);
 
     Meeting finishMeeting(Long meetingId);
 
-    List<Member> getMembersForEditVotes(DiscussionPoint discussionPoint);
+//    List<Member> getMembersForEditVotes(DiscussionPoint discussionPoint);
 
-    List<Member> getMembersThatVotedYes(Long id);
+//    List<Member> getMembersThatVotedYes(Long id);
 
-    List<Member> getMembersThatVotedNo(Long id);
+//    List<Member> getMembersThatVotedNo(Long id);
 
     List<Meeting> filter(String topic, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type);
     void deleteMeeting(Long id);
