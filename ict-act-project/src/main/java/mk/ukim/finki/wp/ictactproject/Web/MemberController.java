@@ -21,7 +21,7 @@ public class MemberController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editMember(Model model, @PathVariable Long id){
+    public String getEditMemberPage(Model model, @PathVariable Long id){
         Member member;
         try{
             member = memberService.findById(id);
