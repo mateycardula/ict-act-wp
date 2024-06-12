@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/members")
 public class MemberController {
@@ -18,6 +20,15 @@ public class MemberController {
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+    @GetMapping()
+    public String getAllMembers(Model model){
+        List<Member> members = memberService.getAll();
+        model.addAttribute("members", members);
+        model.addAttribute("bodyContent", "all-members");
+
+        return "master-template";
     }
 
     @GetMapping("/edit/{id}")
