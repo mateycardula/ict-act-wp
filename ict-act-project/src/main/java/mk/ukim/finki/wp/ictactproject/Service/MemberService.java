@@ -11,5 +11,5 @@ public interface MemberService extends UserDetailsService {
     Member findById(Long id);
     Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role);
     Member deleteMember(Long id);
-    Member editMember(Long id, String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role);
+    Member editMember(Long id, String name, String surname, String institution, PositionType role);
 }

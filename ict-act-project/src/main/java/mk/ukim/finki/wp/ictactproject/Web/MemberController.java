@@ -34,42 +34,37 @@ public class MemberController {
     @GetMapping("/edit/{id}")
     public String getEditMemberPage(Model model, @PathVariable Long id){
         Member member;
-        try{
-            member = memberService.findById(id);
-        } catch (InvalidArgumentsException exception){
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        //TODO: Add details for the member
+        member = memberService.findById(id);
+        model.addAttribute("member", member);
         model.addAttribute("bodyContent", "edit-member");
+        model.addAttribute("types", PositionType.values());
         return "master-template";
     }
 
     @PostMapping("/edit/{id}")
     public String editMember(Model model,
                                @PathVariable Long id,
-                               @RequestParam String email,
+//                               @RequestParam String email,
                                @RequestParam String name,
-                               @RequestParam String password,
-                               @RequestParam String repeatPassword,
+//                               @RequestParam String password,
+//                               @RequestParam String repeatPassword,
                                @RequestParam String surname,
                                @RequestParam String institution,
                                @RequestParam PositionType role) {
-        Member member;
-        try {
-            member = memberService.editMember(id, email, password, repeatPassword, name, surname, institution, role);
-        } catch (Exception exception){ //TODO: Change exception
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
+        memberService.editMember(id, name, surname, institution, role);
         return "redirect:/members";
     }
 
-    @PostMapping("/delete/member/{id}")
+    @GetMapping("/delete/{id}")
+    public String deleteMemberPage(Model model, @PathVariable Long id){
+        Member member = memberService.findById(id);
+        model.addAttribute("member", member);
+        model.addAttribute("bodyContent", "delete-member");
+
+        return "master-template";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteMember(@PathVariable Long id) {
         Member member = memberService.deleteMember(id);
 

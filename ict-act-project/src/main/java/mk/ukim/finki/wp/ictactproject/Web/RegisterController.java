@@ -45,7 +45,7 @@ public class RegisterController {
                            @RequestParam String institution
     ) {
         try {
-            this.memberService.register(email, password, repeatedPassword, name, surname, institution);
+            this.memberService.register(email, password, repeatedPassword, name, surname, institution, PositionType.NEW_USER);
             return "redirect:/login";
         } catch (InvalidEmailOrPasswordException | PasswordDoNotMatchException |
                  UsernameAlreadyExistsException exception) {

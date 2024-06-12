@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<form th:action="@{'/members/delete/' + ${member.getId()}}" th:method = 'POST'>
+    <p>Are you sure you want to delete the following member?</p>
+    <span >Name: <span th:text = "${member.getName()}"> </span > </span>
+    <br>
+    <span >Surname: <span th:text = "${member.getSurname()}"> </span > </span>
+    <br>
+
+    <span >Institution: <span th:text = "${member.getInstitution()}"> </span > </span>
+    <br>
+
+    <span >Email: <span th:text = "${member.getEmail()}"> </span > </span>
+    <br>
+
+
+    <button class="btn btn-danger m-1 col-1" type="submit">Delete</button>
+</form>
