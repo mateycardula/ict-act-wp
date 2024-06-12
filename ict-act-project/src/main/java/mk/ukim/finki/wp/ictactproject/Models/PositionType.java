@@ -8,7 +8,14 @@ public enum PositionType implements GrantedAuthority {
     BOARD_MEMBER,
     FINANCE_BOARD,
     MEMBER,
-    GUEST;
+    GUEST,
+    NEW_USER;
+
+
+    @Override
+    public String toString() {
+        return name();
+    }
 
     @Override
     public String getAuthority() {

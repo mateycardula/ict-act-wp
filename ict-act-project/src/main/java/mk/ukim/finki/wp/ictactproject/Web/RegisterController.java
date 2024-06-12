@@ -42,11 +42,10 @@ public class RegisterController {
                            @RequestParam String repeatedPassword,
                            @RequestParam String name,
                            @RequestParam String surname,
-                           @RequestParam String institution,
-                           @RequestParam PositionType role
+                           @RequestParam String institution
     ) {
         try {
-            this.memberService.register(email, password, repeatedPassword, name, surname, institution, role);
+            this.memberService.register(email, password, repeatedPassword, name, surname, institution);
             return "redirect:/login";
         } catch (InvalidEmailOrPasswordException | PasswordDoNotMatchException |
                  UsernameAlreadyExistsException exception) {

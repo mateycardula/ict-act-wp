@@ -3,7 +3,6 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidUserCredentialsException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -50,7 +49,8 @@ public class MemberServiceImpl implements MemberService {
             throw new UsernameAlreadyExistsException();
         }
 
-        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, role);
+        Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
+        System.out.println(member.getAuthorities());
 
         return memberRepository.save(member);
     }

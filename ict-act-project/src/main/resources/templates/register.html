@@ -26,10 +26,10 @@
             <input type="text" id="institution" name="institution" class="form-control" placeholder="Institution" required="" autofocus="">
         </p>
 
-        <div th:each="type: ${types}" class="form-check form-check-inline">
-            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}">
-            <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
-        </div>
+<!--        <div th:each="type: ${types}" class="form-check form-check-inline">-->
+<!--            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}">-->
+<!--            <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>-->
+<!--        </div>-->
 
         <th:block th:if="${hasError}">
             <div th:text="${error}" class="text-danger"></div>
