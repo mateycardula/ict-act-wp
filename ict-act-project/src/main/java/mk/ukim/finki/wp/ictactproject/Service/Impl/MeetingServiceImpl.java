@@ -106,7 +106,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Meeting finishMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
-        Long members = (long) memberRepository.findAll().size();
+        Long members = (long) meeting.getAttendees().size();
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
 
         for (DiscussionPoint discussionPoint : discussionPoints) {

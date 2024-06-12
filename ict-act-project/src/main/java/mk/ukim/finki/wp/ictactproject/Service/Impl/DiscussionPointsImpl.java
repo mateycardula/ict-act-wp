@@ -3,10 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsMembersAttendingException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsRemainingMembers;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.*;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -41,7 +38,16 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     public DiscussionPoint voteYes(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
         Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
-        Integer membersNumber = memberRepository.findAll().size();
+        Integer membersNumber = meeting.getAttendees().size();
+
+        if(votes == null) {
+            votes = 0L;
+        }
+
+        if(votes < 0) {
+            throw new VotesMustBeZeroOrGreaterException();
+        }
+
         if(votes > membersNumber) {
             throw new NumberOfVotesExceedsMembersAttendingException();
         }
@@ -61,7 +67,16 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     public DiscussionPoint voteNo(Long votes, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
         Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
-        Integer membersNumber = memberRepository.findAll().size();
+        Integer membersNumber = meeting.getAttendees().size();
+
+        if(votes == null) {
+            votes = 0L;
+        }
+
+        if(votes < 0) {
+            throw new VotesMustBeZeroOrGreaterException();
+        }
+
         if(votes > membersNumber) {
             throw new NumberOfVotesExceedsMembersAttendingException();
         }
