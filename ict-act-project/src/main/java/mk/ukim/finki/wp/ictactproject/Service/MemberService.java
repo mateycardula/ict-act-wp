@@ -7,11 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
 public interface MemberService extends UserDetailsService {
-
-    Member findById(long id);
-
     List<Member> getAll();
-
-
-    Member register(String email, String password, String repeatPassword, String name, String surname, String institution);
+    Member findById(Long id);
+    Member register(String email, String password, String repeatPassword, String name, String surname, String institution, PositionType role);
+    Member deleteMember(Long id);
+    Member editMember(Long id, String name, String surname, String institution, PositionType role);
 }

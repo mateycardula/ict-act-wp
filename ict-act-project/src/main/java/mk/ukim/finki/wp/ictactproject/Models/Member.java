@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,20 +18,24 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Setter
     private String name;
-
+    @Setter
     private String surname;
-
+    @Setter
     private String institution;
 
-    @OneToMany
+    @Setter
+    @ManyToMany
     private List<Position> positions;
 
+    @Setter
     private String email;
 
+    @Setter
     private String password;
 
+    @Setter
     private PositionType role;
 
     private boolean isAccountNonExpired = true;
