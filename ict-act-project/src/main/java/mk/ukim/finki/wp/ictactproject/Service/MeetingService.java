@@ -41,8 +41,9 @@ public interface MeetingService {
     void deleteMeeting(Long id);
     Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type);
     Meeting userAttendMeeting(String username, Long id);
+    Meeting confirmUserAttendance(String username, Long id);
 
-    List<Long> getMeetingsUserCheckedAttended(String username);
+    List<Long> getMeetingsUserCheckedAttended();
 
     Meeting userCancelAttendance(String username, Long id);
 }

@@ -27,8 +27,8 @@
                 </header>
                 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}">
-                        <button class="btn btn-success col-4 btn-sm">Enter Meeting</button>
+                    <a sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}">
+                       Start meeting
                     </a>
                 </div>
                 <!-- Post content-->

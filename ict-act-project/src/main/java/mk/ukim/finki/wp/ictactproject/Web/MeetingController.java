@@ -50,12 +50,7 @@ public class MeetingController {
         model.addAttribute("bodyContent", "all-meetings");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Long> meetingsAttended = new ArrayList<>();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-            meetingsAttended = meetingService.getMeetingsUserCheckedAttended(username);
-        }
+        List<Long> meetingsAttended = meetingService.getMeetingsUserCheckedAttended();
         model.addAttribute("attended", meetingsAttended);
 
 

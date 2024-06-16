@@ -12,6 +12,9 @@ import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -191,14 +194,36 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Long> getMeetingsUserCheckedAttended(String username) {
-        List<Meeting> meetings = meetingRepository.findAll();
+    public Meeting confirmUserAttendance(String username, Long id) {
+        Meeting meeting = this.findMeetingById(id);
         Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+        List<Member> attendees = meeting.getAttendees();
+        if(!attendees.contains(member)) {
+            attendees.add(member);
+        }
+        return meetingRepository.save(meeting);
+    }
 
-        return meetings.stream()
-                .filter(i -> i.getAttendees().contains(member))
-                .map(Meeting::getId)
-                .toList();
+    @Override
+    public List<Long> getMeetingsUserCheckedAttended() {
+        List<Long> userAttendanceMeetings = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+            List<Meeting> meetings = meetingRepository.findAll();
+
+            userAttendanceMeetings =  meetings.stream()
+                    .filter(i -> i.getAttendees().contains(member))
+                    .map(Meeting::getId)
+                    .toList();
+        }
+
+        return userAttendanceMeetings;
+
+
     }
 
     @Override

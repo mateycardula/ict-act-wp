@@ -72,7 +72,7 @@
                         <div class="text-center p-2">
                             <th:block th:unless="${#lists.contains(attended, meeting.getId())}">
                                 <form th:action="@{'/meetings/attend/' + ${meeting.getId()}}" method="post">
-                                    <button type="submit" class="btn btn-success mt-auto">Attend</button>
+                                    <button type="submit" class="btn btn-success mt-auto">Will attend</button>
                                 </form>
                             </th:block>
                             <th:block th:if="${#lists.contains(attended, meeting.getId())}">

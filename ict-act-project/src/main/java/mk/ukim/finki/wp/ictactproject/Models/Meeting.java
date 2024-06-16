@@ -33,6 +33,10 @@ public class Meeting {
     private boolean finished = false;
     @ManyToMany
     private List<Member> attendees;
+
+    @ManyToMany
+    private List<Member> possibleAttendees;
+
     public Meeting() {}
 
     public Meeting(String topic, String room, LocalDateTime dateOfMeeting, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
