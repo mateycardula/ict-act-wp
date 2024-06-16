@@ -26,7 +26,7 @@ public class Meeting {
     private MeetingType meetingType;
 
     @OneToMany
-    private List<DiscussionPoint> discussionPoints;
+    private List<DiscussionPoint> discussionPoints = new ArrayList<>();
 
     @OneToOne
     private MeetingReport meetingReport;

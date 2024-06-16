@@ -122,11 +122,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
     @Override
     public void editDiscussion(Meeting meeting, Long discussionPointId, String discussion) {
-        DiscussionPoint dp = meeting.getDiscussionPoints()
-                .stream().filter(item -> item.getId().equals(discussionPointId))
-                .findFirst()
-                .orElseThrow(DiscussionPointDoesNotExist::new);
-
+        DiscussionPoint dp = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
         dp.setDiscussion(discussion);
         discussionPointsRepository.save(dp);
     }

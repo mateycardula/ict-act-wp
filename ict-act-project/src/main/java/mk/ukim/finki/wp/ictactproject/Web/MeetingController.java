@@ -89,7 +89,7 @@ public class MeetingController {
         return "master-template";
     }
 
-    @GetMapping("/in-progress/{id}")
+    @GetMapping("/panel/{id}")
     private String meetingInProgressPage(Model model, @PathVariable Long id) {
         Meeting meeting;
         try {

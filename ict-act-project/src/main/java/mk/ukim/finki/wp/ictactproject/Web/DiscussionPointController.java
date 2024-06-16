@@ -56,7 +56,7 @@ public class DiscussionPointController {
 
         meetingService.addDiscussionPoint(discussionPoint, meeting);
 
-        return "redirect:/discussion-point/add?meetingId="+meetingId;
+        return "redirect:/meetings/details/"+meetingId;
     }
 
     @PostMapping("/vote/yes/{discussionPointId}")
@@ -117,7 +117,7 @@ public class DiscussionPointController {
             return "master-template";
         }
 
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+        return "redirect:/meetings/panel/" + meeting.getId();
     }
 
     @GetMapping("/edit/votes/yes/{id}")
@@ -201,7 +201,7 @@ public class DiscussionPointController {
             }
         }
 
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+        return "redirect:/meetings/panel/" + meeting.getId();
     }
 
     @PostMapping("/edit/votes/no/{id}")
@@ -233,7 +233,7 @@ public class DiscussionPointController {
             }
         }
 
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+        return "redirect:/meetings/panel/" + meeting.getId();
     }
 
     @GetMapping("/edit/discussion/{id}")
@@ -269,6 +269,6 @@ public class DiscussionPointController {
 
         discussionPointsService.editDiscussion(meeting, id, discussionText);
 
-        return "redirect:/meetings/details/"+meeting.getId();
+        return "redirect:/meetings/panel/"+meeting.getId();
     }
 }

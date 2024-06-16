@@ -53,8 +53,12 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting) {
+        System.out.println("TUKA");
         List<DiscussionPoint> discussionPointList = meeting.getDiscussionPoints();
         discussionPointList.add(discussionPoint);
+        discussionPoint.setTopic((discussionPointList.size() + ". " + discussionPoint.getTopic()));
+
+        discussionPointsRepository.save(discussionPoint);
         return meetingRepository.save(meeting);
     }
 
