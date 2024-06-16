@@ -15,7 +15,8 @@ public interface DiscussionPointsService {
     DiscussionPoint deleteVotesNo(Long id);
 
     Meeting getParentMeetingByDiscussionPointId(Long discussionPointId);
-    void editDiscussion(Meeting meeting, Long discussionPointId, String discussion);
+    void editDiscussion(Long discussionPointId, String discussion);
     void deleteDiscussion(Meeting meeting, Long dpId);
     DiscussionPoint validateVotes(Long discussionPointId, Long votes);
+    DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, boolean isVotable);
 }

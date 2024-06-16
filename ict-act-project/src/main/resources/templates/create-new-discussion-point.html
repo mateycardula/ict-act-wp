@@ -1,17 +1,18 @@
 <div class="container">
   <div class="row justify-content-center m-4 bg-light p-4">
     <div class="col-md-8"> <!-- class="col-md-10" -->
-      <form class="" th:action="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}" method="post">
+      <form class="" th:action="@{ ${point != null} ? '/discussion-point/edit/' + ${point.getId()} : '/discussion-point/add?meetingId=' + ${meeting.getId()}}" method="post">
         <h4 class="mb-3">Create new Discussion Point</h4>
 
         <label for="topic">Topic</label>
-        <input name="topic" class="form-control mb-3" type="search" placeholder="Meeting topic" aria-label="Name" id="topic">
+        <input th:value="${point?.topic}" name="topic" class="form-control mb-3" type="search" placeholder="Meeting topic" aria-label="Name" id="topic">
 
         <label for="isVotable">Is the discussion point votable?</label>
 
-        <input name="isVotable" class="form-check-input" type="checkbox"  aria-label="Is votable" id="isVotable">
+        <input th:checked="${point?.isVotable}" name="isVotable" class="form-check-input" type="checkbox"  aria-label="Is votable" id="isVotable">
 
-        <button class="btn btn-primary m-1 col-3" type="submit">Create</button>
+        <input type="hidden" name="meetingId", th:value="${meeting.getId()}">
+        <button class="btn btn-primary m-1 col-3" type="submit">Submit</button>
       </form>
     </div>
   </div>

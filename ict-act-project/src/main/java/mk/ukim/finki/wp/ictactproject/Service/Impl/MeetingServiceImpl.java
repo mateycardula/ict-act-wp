@@ -116,23 +116,25 @@ public class MeetingServiceImpl implements MeetingService {
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
 
         for (DiscussionPoint discussionPoint : discussionPoints) {
-            Long membersVotedYes = discussionPoint.getVotesYes();
-            if(membersVotedYes == null || membersVotedYes < 0L) {
-                membersVotedYes = 0L;
-                discussionPoint.setVotesYes(membersVotedYes);
-            }
-            Long membersVotedNo = discussionPoint.getVotesNo();
-            if(membersVotedNo == null || membersVotedNo < 0L) {
-                membersVotedNo = 0L;
-                discussionPoint.setVotesNo(membersVotedNo);
-            }
-            Long membersAbstained = members - membersVotedNo - membersVotedYes;
-            if(membersAbstained < 0L) {
-                membersAbstained = 0L;
-            }
-            discussionPoint.setAbstained(membersAbstained);
+            if(discussionPoint.isVotable()) {
+                Long membersVotedYes = discussionPoint.getVotesYes();
+                if (membersVotedYes == null || membersVotedYes < 0L) {
+                    membersVotedYes = 0L;
+                    discussionPoint.setVotesYes(membersVotedYes);
+                }
+                Long membersVotedNo = discussionPoint.getVotesNo();
+                if (membersVotedNo == null || membersVotedNo < 0L) {
+                    membersVotedNo = 0L;
+                    discussionPoint.setVotesNo(membersVotedNo);
+                }
+                Long membersAbstained = members - membersVotedNo - membersVotedYes;
+                if (membersAbstained < 0L) {
+                    membersAbstained = 0L;
+                }
+                discussionPoint.setAbstained(membersAbstained);
 
-            discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
+                discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
+            }
         }
 
         meeting.setFinished(true);

@@ -82,7 +82,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public void editDiscussion(Meeting meeting, Long discussionPointId, String discussion) {
+    public void editDiscussion(Long discussionPointId, String discussion) {
         DiscussionPoint dp = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
         dp.setDiscussion(discussion);
         discussionPointsRepository.save(dp);
@@ -127,5 +127,13 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         }
 
         return discussionPoint;
+    }
+
+    @Override
+    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, boolean isVotable) {
+        DiscussionPoint pointToEdit = getDiscussionPointById(discussionPointId);
+        pointToEdit.setTopic(topic);
+        pointToEdit.setVotable(isVotable);
+        return discussionPointsRepository.save(pointToEdit);
     }
 }
