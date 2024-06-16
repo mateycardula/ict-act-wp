@@ -17,7 +17,7 @@ public interface MeetingService {
 
     Meeting findMeetingById(Long id);
 
-    Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting, boolean isVotable);
+    Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting);
 
     Meeting findMeetingByDiscussionPoint(Long discussionPointId);
 

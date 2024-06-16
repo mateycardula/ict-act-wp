@@ -69,8 +69,8 @@ public class DataInit {
             LocalDateTime date = LocalDateTime.now();
             LocalDateTime meetingDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), date.getHour(), date.getMinute());
             Meeting meeting = meetingService.create("topic" + i, "room" + i, meetingDate, MeetingType.BOARD_MEETING);
-            DiscussionPoint discussionPoint = discussionPointsService.create("discussion point", "");
-            meetingService.addDiscussionPoint(discussionPoint, meeting, true);
+            DiscussionPoint discussionPoint = discussionPointsService.create("discussion point", "", true);
+            meetingService.addDiscussionPoint(discussionPoint, meeting);
         }
     }
 }

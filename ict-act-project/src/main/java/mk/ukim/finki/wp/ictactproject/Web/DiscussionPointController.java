@@ -52,9 +52,9 @@ public class DiscussionPointController {
             return "master-template";
         }
 
-        DiscussionPoint discussionPoint = discussionPointsService.create(topic, "");
+        DiscussionPoint discussionPoint = discussionPointsService.create(topic, "", false);
 
-        meetingService.addDiscussionPoint(discussionPoint, meeting, false);
+        meetingService.addDiscussionPoint(discussionPoint, meeting);
 
         return "redirect:/meetings/details/"+meetingId;
     }
@@ -65,7 +65,7 @@ public class DiscussionPointController {
         Meeting meeting;
         try {
             meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
-        } catch (DiscussionPointDoesNotExist exception) {
+        } catch (DiscussionPointDoesNotExist | DiscussionPointNotVotable exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
             return "master-template";
@@ -73,18 +73,19 @@ public class DiscussionPointController {
 
         try {
             discussionPoint = discussionPointsService.voteYes(votes, discussionPointId);
-        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers | DiscussionPointNotVotable exception) {
             redirectAttributes.addFlashAttribute("hasError", true);
             redirectAttributes.addFlashAttribute("error", new DiscussionPointError(discussionPointId, exception.getMessage(), "yes"));
         }
 
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+        return "redirect:/meetings/panel/" + meeting.getId();
     }
 
     @PostMapping("/vote/no/{discussionPointId}")
     public String voteNoForDiscussionPoint(Model model, @RequestParam(required = false) Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
         DiscussionPoint discussionPoint;
         Meeting meeting;
+
         try {
             meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
         } catch (DiscussionPointDoesNotExist exception) {
@@ -95,12 +96,12 @@ public class DiscussionPointController {
 
         try {
             discussionPoint = discussionPointsService.voteNo(votes, discussionPointId);
-        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers | DiscussionPointNotVotable  exception) {
             redirectAttributes.addFlashAttribute("hasError", true);
             redirectAttributes.addFlashAttribute("error", new DiscussionPointError(discussionPointId, exception.getMessage(), "no"));
         }
 
-        return "redirect:/meetings/in-progress/" + meeting.getId();
+        return "redirect:/meetings/panel/" + meeting.getId();
     }
 
     @PostMapping("/add/discussion/{discussionPointId}")

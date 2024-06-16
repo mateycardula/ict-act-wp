@@ -52,9 +52,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting, boolean isVotable) {
+    public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting) {
         System.out.println("TUKA");
-        discussionPoint.setVotable(isVotable);
         List<DiscussionPoint> discussionPointList = meeting.getDiscussionPoints();
         discussionPointList.add(discussionPoint);
         discussionPoint.setTopic((discussionPointList.size() + ". " + discussionPoint.getTopic()));

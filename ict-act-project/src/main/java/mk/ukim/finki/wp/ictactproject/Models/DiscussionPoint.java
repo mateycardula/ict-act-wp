@@ -35,13 +35,14 @@ public class DiscussionPoint {
     public DiscussionPoint() {
     }
 
-    public DiscussionPoint(String topic, String discussion, Long votesYes, Long votesNo, Long abstained, boolean confirmed) {
+    public DiscussionPoint(String topic, String discussion, Long votesYes, Long votesNo, Long abstained, boolean confirmed, boolean isVotable) {
         this.topic = topic;
         this.discussion = discussion;
         this.votesYes = votesYes;
         this.votesNo = votesNo;
         this.abstained = abstained;
         this.confirmed = confirmed;
+        this.isVotable = isVotable;
     }
 
     public DiscussionPoint(String topic) {
