@@ -67,8 +67,8 @@
                     <!-- Actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                         <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" th:href="@{'/meetings/details/' + ${meeting.getId()}}">Info</a></div>
-                        <div class="text-center p-2"><a class="btn btn-outline-danger mt-auto" th:href="@{'/meetings/delete/' + ${meeting.getId()}}">Delete</a></div>
-                        <div class="text-center p-2"><a class="btn btn-info mt-auto" th:href="@{'/meetings/edit/' + ${meeting.getId()}}">Edit</a></div>
+                        <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-outline-danger mt-auto" th:href="@{'/meetings/delete/' + ${meeting.getId()}}">Delete</a></div>
+                        <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-info mt-auto" th:href="@{'/meetings/edit/' + ${meeting.getId()}}">Edit</a></div>
                         <div class="text-center p-2">
                             <th:block th:unless="${#lists.contains(attended, meeting.getId())}">
                                 <form th:action="@{'/meetings/attend/' + ${meeting.getId()}}" method="post">
@@ -82,7 +82,6 @@
                             </th:block>
 <!--                            <a class="btn btn-success mt-auto" th:href="@{'/meetings/attend/' + ${meeting.getId()}}">Attend</a>-->
                         </div>
-                        <div class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
                     </div>
 
                 </div>
