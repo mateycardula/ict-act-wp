@@ -71,12 +71,12 @@
                         <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-info mt-auto" th:href="@{'/meetings/edit/' + ${meeting.getId()}}">Edit</a></div>
                         <div class="text-center p-2">
                             <th:block th:unless="${#lists.contains(attended_meetings, meeting.getId())}">
-                                <form th:action="@{'/meetings/attend/' + ${meeting.getId()}}" method="post">
+                                <form th:action="@{'/meetings/change-attendance/' + ${meeting.getId()}}" method="post">
                                     <button type="submit" class="btn btn-success mt-auto">Will attend</button>
                                 </form>
                             </th:block>
                             <th:block th:if="${#lists.contains(attended_meetings, meeting.getId())}">
-                                <form th:action="@{'/meetings/cancel-attendance/' + ${meeting.getId()}}" method="post">
+                                <form th:action="@{'/meetings/change-attendance/' + ${meeting.getId()}}" method="post">
                                     <button type="submit" class="btn btn-danger mt-auto">Cancel attendance</button>
                                 </form>
                             </th:block>

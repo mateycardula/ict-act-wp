@@ -54,7 +54,7 @@ public class DiscussionPointController {
 
         DiscussionPoint discussionPoint = discussionPointsService.create(topic, "");
 
-        meetingService.addDiscussionPoint(discussionPoint, meeting);
+        meetingService.addDiscussionPoint(discussionPoint, meeting, false);
 
         return "redirect:/meetings/details/"+meetingId;
     }

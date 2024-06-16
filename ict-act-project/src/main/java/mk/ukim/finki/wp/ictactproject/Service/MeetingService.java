@@ -17,7 +17,7 @@ public interface MeetingService {
 
     Meeting findMeetingById(Long id);
 
-    Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting);
+    Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting, boolean isVotable);
 
     Meeting findMeetingByDiscussionPoint(Long discussionPointId);
 
@@ -40,10 +40,8 @@ public interface MeetingService {
     List<Meeting> filter(String topic, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type);
     void deleteMeeting(Long id);
     Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type);
-    Meeting userAttendMeeting(String username, Long id);
+    Meeting changeLoggedUserAttendanceStatus(Long meetingId);
     Meeting confirmUserAttendance(String username, Long id);
 
     List<Long> getMeetingsUserCheckedAttended();
-
-    Meeting userCancelAttendance(String username, Long id);
 }

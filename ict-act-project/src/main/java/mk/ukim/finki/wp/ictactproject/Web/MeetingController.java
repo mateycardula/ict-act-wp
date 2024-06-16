@@ -133,10 +133,8 @@ public class MeetingController {
 
     @GetMapping("/delete/{id}")
     public String deleteMeeting(Model model, @PathVariable Long id) {
-        // TODO: CHECK IF THE LOGGED IN USER IS THE PRESIDENT/VICE PRESIDENT
-        Meeting meeting;
         try {
-            meeting = meetingService.findMeetingById(id);
+            meetingService.findMeetingById(id);
         } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
@@ -171,9 +169,8 @@ public class MeetingController {
                               @RequestParam String room,
                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
                               @RequestParam MeetingType type) {
-        Meeting meeting;
         try {
-            meeting = meetingService.editMeeting(id, topic, room, dateAndTime, type);
+            meetingService.editMeeting(id, topic, room, dateAndTime, type);
         } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
@@ -191,20 +188,11 @@ public class MeetingController {
         return "redirect:/meetings/details/"+meeting.getId();
     }
 
-    @PostMapping("/attend/{id}")
-    public String attendMeeting(Model model, @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername();
-        } else {
-            return "redirect:/login";
-        }
-
+    @PostMapping("/change-attendance/{id}")
+    public String changeMeetingsAttendanceStatus(Model model, @PathVariable Long id) {
         try {
-            Meeting meeting = meetingService.userAttendMeeting(username, id);
-        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
+            Meeting meeting = meetingService.changeLoggedUserAttendanceStatus(id);
+        } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
             return "master-template";
@@ -213,26 +201,4 @@ public class MeetingController {
         return "redirect:/meetings";
     }
 
-    @PostMapping("/cancel-attendance/{id}")
-    public String cancelAttendMeeting(Model model, @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername();
-        } else {
-            return "redirect:/login";
-        }
-
-        try {
-            Meeting meeting = meetingService.userCancelAttendance(username, id);
-        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        return "redirect:/meetings";
-    }
 }

@@ -52,12 +52,12 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting) {
+    public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting, boolean isVotable) {
         System.out.println("TUKA");
+        discussionPoint.setVotable(isVotable);
         List<DiscussionPoint> discussionPointList = meeting.getDiscussionPoints();
         discussionPointList.add(discussionPoint);
         discussionPoint.setTopic((discussionPointList.size() + ". " + discussionPoint.getTopic()));
-
         discussionPointsRepository.save(discussionPoint);
         return meetingRepository.save(meeting);
     }
@@ -189,13 +189,25 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Meeting userAttendMeeting(String username, Long id) {
-        Meeting meeting = this.findMeetingById(id);
+    public Meeting changeLoggedUserAttendanceStatus(Long meetingId) {
+
+        Meeting meeting = this.findMeetingById(meetingId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername();
+        }
+
         Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
         List<Member> attendees = meeting.getAttendees();
-        if(!attendees.contains(member)) {
-            attendees.add(member);
+
+        if(attendees.contains(member)) {
+            attendees.remove(member);
         }
+        else attendees.add(member);
+
         return meetingRepository.save(meeting);
     }
 
@@ -231,12 +243,4 @@ public class MeetingServiceImpl implements MeetingService {
 
 
     }
-
-    @Override
-    public Meeting userCancelAttendance(String username, Long id) {
-        Meeting meeting = this.findMeetingById(id);
-        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
-        List<Member> attendees = meeting.getAttendees();
-        attendees.remove(member);
-        return meetingRepository.save(meeting);    }
 }

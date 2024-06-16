@@ -30,6 +30,8 @@ public class DiscussionPoint {
 
     private boolean confirmed;
 
+    private boolean isVotable;
+
     public DiscussionPoint() {
     }
 
