@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -47,4 +48,9 @@ public class Meeting {
         this.discussionPoints = discussionPoints;
         this.attendees = new ArrayList<>();
     }
+
+    public static final Comparator<Meeting> COMPARATOR = Comparator
+            .comparing(Meeting::getDateOfMeeting)
+            .thenComparing(meeting ->  meeting.getDateOfMeeting().toLocalTime())
+            .thenComparing(Meeting::getTopic);
 }

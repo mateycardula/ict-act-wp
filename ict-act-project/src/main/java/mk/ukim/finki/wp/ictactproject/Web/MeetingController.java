@@ -48,12 +48,7 @@ public class MeetingController {
         model.addAttribute("meetings", meetingService.filter(name, dateTimeFrom, dateTimeTo, type));
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Long> meetingsAttended = meetingService.getMeetingsUserCheckedAttended();
-        model.addAttribute("attended", meetingsAttended);
-
-
+        model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
         return "master-template";
     }
 
@@ -89,6 +84,8 @@ public class MeetingController {
 
         model.addAttribute("meeting", meeting);
         model.addAttribute("bodyContent", "meeting-info");
+        model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
+
         return "master-template";
     }
 
@@ -220,6 +217,7 @@ public class MeetingController {
     public String cancelAttendMeeting(Model model, @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = null;
+
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             username = userDetails.getUsername();

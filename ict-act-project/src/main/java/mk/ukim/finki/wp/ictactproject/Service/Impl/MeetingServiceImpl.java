@@ -163,7 +163,9 @@ public class MeetingServiceImpl implements MeetingService {
             meetings.retainAll(typeFilter);
         }
 
-        return meetings.stream().toList();
+        return meetings.stream()
+                .sorted(Meeting.COMPARATOR)
+                .toList();
 
     }
 
