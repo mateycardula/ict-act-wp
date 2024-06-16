@@ -43,5 +43,6 @@ public interface MeetingService {
     Meeting changeLoggedUserAttendanceStatus(Long meetingId);
     Meeting confirmUserAttendance(String username, Long id);
 
+    List<DiscussionPoint> getDiscussionPointsSorted(Long meetingId);
     List<Long> getMeetingsUserCheckedAttended();
 }

@@ -98,13 +98,15 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Map<Long, String> getDiscussions(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
-        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
+        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints().stream().sorted(DiscussionPoint.SORT_BY_TOPIC).toList();
+
         Map<Long, String> mapOfDiscussions = new HashMap<>();
         for (DiscussionPoint discussionPoint : discussionPoints) {
             Long discussionPointId = discussionPoint.getId();
             String discussion = discussionPoint.getDiscussion();
             mapOfDiscussions.put(discussionPointId, discussion);
         }
+
 
         return mapOfDiscussions;
     }
@@ -221,6 +223,12 @@ public class MeetingServiceImpl implements MeetingService {
             attendees.add(member);
         }
         return meetingRepository.save(meeting);
+    }
+
+    @Override
+    public List<DiscussionPoint> getDiscussionPointsSorted(Long meetingId) {
+        Meeting meeting = findMeetingById(meetingId);
+        return meeting.getDiscussionPoints().stream().sorted(DiscussionPoint.SORT_BY_TOPIC).toList();
     }
 
     @Override

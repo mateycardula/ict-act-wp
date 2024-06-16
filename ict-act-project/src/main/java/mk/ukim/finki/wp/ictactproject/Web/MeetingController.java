@@ -1,5 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
+import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
@@ -82,7 +83,9 @@ public class MeetingController {
             return "master-template";
         }
 
+        List<DiscussionPoint> sortedDiscussions = meetingService.getDiscussionPointsSorted(meeting.getId());
         model.addAttribute("meeting", meeting);
+        model.addAttribute("sortedDiscussions", sortedDiscussions);
         model.addAttribute("bodyContent", "meeting-info");
         model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
 
@@ -103,11 +106,12 @@ public class MeetingController {
         Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
         Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
         Map<Long, String> discussions = meetingService.getDiscussions(id);
-
+        List<DiscussionPoint> sortedDiscussions = meetingService.getDiscussionPointsSorted(id);
         model.addAttribute("meeting", meeting);
         model.addAttribute("votesYes", membersVotedYes);
         model.addAttribute("votesNo", membersVotedNo);
         model.addAttribute("discussions", discussions);
+        model.addAttribute("sortedDiscussions", sortedDiscussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
 
         if(model.asMap().get("hasError") != null) {

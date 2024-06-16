@@ -38,7 +38,7 @@
                         us an understanding of our place in the universe.</p>
                     <h4 class="fw-bolder mb-4 mt-5">Discussion points</h4>
                     <ul class="list-group list-group-flush">
-                        <li th:each="dp : ${meeting.discussionPoints}" class="list-group-item">
+                        <li th:each="dp : ${sortedDiscussions}" class="list-group-item">
                             <div style="display: flex; align-items: center;">
                                 <span th:text="${dp.topic}"></span>
                                 <span style="flex-grow: 1; border-bottom: 1px solid #ccc; margin-left: 10px; margin-right: 10px;"></span>

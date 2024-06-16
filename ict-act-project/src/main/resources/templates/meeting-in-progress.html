@@ -16,7 +16,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="point: ${meeting.getDiscussionPoints()}">
+        <tr th:each="point: ${sortedDiscussions}">
             <td th:text="${point.getTopic()}"></td>
             <td th:if="${votesYes[point.getId()] == null}">
                 <div th:if="${point.isVotable}">

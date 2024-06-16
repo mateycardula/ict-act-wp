@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -48,4 +49,7 @@ public class DiscussionPoint {
     public DiscussionPoint(String topic) {
         this.topic = topic;
     }
+
+    public static Comparator<DiscussionPoint> SORT_BY_TOPIC = Comparator.
+            comparing(DiscussionPoint::getTopic);
 }
