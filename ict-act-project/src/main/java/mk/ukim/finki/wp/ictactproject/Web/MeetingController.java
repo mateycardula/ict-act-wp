@@ -5,16 +5,21 @@ import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +48,16 @@ public class MeetingController {
         model.addAttribute("meetings", meetingService.filter(name, dateTimeFrom, dateTimeTo, type));
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<Long> meetingsAttended = new ArrayList<>();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            meetingsAttended = meetingService.getMeetingsUserCheckedAttended(username);
+        }
+        model.addAttribute("attended", meetingsAttended);
+
 
         return "master-template";
     }
@@ -182,5 +197,49 @@ public class MeetingController {
         discussionPointsService.deleteDiscussion(meeting, id);
 
         return "redirect:/meetings/details/"+meeting.getId();
+    }
+
+    @PostMapping("/attend/{id}")
+    public String attendMeeting(Model model, @PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername();
+        } else {
+            return "redirect:/login";
+        }
+
+        try {
+            Meeting meeting = meetingService.userAttendMeeting(username, id);
+        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        return "redirect:/meetings";
+    }
+
+    @PostMapping("/cancel-attendance/{id}")
+    public String cancelAttendMeeting(Model model, @PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername();
+        } else {
+            return "redirect:/login";
+        }
+
+        try {
+            Meeting meeting = meetingService.userCancelAttendance(username, id);
+        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        return "redirect:/meetings";
     }
 }

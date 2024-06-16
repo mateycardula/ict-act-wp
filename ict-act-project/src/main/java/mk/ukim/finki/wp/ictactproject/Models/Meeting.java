@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -30,6 +31,8 @@ public class Meeting {
     private MeetingReport meetingReport;
 
     private boolean finished = false;
+    @ManyToMany
+    private List<Member> attendees;
     public Meeting() {}
 
     public Meeting(String topic, String room, LocalDateTime dateOfMeeting, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
@@ -38,5 +41,6 @@ public class Meeting {
         this.dateOfMeeting = dateOfMeeting;
         this.meetingType = meetingType;
         this.discussionPoints = discussionPoints;
+        this.attendees = new ArrayList<>();
     }
 }

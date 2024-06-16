@@ -6,10 +6,12 @@ import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
+import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -104,7 +106,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Meeting finishMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(MeetingDoesNotExistException::new);
-        Long members = (long) memberRepository.findAll().size();
+        Long members = (long) meeting.getAttendees().size();
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
 
         for (DiscussionPoint discussionPoint : discussionPoints) {
@@ -176,4 +178,34 @@ public class MeetingServiceImpl implements MeetingService {
         meeting.setMeetingType(type);
         return meetingRepository.save(meeting);
     }
+
+    @Override
+    public Meeting userAttendMeeting(String username, Long id) {
+        Meeting meeting = this.findMeetingById(id);
+        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+        List<Member> attendees = meeting.getAttendees();
+        if(!attendees.contains(member)) {
+            attendees.add(member);
+        }
+        return meetingRepository.save(meeting);
+    }
+
+    @Override
+    public List<Long> getMeetingsUserCheckedAttended(String username) {
+        List<Meeting> meetings = meetingRepository.findAll();
+        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+
+        return meetings.stream()
+                .filter(i -> i.getAttendees().contains(member))
+                .map(Meeting::getId)
+                .toList();
+    }
+
+    @Override
+    public Meeting userCancelAttendance(String username, Long id) {
+        Meeting meeting = this.findMeetingById(id);
+        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+        List<Member> attendees = meeting.getAttendees();
+        attendees.remove(member);
+        return meetingRepository.save(meeting);    }
 }

@@ -4,10 +4,7 @@ import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsMembersAttendingException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.NumberOfVotesExceedsRemainingMembers;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.*;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.stereotype.Controller;
@@ -63,7 +60,7 @@ public class DiscussionPointController {
     }
 
     @PostMapping("/vote/yes/{discussionPointId}")
-    public String voteYesForDiscussionPoint(Model model, @RequestParam Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
+    public String voteYesForDiscussionPoint(Model model, @RequestParam(required = false) Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
         DiscussionPoint discussionPoint;
         Meeting meeting;
         try {
@@ -76,7 +73,7 @@ public class DiscussionPointController {
 
         try {
             discussionPoint = discussionPointsService.voteYes(votes, discussionPointId);
-        } catch (NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
             redirectAttributes.addFlashAttribute("hasError", true);
             redirectAttributes.addFlashAttribute("error", new DiscussionPointError(discussionPointId, exception.getMessage(), "yes"));
         }
@@ -85,7 +82,7 @@ public class DiscussionPointController {
     }
 
     @PostMapping("/vote/no/{discussionPointId}")
-    public String voteNoForDiscussionPoint(Model model, @RequestParam Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
+    public String voteNoForDiscussionPoint(Model model, @RequestParam(required = false) Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
         DiscussionPoint discussionPoint;
         Meeting meeting;
         try {
@@ -98,7 +95,7 @@ public class DiscussionPointController {
 
         try {
             discussionPoint = discussionPointsService.voteNo(votes, discussionPointId);
-        } catch (NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
             redirectAttributes.addFlashAttribute("hasError", true);
             redirectAttributes.addFlashAttribute("error", new DiscussionPointError(discussionPointId, exception.getMessage(), "no"));
         }
@@ -197,7 +194,7 @@ public class DiscussionPointController {
         } else {
             try {
                 DiscussionPoint discussionPoint = discussionPointsService.voteYes(votes, id);
-            } catch (NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+            } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
                 redirectAttributes.addFlashAttribute("hasError", true);
                 redirectAttributes.addFlashAttribute("error", exception.getMessage());
                 return "redirect:/discussion-point/edit/votes/yes/" + id;
@@ -229,7 +226,7 @@ public class DiscussionPointController {
         } else {
             try {
                 DiscussionPoint discussionPoint = discussionPointsService.voteNo(votes, id);
-            } catch (NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+            } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
                 redirectAttributes.addFlashAttribute("hasError", true);
                 redirectAttributes.addFlashAttribute("error", exception.getMessage());
                 return "redirect:/discussion-point/edit/votes/no/" + id;
