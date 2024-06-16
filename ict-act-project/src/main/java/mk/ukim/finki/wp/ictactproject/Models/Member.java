@@ -36,6 +36,7 @@ public class Member implements UserDetails {
     private String password;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private PositionType role;
 
     private boolean isAccountNonExpired = true;
