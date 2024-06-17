@@ -6,8 +6,15 @@
 </head>
 <body>
 <div class="container">
+    <div class="d-inline-flex align-items-center">
+        <span><strong>Total attendees:</strong> <span th:text="${#lists.size(meeting.getAttendees())}"></span></span>
+        <a class="ms-3" th:href="@{/meetings/add-attendees/{id}(id=${meeting.getId()})}">Modify attendance list</a>
+    </div>
     <table class="table">
         <thead class="thead-dark">
+
+
+
         <tr>
             <th scope="col">Topic</th>
             <th scope="col">Voted Yes</th>
@@ -23,8 +30,8 @@
                     <form th:action="@{'/discussion-point/vote/yes/' + ${point.getId()}}" method="post">
                         <div class="form-group">
                             <div class="form-control">
-                                <input class="form-control" type="number" id="votes-yes" name="votes">
                                 <label class="form-control" for="votes-yes">Enter vote number:</label>
+                                <input class="form-control" type="number" id="votes-yes" name="votes">
                             </div>
                         </div>
                         <button class="btn btn-primary m-1 col-3" type="submit">Vote Yes</button>
@@ -47,8 +54,8 @@
                     <form th:action="@{'/discussion-point/vote/no/' + ${point.getId()}}" method="post">
                         <div class="form-group">
                             <div class="form-control">
-                                <input class="form-control" type="number" id="votes-no" name="votes">
                                 <label class="form-control" for="votes-no">Enter vote number:</label>
+                                <input class="form-control" type="number" id="votes-no" name="votes">
                             </div>
                         </div>
                         <button class="btn btn-primary m-1 col-3" type="submit">Vote No</button>

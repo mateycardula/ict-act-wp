@@ -203,7 +203,7 @@ public class MeetingController {
         return "redirect:/meetings";
     }
 
-    @GetMapping("/add-attendants/{id}")
+    @GetMapping("/add-attendees/{id}")
     public String addAttendantsForm(Model model, @PathVariable Long id) {
         Meeting meeting;
 
@@ -232,17 +232,56 @@ public class MeetingController {
         model.addAttribute("confirmedAttendees", confirmedAttendees.stream().toList());
         model.addAttribute("registeredMembers", registeredAttendees.stream().toList());
         model.addAttribute("members", otherMembers.stream().toList());
-        model.addAttribute("bodyContent", "add-attendants");
+        model.addAttribute("bodyContent", "add-attendees");
 
         return "master-template";
     }
 
-    @PostMapping("/add-attendants")
+    @PostMapping("/add-attendees")
     public String addAttendants(@RequestParam Long meetingId, @RequestParam(required = false) List<Long> attendants){
         System.out.println(attendants);
         List<Member> attendantsToAdd = memberService.getMultipleByIds(attendants);
         meetingService.addAttendants(attendantsToAdd, meetingId);
-        return "redirect:/meetings";
+        return "redirect:/meetings/panel/" + meetingId;
+    }
+
+    @GetMapping("/registered-members/{id}")
+    public String registeredMembers(Model model, @PathVariable Long id) {
+        Meeting meeting;
+
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("meetingId", meeting.getId());
+        model.addAttribute("members", meeting.getRegisteredAttendees());
+        model.addAttribute("bodyContent", "meeting-registered-attendees");
+        return "master-template";
+
+    }
+
+    @GetMapping("/meeting-attendants/{id}")
+    public String meetingAttendants(Model model, @PathVariable Long id) {
+        Meeting meeting;
+
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("meetingId", meeting.getId());
+        model.addAttribute("members", meeting.getAttendees());
+        model.addAttribute("bodyContent", "meeting-registered-attendees");
+        return "master-template";
     }
 
 }

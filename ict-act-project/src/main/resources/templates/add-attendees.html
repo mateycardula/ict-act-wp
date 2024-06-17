@@ -1,19 +1,19 @@
-<form action="/meetings/add-attendants" method="post">
+<form action="/meetings/add-attendees" method="post">
 
     <h2>Attendees</h2>
 
     <div th:each="confirmed: ${confirmedAttendees}">
         <span>
         <input type="checkbox" th:checked="${true}" th:value="${confirmed.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + confirmed.getId()}">
-        <label  th:text="${confirmed.name} + ${confirmed.surname} " th:for="${'member_' + confirmed.getId()}"></label>
+        <label  th:text="${confirmed.name} + ' ' +  ${confirmed.surname} + ', ' + ${confirmed.username}" th:for="${'member_' + confirmed.getId()}"></label>
         </span>
     </div>
 
     <h2>Registered members</h2>
     <div th:each="registered: ${registeredMembers}">
     <span>
-    <input type="checkbox"  th:value="${registered.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + registered.getId()}">
-    <label  th:text="${registered.name} + ${registered.surname} " th:for="${'member_' + registered.getId()}"></label>
+    <input type="checkbox" th:value="${registered.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + registered.getId()}">
+    <label  th:text="${registered.name} + ' ' + ${registered.surname} + ', ' + ${registered.username} " th:for="${'member_' + registered.getId()}"></label>
     </span>
     </div>
 
@@ -22,7 +22,7 @@
     <div th:each="member: ${members}">
     <span>
     <input type="checkbox"  th:value="${member.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + member.getId()}">
-    <label  th:text="${member.name} + ${member.surname} " th:for="${'member_' + member.getId()}"></label>
+    <label  th:text="${member.name} + ' ' +  ${member.surname} + ', ' + ${member.username}" th:for="${'member_' + member.getId()}"></label>
     </span>
     </div>
 

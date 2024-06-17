@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DiscussionPointsImpl implements DiscussionPointsService {
@@ -35,14 +36,14 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
     @Override
     public DiscussionPoint voteYes(Long votes, Long discussionPointId) {
-        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes);
+        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes, "YES");
         validatedDiscussionPointForVote.setVotesYes(votes);
         return discussionPointsRepository.save(validatedDiscussionPointForVote);
     }
 
     @Override
     public DiscussionPoint voteNo(Long votes, Long discussionPointId) {
-        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes);
+        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes, "NO");
         validatedDiscussionPointForVote.setVotesNo(votes);
         return discussionPointsRepository.save(validatedDiscussionPointForVote);
     }
@@ -99,7 +100,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public DiscussionPoint validateVotes(Long discussionPointId, Long votes) {
+    public DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType) {
         Meeting meeting = getParentMeetingByDiscussionPointId(discussionPointId);
         DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
 
@@ -119,10 +120,20 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
             throw new NumberOfVotesExceedsMembersAttendingException();
         }
 
-        if(discussionPoint.getVotesYes() != null) {
-            long remainingMembers = membersNumber - discussionPoint.getVotesYes();
-            if (votes > remainingMembers) {
-                throw new NumberOfVotesExceedsRemainingMembers();
+        if(Objects.equals(voteType, "NO")){
+            if(discussionPoint.getVotesYes() != null) {
+                long remainingMembers = membersNumber - discussionPoint.getVotesYes();
+                if (votes > remainingMembers) {
+                    throw new NumberOfVotesExceedsRemainingMembers();
+                }
+            }
+        }
+        else{
+            if(discussionPoint.getVotesNo() != null) {
+                long remainingMembers = membersNumber - discussionPoint.getVotesNo();
+                if(votes > remainingMembers) {
+                    throw new NumberOfVotesExceedsRemainingMembers();
+                }
             }
         }
 

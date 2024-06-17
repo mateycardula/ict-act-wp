@@ -26,7 +26,7 @@
                 </header>
                 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a  th:unless="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                    <a  th:unless="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
                        Start meeting
                     </a>
                     <a  th:if="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-warning col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
@@ -70,18 +70,14 @@
         <div class="col-lg-4 bg-light">
             <h4 class="fw-bolder mb-4 mt-5">Meeting Notes</h4>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Note 1: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
-                        class="text-danger fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 2: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
+                <li class="list-group-item">
+                    <a th:href="@{/meetings/registered-members/{meetingId}(meetingId=${meeting.getId()})}" th:text="${#lists.size(meeting.getRegisteredAttendees())} + ' members'"></a>
+                    <span th:text="' have announced their attendance for this meeting'"></span>
                 </li>
-                <li class="list-group-item">Note 3: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
-                        class="text-success fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 4: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
-                </li>
-                <li class="list-group-item">Note 5: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
+
+                <li class="list-group-item" th:if="${meeting.finished}">
+                    <a th:href="@{/meetings/meeting-attendants/{meetingId}(meetingId=${meeting.getId()})}" th:text="${#lists.size(meeting.getAttendees())} + ' members'"></a>
+                    <span th:text="' have attended this meeting'"></span>
                 </li>
             </ul>
         </div>

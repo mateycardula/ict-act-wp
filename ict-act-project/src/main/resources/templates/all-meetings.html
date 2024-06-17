@@ -35,14 +35,8 @@
             <div class="col mb-5" th:each="meeting: ${meetings}">
                 <div class="card h-100">
                     <!-- TODO: If finished/in_progress show this badge-->
-<!--                    <div class="badge bg-warning text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
-<!--                         th:if="${meeting.dateAndTime.isBefore(#dates.createNow())}">In progress</div>-->
-<!--                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
-<!--                         th:if="${meeting.dateAndTime.isBefore(#dates.createNow()) && meeting.finished}">Finished</div>-->
-<!--                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"-->
-<!--                         th:if="${meeting.dateAndTime.isAfter(#dates.createNow())}"></div>-->
-
-                    <!-- Meeting Details-->
+                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"
+                         th:if="${meeting.finished}">Finished</div>
                     <div class="card-body p-4">
                         <div class="">
                             <!-- Meeting name-->
@@ -69,7 +63,7 @@
                         <div class="text-center p-2"><a class="btn btn-outline-info mt-auto" th:href="@{'/meetings/details/' + ${meeting.getId()}}">Info</a></div>
                         <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-outline-danger mt-auto" th:href="@{'/meetings/delete/' + ${meeting.getId()}}">Delete</a></div>
                         <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-info mt-auto" th:href="@{'/meetings/edit/' + ${meeting.getId()}}">Edit</a></div>
-                        <div class="text-center p-2">
+                        <div class="text-center p-2" th:unless="${meeting.finished}">
                             <th:block th:unless="${#lists.contains(attended_meetings, meeting.getId())}">
                                 <form th:action="@{'/meetings/change-attendance/' + ${meeting.getId()}}" method="post">
                                     <button type="submit" class="btn btn-success mt-auto">Will attend</button>
