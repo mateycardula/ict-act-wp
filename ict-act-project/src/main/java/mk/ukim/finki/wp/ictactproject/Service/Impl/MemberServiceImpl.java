@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -73,6 +74,17 @@ public class MemberServiceImpl implements MemberService {
         member.setRole(role);
 
         return memberRepository.save(member);
+    }
+
+    @Override
+    public List<Member> getMultipleByIds(List<Long> ids) {
+        if(ids == null) return new ArrayList<>();
+        List<Member> members = new ArrayList<>();
+        for (Long id : ids) {
+            Member member = findById(id);
+            if (member != null) members.add(member);
+        }
+        return members;
     }
 
     @Override

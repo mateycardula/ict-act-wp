@@ -46,6 +46,8 @@ public class WebSecurityConfig {
 
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))
                         .hasAuthority("PRESIDENT")
+                        .requestMatchers(new AntPathRequestMatcher("/meetings/delete/**"))
+                        .hasAuthority("PRESIDENT")
 
                         .anyRequest().authenticated()
                 )

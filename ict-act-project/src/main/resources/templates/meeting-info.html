@@ -22,14 +22,17 @@
                     <div class="text-muted fst-italic mb-2"><span th:text="${meeting.getDateOfMeeting}">MEETING DATE; TIME;</span>
                         <span th:text="${meeting.getRoom()}">LOCATION - PLACEHOLDER</span></div>
                     <!-- Post categories-->
-                    <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 1 PLACEHOLDER</a>
-                    <a class="badge bg-secondary text-decoration-none link-light" href="#!">TYPE 2 PLACEHOLDER</a>
+                    <p class="badge bg-secondary text-decoration-none light" href="#!" th:text="${meeting.meetingType}">TYPE PLACEHOLDER</p>
                 </header>
                 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a th:href="@{'/meetings/in-progress/' + ${meeting.getId()}}">
-                        <button class="btn btn-success col-4 btn-sm">Enter Meeting</button>
+                    <a  th:unless="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
+                       Start meeting
                     </a>
+                    <a  th:if="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-warning col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                        Modify meeting
+                    </a>
+
                 </div>
                 <!-- Post content-->
                 <section class="mb-5">
@@ -39,7 +42,7 @@
                         us an understanding of our place in the universe.</p>
                     <h4 class="fw-bolder mb-4 mt-5">Discussion points</h4>
                     <ul class="list-group list-group-flush">
-                        <li th:each="dp : ${meeting.discussionPoints}" class="list-group-item">
+                        <li th:each="dp : ${sortedDiscussions}" class="list-group-item">
                             <div style="display: flex; align-items: center;">
                                 <span th:text="${dp.topic}"></span>
                                 <span style="flex-grow: 1; border-bottom: 1px solid #ccc; margin-left: 10px; margin-right: 10px;"></span>
@@ -54,10 +57,12 @@
                                 <input type="hidden" name="_method" value="POST"/>
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
-                            <a th:href="@{/discussion-point/edit/discussion/{id}(id=${dp.id})}"
-                               class="btn btn-sm btn-outline-primary float-end">Edit Discussion</a>
+                            <a th:href="@{/discussion-point/edit/{id}(id=${dp.id})}"
+                               class="btn btn-sm btn-outline-primary float-end">Edit point</a>
                         </li>
                     </ul>
+                    <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
+
                 </section>
 
             </article>
@@ -65,18 +70,14 @@
         <div class="col-lg-4 bg-light">
             <h4 class="fw-bolder mb-4 mt-5">Meeting Notes</h4>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Note 1: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
-                        class="text-danger fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 2: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
+                <li class="list-group-item">
+                    <a th:href="@{/meetings/registered-members/{meetingId}(meetingId=${meeting.getId()})}" th:text="${#lists.size(meeting.getRegisteredAttendees())} + ' members'"></a>
+                    <span th:text="' have announced their attendance for this meeting'"></span>
                 </li>
-                <li class="list-group-item">Note 3: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb eakbkeba<b
-                        class="text-success fst-italic"></b></li> <!-- ONLY IF THE MEETING IS FINISHED -->
-                <li class="list-group-item">Note 4: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
-                </li>
-                <li class="list-group-item">Note 5: ahajkbe aj;fkbf aekfkae bfaeb e abfaekbf aekf kbf ae bakefb
-                    eakbkeba
+
+                <li class="list-group-item" th:if="${meeting.finished}">
+                    <a th:href="@{/meetings/meeting-attendants/{meetingId}(meetingId=${meeting.getId()})}" th:text="${#lists.size(meeting.getAttendees())} + ' members'"></a>
+                    <span th:text="' have attended this meeting'"></span>
                 </li>
             </ul>
         </div>

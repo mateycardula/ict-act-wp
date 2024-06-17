@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DiscussionPointsImpl implements DiscussionPointsService {
@@ -27,69 +28,24 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public DiscussionPoint create(String topic, String discussion) {
-        boolean confirmed = false;
-
-        DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, null, null, null, confirmed);
+    public DiscussionPoint create(String topic, String discussion, boolean isVotable) {
+        boolean confirmed = !isVotable;
+        DiscussionPoint discussionPoint = new DiscussionPoint(topic, discussion, null, null, null, confirmed, isVotable);
         return discussionPointsRepository.save(discussionPoint);
     }
 
     @Override
     public DiscussionPoint voteYes(Long votes, Long discussionPointId) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
-        Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
-        Integer membersNumber = meeting.getAttendees().size();
-
-        if(votes == null) {
-            votes = 0L;
-        }
-
-        if(votes < 0) {
-            throw new VotesMustBeZeroOrGreaterException();
-        }
-
-        if(votes > membersNumber) {
-            throw new NumberOfVotesExceedsMembersAttendingException();
-        }
-
-        if(discussionPoint.getVotesNo() != null) {
-            long remainingMembers = membersNumber - discussionPoint.getVotesNo();
-            if(votes > remainingMembers) {
-                throw new NumberOfVotesExceedsRemainingMembers();
-            }
-        }
-
-        discussionPoint.setVotesYes(votes);
-        return discussionPointsRepository.save(discussionPoint);
+        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes, "YES");
+        validatedDiscussionPointForVote.setVotesYes(votes);
+        return discussionPointsRepository.save(validatedDiscussionPointForVote);
     }
 
     @Override
     public DiscussionPoint voteNo(Long votes, Long discussionPointId) {
-        DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
-        Meeting meeting = meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
-        Integer membersNumber = meeting.getAttendees().size();
-
-        if(votes == null) {
-            votes = 0L;
-        }
-
-        if(votes < 0) {
-            throw new VotesMustBeZeroOrGreaterException();
-        }
-
-        if(votes > membersNumber) {
-            throw new NumberOfVotesExceedsMembersAttendingException();
-        }
-
-        if(discussionPoint.getVotesYes() != null) {
-            long remainingMembers = membersNumber - discussionPoint.getVotesYes();
-            if (votes > remainingMembers) {
-                throw new NumberOfVotesExceedsRemainingMembers();
-            }
-        }
-
-        discussionPoint.setVotesNo(votes);
-        return discussionPointsRepository.save(discussionPoint);
+        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes, "NO");
+        validatedDiscussionPointForVote.setVotesNo(votes);
+        return discussionPointsRepository.save(validatedDiscussionPointForVote);
     }
 
     @Override
@@ -121,12 +77,14 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public void editDiscussion(Meeting meeting, Long discussionPointId, String discussion) {
-        DiscussionPoint dp = meeting.getDiscussionPoints()
-                .stream().filter(item -> item.getId().equals(discussionPointId))
-                .findFirst()
-                .orElseThrow(DiscussionPointDoesNotExist::new);
+    public Meeting getParentMeetingByDiscussionPointId(Long discussionPointId) {
+        DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
+        return meetingRepository.findMeetingByDiscussionPointsContains(discussionPoint);
+    }
 
+    @Override
+    public void editDiscussion(Long discussionPointId, String discussion) {
+        DiscussionPoint dp = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
         dp.setDiscussion(discussion);
         discussionPointsRepository.save(dp);
     }
@@ -139,5 +97,54 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
 
         meetingRepository.save(meeting);
         discussionPointsRepository.delete(dp);
+    }
+
+    @Override
+    public DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType) {
+        Meeting meeting = getParentMeetingByDiscussionPointId(discussionPointId);
+        DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
+
+        if(!discussionPoint.isVotable()) throw new DiscussionPointNotVotable();
+
+        Integer membersNumber = meeting.getAttendees().size();
+
+        if(votes == null) {
+            votes = 0L;
+        }
+
+        if(votes < 0) {
+            throw new VotesMustBeZeroOrGreaterException();
+        }
+
+        if(votes > membersNumber) {
+            throw new NumberOfVotesExceedsMembersAttendingException();
+        }
+
+        if(Objects.equals(voteType, "NO")){
+            if(discussionPoint.getVotesYes() != null) {
+                long remainingMembers = membersNumber - discussionPoint.getVotesYes();
+                if (votes > remainingMembers) {
+                    throw new NumberOfVotesExceedsRemainingMembers();
+                }
+            }
+        }
+        else{
+            if(discussionPoint.getVotesNo() != null) {
+                long remainingMembers = membersNumber - discussionPoint.getVotesNo();
+                if(votes > remainingMembers) {
+                    throw new NumberOfVotesExceedsRemainingMembers();
+                }
+            }
+        }
+
+        return discussionPoint;
+    }
+
+    @Override
+    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, boolean isVotable) {
+        DiscussionPoint pointToEdit = getDiscussionPointById(discussionPointId);
+        pointToEdit.setTopic(topic);
+        pointToEdit.setVotable(isVotable);
+        return discussionPointsRepository.save(pointToEdit);
     }
 }

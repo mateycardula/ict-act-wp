@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -25,7 +26,7 @@ public class Meeting {
     private MeetingType meetingType;
 
     @OneToMany
-    private List<DiscussionPoint> discussionPoints;
+    private List<DiscussionPoint> discussionPoints = new ArrayList<>();
 
     @OneToOne
     private MeetingReport meetingReport;
@@ -33,6 +34,10 @@ public class Meeting {
     private boolean finished = false;
     @ManyToMany
     private List<Member> attendees;
+
+    @ManyToMany
+    private List<Member> registeredAttendees;
+
     public Meeting() {}
 
     public Meeting(String topic, String room, LocalDateTime dateOfMeeting, MeetingType meetingType, List<DiscussionPoint> discussionPoints) {
@@ -43,4 +48,9 @@ public class Meeting {
         this.discussionPoints = discussionPoints;
         this.attendees = new ArrayList<>();
     }
+
+    public static final Comparator<Meeting> COMPARATOR = Comparator
+            .comparing(Meeting::getDateOfMeeting)
+            .thenComparing(meeting ->  meeting.getDateOfMeeting().toLocalTime())
+            .thenComparing(Meeting::getTopic);
 }

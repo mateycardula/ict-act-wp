@@ -40,9 +40,11 @@ public interface MeetingService {
     List<Meeting> filter(String topic, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type);
     void deleteMeeting(Long id);
     Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type);
-    Meeting userAttendMeeting(String username, Long id);
+    Meeting changeLoggedUserAttendanceStatus(Long meetingId);
+    Meeting confirmUserAttendance(Member member, Meeting meeting);
 
-    List<Long> getMeetingsUserCheckedAttended(String username);
-
-    Meeting userCancelAttendance(String username, Long id);
+    List<DiscussionPoint> getDiscussionPointsSorted(Long meetingId);
+    List<Long> getMeetingsUserCheckedAttended();
+    void addAttendants(List<Member> attendants, Long meetingId);
+    void removeUserAttendance(Member member, Meeting meeting);
 }

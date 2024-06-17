@@ -1,0 +1,13 @@
+<div class="container">
+  <!--/*@thymesVar id="discussionPoint" type="mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint"*/-->
+  <form th:action="@{'/discussion-point/edit/discussion/' + ${discussionPoint.getId()}}"
+        method="post" id="editDiscussionForm">
+    <div class="form-group">
+      <div class="mb-3">
+        <label for="discussion" class="form-label">Discussion</label>
+        <textarea class="form-control" id="discussion" rows="3" th:text="${discussionText}" name="discussionText"></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary m-1 col-3" type="submit">Edit discussion</button>
+  </form>
+</div>

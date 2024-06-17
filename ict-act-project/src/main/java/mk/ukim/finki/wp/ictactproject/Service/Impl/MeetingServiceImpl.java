@@ -11,7 +11,9 @@ import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
-import mk.ukim.finki.wp.ictactproject.Service.MemberService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -50,8 +52,11 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting) {
+        System.out.println("TUKA");
         List<DiscussionPoint> discussionPointList = meeting.getDiscussionPoints();
         discussionPointList.add(discussionPoint);
+        discussionPoint.setTopic((discussionPointList.size() + ". " + discussionPoint.getTopic()));
+        discussionPointsRepository.save(discussionPoint);
         return meetingRepository.save(meeting);
     }
 
@@ -92,13 +97,15 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Map<Long, String> getDiscussions(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
-        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
+        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints().stream().sorted(DiscussionPoint.SORT_BY_TOPIC).toList();
+
         Map<Long, String> mapOfDiscussions = new HashMap<>();
         for (DiscussionPoint discussionPoint : discussionPoints) {
             Long discussionPointId = discussionPoint.getId();
             String discussion = discussionPoint.getDiscussion();
             mapOfDiscussions.put(discussionPointId, discussion);
         }
+
 
         return mapOfDiscussions;
     }
@@ -110,23 +117,25 @@ public class MeetingServiceImpl implements MeetingService {
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
 
         for (DiscussionPoint discussionPoint : discussionPoints) {
-            Long membersVotedYes = discussionPoint.getVotesYes();
-            if(membersVotedYes == null || membersVotedYes < 0L) {
-                membersVotedYes = 0L;
-                discussionPoint.setVotesYes(membersVotedYes);
-            }
-            Long membersVotedNo = discussionPoint.getVotesNo();
-            if(membersVotedNo == null || membersVotedNo < 0L) {
-                membersVotedNo = 0L;
-                discussionPoint.setVotesNo(membersVotedNo);
-            }
-            Long membersAbstained = members - membersVotedNo - membersVotedYes;
-            if(membersAbstained < 0L) {
-                membersAbstained = 0L;
-            }
-            discussionPoint.setAbstained(membersAbstained);
+            if(discussionPoint.isVotable()) {
+                Long membersVotedYes = discussionPoint.getVotesYes();
+                if (membersVotedYes == null || membersVotedYes < 0L) {
+                    membersVotedYes = 0L;
+                    discussionPoint.setVotesYes(membersVotedYes);
+                }
+                Long membersVotedNo = discussionPoint.getVotesNo();
+                if (membersVotedNo == null || membersVotedNo < 0L) {
+                    membersVotedNo = 0L;
+                    discussionPoint.setVotesNo(membersVotedNo);
+                }
+                Long membersAbstained = members - membersVotedNo - membersVotedYes;
+                if (membersAbstained < 0L) {
+                    membersAbstained = 0L;
+                }
+                discussionPoint.setAbstained(membersAbstained);
 
-            discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
+                discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
+            }
         }
 
         meeting.setFinished(true);
@@ -143,6 +152,7 @@ public class MeetingServiceImpl implements MeetingService {
         if (dateFrom != null) {
             dateFilterFrom.addAll(meetingRepository.findByDateOfMeetingAfter(dateFrom));
             meetings.retainAll(dateFilterFrom);
+
         }
 
         if (dateTo != null) {
@@ -160,7 +170,9 @@ public class MeetingServiceImpl implements MeetingService {
             meetings.retainAll(typeFilter);
         }
 
-        return meetings.stream().toList();
+        return meetings.stream()
+                .sorted(Meeting.COMPARATOR)
+                .toList();
 
     }
 
@@ -180,32 +192,96 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Meeting userAttendMeeting(String username, Long id) {
-        Meeting meeting = this.findMeetingById(id);
+    public Meeting changeLoggedUserAttendanceStatus(Long meetingId) {
+
+        Meeting meeting = this.findMeetingById(meetingId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername();
+        }
+
         Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+        List<Member> possibleAttendees = meeting.getRegisteredAttendees();
+
+        if(possibleAttendees.contains(member)) {
+            possibleAttendees.remove(member);
+        }
+        else possibleAttendees.add(member);
+
+        return meetingRepository.save(meeting);
+    }
+
+    @Override
+    public List<DiscussionPoint> getDiscussionPointsSorted(Long meetingId) {
+        Meeting meeting = findMeetingById(meetingId);
+        return meeting.getDiscussionPoints().stream().sorted(DiscussionPoint.SORT_BY_TOPIC).toList();
+    }
+
+    @Override
+    public List<Long> getMeetingsUserCheckedAttended() {
+        List<Long> userAttendanceMeetings = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+            List<Meeting> meetings = meetingRepository.findAll();
+
+            userAttendanceMeetings =  meetings.stream()
+                    .filter(i -> i.getRegisteredAttendees().contains(member))
+                    .map(Meeting::getId)
+                    .toList();
+        }
+
+        return userAttendanceMeetings;
+
+    }
+
+    @Override
+    public void addAttendants(List<Member> updatedAttendees, Long meetingId) {
+        Meeting meeting = this.findMeetingById(meetingId);
+
+        Set<Member> attendeesToRemove = new HashSet<>(meeting.getAttendees());
+        Set<Member> attendeesToAdd = new HashSet<>(updatedAttendees);
+
+        attendeesToRemove.removeAll(attendeesToAdd);
+
+         for (Member attendant : updatedAttendees) {
+            confirmUserAttendance(attendant, meeting);
+        }
+
+         for (Member attendant : attendeesToRemove) {
+             removeUserAttendance(attendant, meeting);
+         }
+    }
+
+    @Override
+    public void removeUserAttendance(Member member, Meeting meeting) {
+        List<Member> attendees = meeting.getAttendees();
+        if(attendees.contains(member)) {
+            System.out.println("Remove attendant " + member.getUsername());
+            attendees.remove(member);
+        }
+
+        meetingRepository.save(meeting);
+    }
+
+
+    @Override
+    public Meeting confirmUserAttendance(Member member, Meeting meeting) {
         List<Member> attendees = meeting.getAttendees();
         if(!attendees.contains(member)) {
+            System.out.println("Adding attendant " + member.getUsername());
             attendees.add(member);
         }
         return meetingRepository.save(meeting);
     }
 
-    @Override
-    public List<Long> getMeetingsUserCheckedAttended(String username) {
-        List<Meeting> meetings = meetingRepository.findAll();
-        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
 
-        return meetings.stream()
-                .filter(i -> i.getAttendees().contains(member))
-                .map(Meeting::getId)
-                .toList();
-    }
 
-    @Override
-    public Meeting userCancelAttendance(String username, Long id) {
-        Meeting meeting = this.findMeetingById(id);
-        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
-        List<Member> attendees = meeting.getAttendees();
-        attendees.remove(member);
-        return meetingRepository.save(meeting);    }
+
 }

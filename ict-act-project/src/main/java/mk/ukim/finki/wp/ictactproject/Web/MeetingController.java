@@ -1,27 +1,26 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
+import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/meetings")
@@ -48,17 +47,7 @@ public class MeetingController {
         model.addAttribute("meetings", meetingService.filter(name, dateTimeFrom, dateTimeTo, type));
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Long> meetingsAttended = new ArrayList<>();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-            meetingsAttended = meetingService.getMeetingsUserCheckedAttended(username);
-        }
-        model.addAttribute("attended", meetingsAttended);
-
-
+        model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
         return "master-template";
     }
 
@@ -92,12 +81,16 @@ public class MeetingController {
             return "master-template";
         }
 
+        List<DiscussionPoint> sortedDiscussions = meetingService.getDiscussionPointsSorted(meeting.getId());
         model.addAttribute("meeting", meeting);
+        model.addAttribute("sortedDiscussions", sortedDiscussions);
         model.addAttribute("bodyContent", "meeting-info");
+        model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
+
         return "master-template";
     }
 
-    @GetMapping("/in-progress/{id}")
+    @GetMapping("/panel/{id}")
     private String meetingInProgressPage(Model model, @PathVariable Long id) {
         Meeting meeting;
         try {
@@ -111,11 +104,12 @@ public class MeetingController {
         Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
         Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
         Map<Long, String> discussions = meetingService.getDiscussions(id);
-
+        List<DiscussionPoint> sortedDiscussions = meetingService.getDiscussionPointsSorted(id);
         model.addAttribute("meeting", meeting);
         model.addAttribute("votesYes", membersVotedYes);
         model.addAttribute("votesNo", membersVotedNo);
         model.addAttribute("discussions", discussions);
+        model.addAttribute("sortedDiscussions", sortedDiscussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
 
         if(model.asMap().get("hasError") != null) {
@@ -141,10 +135,8 @@ public class MeetingController {
 
     @GetMapping("/delete/{id}")
     public String deleteMeeting(Model model, @PathVariable Long id) {
-        // TODO: CHECK IF THE LOGGED IN USER IS THE PRESIDENT/VICE PRESIDENT
-        Meeting meeting;
         try {
-            meeting = meetingService.findMeetingById(id);
+            meetingService.findMeetingById(id);
         } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
@@ -179,9 +171,8 @@ public class MeetingController {
                               @RequestParam String room,
                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAndTime,
                               @RequestParam MeetingType type) {
-        Meeting meeting;
         try {
-            meeting = meetingService.editMeeting(id, topic, room, dateAndTime, type);
+            meetingService.editMeeting(id, topic, room, dateAndTime, type);
         } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
@@ -199,20 +190,11 @@ public class MeetingController {
         return "redirect:/meetings/details/"+meeting.getId();
     }
 
-    @PostMapping("/attend/{id}")
-    public String attendMeeting(Model model, @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername();
-        } else {
-            return "redirect:/login";
-        }
-
+    @PostMapping("/change-attendance/{id}")
+    public String changeMeetingsAttendanceStatus(Model model, @PathVariable Long id) {
         try {
-            Meeting meeting = meetingService.userAttendMeeting(username, id);
-        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
+            Meeting meeting = meetingService.changeLoggedUserAttendanceStatus(id);
+        } catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
             return "master-template";
@@ -221,25 +203,85 @@ public class MeetingController {
         return "redirect:/meetings";
     }
 
-    @PostMapping("/cancel-attendance/{id}")
-    public String cancelAttendMeeting(Model model, @PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername();
-        } else {
-            return "redirect:/login";
-        }
+    @GetMapping("/add-attendees/{id}")
+    public String addAttendantsForm(Model model, @PathVariable Long id) {
+        Meeting meeting;
 
-        try {
-            Meeting meeting = meetingService.userCancelAttendance(username, id);
-        } catch (MeetingDoesNotExistException | MemberDoesNotExist exception) {
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
             return "master-template";
         }
 
-        return "redirect:/meetings";
+        model.addAttribute("meeting", meeting);
+
+
+        Set<Member> registeredAttendees = new HashSet<>(meeting.getRegisteredAttendees());
+        Set<Member> confirmedAttendees = new HashSet<>(meeting.getAttendees());
+        Set<Member> otherMembers = new HashSet<>(memberService.getAll());
+
+        registeredAttendees.removeAll(confirmedAttendees);
+
+        otherMembers.removeAll(registeredAttendees);
+        otherMembers.removeAll(confirmedAttendees);
+
+
+        model.addAttribute("confirmedAttendees", confirmedAttendees.stream().toList());
+        model.addAttribute("registeredMembers", registeredAttendees.stream().toList());
+        model.addAttribute("members", otherMembers.stream().toList());
+        model.addAttribute("bodyContent", "add-attendees");
+
+        return "master-template";
     }
+
+    @PostMapping("/add-attendees")
+    public String addAttendants(@RequestParam Long meetingId, @RequestParam(required = false) List<Long> attendants){
+        System.out.println(attendants);
+        List<Member> attendantsToAdd = memberService.getMultipleByIds(attendants);
+        meetingService.addAttendants(attendantsToAdd, meetingId);
+        return "redirect:/meetings/panel/" + meetingId;
+    }
+
+    @GetMapping("/registered-members/{id}")
+    public String registeredMembers(Model model, @PathVariable Long id) {
+        Meeting meeting;
+
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("meetingId", meeting.getId());
+        model.addAttribute("members", meeting.getRegisteredAttendees());
+        model.addAttribute("bodyContent", "meeting-registered-attendees");
+        return "master-template";
+
+    }
+
+    @GetMapping("/meeting-attendants/{id}")
+    public String meetingAttendants(Model model, @PathVariable Long id) {
+        Meeting meeting;
+
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("meetingId", meeting.getId());
+        model.addAttribute("members", meeting.getAttendees());
+        model.addAttribute("bodyContent", "meeting-registered-attendees");
+        return "master-template";
+    }
+
 }
