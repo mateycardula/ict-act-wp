@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -83,4 +84,7 @@ public class Member implements UserDetails {
         return isEnabled;
     }
 
+
+    public static final Comparator<Member> SORT_BY_NAME = Comparator
+            .comparing(Member::getName);
 }

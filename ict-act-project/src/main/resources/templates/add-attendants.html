@@ -1,0 +1,32 @@
+<form action="/meetings/add-attendants" method="post">
+
+    <h2>Attendees</h2>
+
+    <div th:each="confirmed: ${confirmedAttendees}">
+        <span>
+        <input type="checkbox" th:checked="${true}" th:value="${confirmed.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + confirmed.getId()}">
+        <label  th:text="${confirmed.name} + ${confirmed.surname} " th:for="${'member_' + confirmed.getId()}"></label>
+        </span>
+    </div>
+
+    <h2>Registered members</h2>
+    <div th:each="registered: ${registeredMembers}">
+    <span>
+    <input type="checkbox"  th:value="${registered.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + registered.getId()}">
+    <label  th:text="${registered.name} + ${registered.surname} " th:for="${'member_' + registered.getId()}"></label>
+    </span>
+    </div>
+
+    <h2>Other members</h2>
+
+    <div th:each="member: ${members}">
+    <span>
+    <input type="checkbox"  th:value="${member.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + member.getId()}">
+    <label  th:text="${member.name} + ${member.surname} " th:for="${'member_' + member.getId()}"></label>
+    </span>
+    </div>
+
+    <input type="hidden" name="meetingId" th:value="${meeting.getId()}">
+
+    <button type="submit" >Submit</button>
+</form>

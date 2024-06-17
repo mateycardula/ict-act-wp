@@ -26,9 +26,13 @@
                 </header>
                 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                    <a  th:unless="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
                        Start meeting
                     </a>
+                    <a  th:if="${meeting.finished}" sec:authorize="hasAuthority('PRESIDENT')" class="btn btn-warning col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                        Modify meeting
+                    </a>
+
                 </div>
                 <!-- Post content-->
                 <section class="mb-5">

@@ -36,7 +36,7 @@ public class Meeting {
     private List<Member> attendees;
 
     @ManyToMany
-    private List<Member> possibleAttendees;
+    private List<Member> registeredAttendees;
 
     public Meeting() {}
 

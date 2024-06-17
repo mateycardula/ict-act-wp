@@ -6,23 +6,21 @@ import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/meetings")
@@ -202,6 +200,48 @@ public class MeetingController {
             return "master-template";
         }
 
+        return "redirect:/meetings";
+    }
+
+    @GetMapping("/add-attendants/{id}")
+    public String addAttendantsForm(Model model, @PathVariable Long id) {
+        Meeting meeting;
+
+        try{
+            meeting = meetingService.findMeetingById(id);
+        }
+        catch (MeetingDoesNotExistException exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("meeting", meeting);
+
+
+        Set<Member> registeredAttendees = new HashSet<>(meeting.getRegisteredAttendees());
+        Set<Member> confirmedAttendees = new HashSet<>(meeting.getAttendees());
+        Set<Member> otherMembers = new HashSet<>(memberService.getAll());
+
+        registeredAttendees.removeAll(confirmedAttendees);
+
+        otherMembers.removeAll(registeredAttendees);
+        otherMembers.removeAll(confirmedAttendees);
+
+
+        model.addAttribute("confirmedAttendees", confirmedAttendees.stream().toList());
+        model.addAttribute("registeredMembers", registeredAttendees.stream().toList());
+        model.addAttribute("members", otherMembers.stream().toList());
+        model.addAttribute("bodyContent", "add-attendants");
+
+        return "master-template";
+    }
+
+    @PostMapping("/add-attendants")
+    public String addAttendants(@RequestParam Long meetingId, @RequestParam(required = false) List<Long> attendants){
+        System.out.println(attendants);
+        List<Member> attendantsToAdd = memberService.getMultipleByIds(attendants);
+        meetingService.addAttendants(attendantsToAdd, meetingId);
         return "redirect:/meetings";
     }
 

@@ -11,7 +11,6 @@ import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
-import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -153,6 +152,7 @@ public class MeetingServiceImpl implements MeetingService {
         if (dateFrom != null) {
             dateFilterFrom.addAll(meetingRepository.findByDateOfMeetingAfter(dateFrom));
             meetings.retainAll(dateFilterFrom);
+
         }
 
         if (dateTo != null) {
@@ -204,24 +204,13 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
-        List<Member> attendees = meeting.getAttendees();
+        List<Member> possibleAttendees = meeting.getRegisteredAttendees();
 
-        if(attendees.contains(member)) {
-            attendees.remove(member);
+        if(possibleAttendees.contains(member)) {
+            possibleAttendees.remove(member);
         }
-        else attendees.add(member);
+        else possibleAttendees.add(member);
 
-        return meetingRepository.save(meeting);
-    }
-
-    @Override
-    public Meeting confirmUserAttendance(String username, Long id) {
-        Meeting meeting = this.findMeetingById(id);
-        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
-        List<Member> attendees = meeting.getAttendees();
-        if(!attendees.contains(member)) {
-            attendees.add(member);
-        }
         return meetingRepository.save(meeting);
     }
 
@@ -243,13 +232,56 @@ public class MeetingServiceImpl implements MeetingService {
             List<Meeting> meetings = meetingRepository.findAll();
 
             userAttendanceMeetings =  meetings.stream()
-                    .filter(i -> i.getAttendees().contains(member))
+                    .filter(i -> i.getRegisteredAttendees().contains(member))
                     .map(Meeting::getId)
                     .toList();
         }
 
         return userAttendanceMeetings;
 
-
     }
+
+    @Override
+    public void addAttendants(List<Member> updatedAttendees, Long meetingId) {
+        Meeting meeting = this.findMeetingById(meetingId);
+
+        Set<Member> attendeesToRemove = new HashSet<>(meeting.getAttendees());
+        Set<Member> attendeesToAdd = new HashSet<>(updatedAttendees);
+
+        attendeesToRemove.removeAll(attendeesToAdd);
+
+         for (Member attendant : updatedAttendees) {
+            confirmUserAttendance(attendant, meeting);
+        }
+
+         for (Member attendant : attendeesToRemove) {
+             removeUserAttendance(attendant, meeting);
+         }
+    }
+
+    @Override
+    public void removeUserAttendance(Member member, Meeting meeting) {
+        List<Member> attendees = meeting.getAttendees();
+        if(attendees.contains(member)) {
+            System.out.println("Remove attendant " + member.getUsername());
+            attendees.remove(member);
+        }
+
+        meetingRepository.save(meeting);
+    }
+
+
+    @Override
+    public Meeting confirmUserAttendance(Member member, Meeting meeting) {
+        List<Member> attendees = meeting.getAttendees();
+        if(!attendees.contains(member)) {
+            System.out.println("Adding attendant " + member.getUsername());
+            attendees.add(member);
+        }
+        return meetingRepository.save(meeting);
+    }
+
+
+
+
 }

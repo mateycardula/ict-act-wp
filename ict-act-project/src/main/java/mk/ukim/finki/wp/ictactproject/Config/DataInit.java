@@ -43,8 +43,8 @@ public class DataInit {
     @PostConstruct
     void init(){
         Member member = new Member();
-        member.setName("Name");
-        member.setSurname("Surname");
+        member.setName("Admin");
+        member.setSurname("Admin");
         member.setEmail("admin");
         member.setPassword(passwordEncoder.encode(
                 "admin"
