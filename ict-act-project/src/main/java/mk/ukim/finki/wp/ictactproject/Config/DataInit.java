@@ -54,16 +54,6 @@ public class DataInit {
         System.out.println(member.getAuthorities());
         memberRepository.save(member);
 
-       member = new Member();
-        member.setName("Name");
-        member.setSurname("Surname");
-        member.setEmail("new@user");
-        member.setPassword(passwordEncoder.encode(
-                "user"
-        ));
-        member.setRole(PositionType.NEW_USER);
-        memberRepository.save(member);
-
         for(int i=0; i<5; i++){
 
             LocalDateTime date = LocalDateTime.now();

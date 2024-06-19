@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/meetings")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/members")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/members")).authenticated()
                         .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()
 
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))

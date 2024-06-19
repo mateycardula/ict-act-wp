@@ -51,6 +51,10 @@ public class MemberController {
                                @RequestParam String surname,
                                @RequestParam String institution,
                                @RequestParam PositionType role) {
+
+        Member member = memberService.findById(id);
+        
+
         memberService.editMember(id, name, surname, institution, role);
         return "redirect:/members";
     }

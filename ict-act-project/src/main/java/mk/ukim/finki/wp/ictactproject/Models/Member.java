@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Member implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +24,7 @@ public class Member implements UserDetails {
     private String name;
     @Setter
     private String surname;
+
     @Setter
     private String institution;
 
@@ -36,9 +38,10 @@ public class Member implements UserDetails {
     @Setter
     private String password;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     private PositionType role;
+
+    private String verificationCode;
 
     private boolean isAccountNonExpired = true;
     private boolean isAccountNonLocked = true;
@@ -84,7 +87,14 @@ public class Member implements UserDetails {
         return isEnabled;
     }
 
+    public void setRole(PositionType role){
+        this.role = role;
+        isEnabled = role != PositionType.NEW_USER;
+    }
 
     public static final Comparator<Member> SORT_BY_NAME = Comparator
             .comparing(Member::getName);
+
+
+
 }
