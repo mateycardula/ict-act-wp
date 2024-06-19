@@ -23,7 +23,7 @@
           <input name="attachment" class="form-control mb-3" type="file" aria-label="Attachment" id="attachment">
           <!-- Display the current attachment if it exists -->
           <div th:if="${point?.attachment != null}">
-            <p>Current attachment: <a th:href="@{/attachments/download/{id}(id=${point.attachment.id})}" th:text="${point.attachment.fileName}">Download</a></p>
+            <p>Current attachment: <a th:href="@{/discussion-point/download/{id}(id=${point.attachment.id})}" th:text="${point.attachment.fileName}">Download</a></p>
           </div>
         </div>
 

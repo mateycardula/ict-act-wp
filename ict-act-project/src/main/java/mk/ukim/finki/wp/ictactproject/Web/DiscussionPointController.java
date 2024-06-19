@@ -9,6 +9,7 @@ import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -138,6 +139,7 @@ public class DiscussionPointController {
     public ResponseEntity<ByteArrayResource> downloadAttachment(@PathVariable UUID id) {
         Attachment attachment = discussionPointsService.getAttachmentById(id);
         return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(attachment.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFileName() + "\"")
                 .body(new ByteArrayResource(attachment.getData()));
     }
