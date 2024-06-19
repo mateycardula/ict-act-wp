@@ -13,4 +13,5 @@ public interface MemberService extends UserDetailsService {
     Member deleteMember(Long id);
     Member editMember(Long id, String name, String surname, String institution, PositionType role);
     List<Member> getMultipleByIds(List<Long> ids);
+    Member getPresident();
 }

@@ -52,4 +52,11 @@ public class DiscussionPoint {
 
     public static Comparator<DiscussionPoint> SORT_BY_TOPIC = Comparator.
             comparing(DiscussionPoint::getTopic);
+
+    public String getConformation() {
+        if(this.confirmed) {
+            return "Усвоена";
+        }
+        else return "Одбиена";
+    }
 }

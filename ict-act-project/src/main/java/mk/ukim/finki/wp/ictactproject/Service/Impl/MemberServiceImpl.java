@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
@@ -85,6 +86,11 @@ public class MemberServiceImpl implements MemberService {
             if (member != null) members.add(member);
         }
         return members;
+    }
+
+    @Override
+    public Member getPresident() {
+       return memberRepository.findByRoleEquals(PositionType.PRESIDENT);
     }
 
     @Override
