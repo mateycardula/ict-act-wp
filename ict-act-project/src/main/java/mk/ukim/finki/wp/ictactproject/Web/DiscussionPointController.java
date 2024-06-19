@@ -189,22 +189,22 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-//    @PostMapping("/add/discussion/{discussionPointId}")
-//    public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
-//        Meeting meeting;
-//        DiscussionPoint discussionPoint;
-//
-//        try {
-//            discussionPoint = discussionPointsService.addDiscussion(discussion, discussionPointId);
-//            meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
-//        } catch (DiscussionPointDoesNotExist exception) {
-//            model.addAttribute("error", exception.getMessage());
-//            model.addAttribute("bodyContent", "error-404");
-//            return "master-template";
-//        }
-//
-//        return "redirect:/meetings/panel/" + meeting.getId();
-//    }
+    @PostMapping("/add/discussion/{discussionPointId}")
+    public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
+        Meeting meeting;
+        DiscussionPoint discussionPoint;
+
+        try {
+            discussionPoint = discussionPointsService.addDiscussion(discussion, discussionPointId);
+            meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+        } catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        return "redirect:/meetings/panel/" + meeting.getId();
+    }
 
     @GetMapping("/edit/votes/yes/{id}")
     public String getEditPageForVotingYes(Model model, @PathVariable Long id) {
@@ -322,39 +322,39 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-//    @GetMapping("/edit/discussion/{id}")
-//    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
-//        DiscussionPoint discussionPoint;
-//        try {
-//            discussionPoint = discussionPointsService.getDiscussionPointById(id);
-//        } catch (DiscussionPointDoesNotExist exception) {
-//            model.addAttribute("error", exception.getMessage());
-//            model.addAttribute("bodyContent", "error-404");
-//            return "master-template";
-//        }
-//        String discussionText = discussionPoint.getDiscussion();
-//
-//        model.addAttribute("discussionPoint", discussionPoint);
-//        model.addAttribute("discussionText", discussionText);
-//        model.addAttribute("bodyContent", "edit-discussion");
-//
-//        return "master-template";
-//    }
+    @GetMapping("/edit/discussion/{id}")
+    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
+        DiscussionPoint discussionPoint;
+        try {
+            discussionPoint = discussionPointsService.getDiscussionPointById(id);
+        } catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+        String discussionText = discussionPoint.getDiscussion();
 
-//    @PostMapping("/edit/discussion/{id}")
-//    public String editDiscussion(Model model, @PathVariable Long id,
-//                                 @RequestParam(required = false) String discussionText){
-//        Meeting meeting;
-//        try {
-//            meeting = meetingService.findMeetingByDiscussionPoint(id);
-//        } catch (DiscussionPointDoesNotExist exception) {
-//            model.addAttribute("error", exception.getMessage());
-//            model.addAttribute("bodyContent", "error-404");
-//            return "master-template";
-//        }
-//
-//        discussionPointsService.editDiscussion(id, discussionText);
-//
-//        return "redirect:/meetings/panel/"+meeting.getId();
-//    }
+        model.addAttribute("discussionPoint", discussionPoint);
+        model.addAttribute("discussionText", discussionText);
+        model.addAttribute("bodyContent", "edit-discussion");
+
+        return "master-template";
+    }
+
+    @PostMapping("/edit/discussion/{id}")
+    public String editDiscussion(Model model, @PathVariable Long id,
+                                 @RequestParam(required = false) String discussionText){
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingByDiscussionPoint(id);
+        } catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        discussionPointsService.editDiscussion(id, discussionText);
+
+        return "redirect:/meetings/panel/"+meeting.getId();
+    }
 }
