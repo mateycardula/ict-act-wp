@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Comparator;
-import java.util.List;
 
 @Data
 @Entity
@@ -32,6 +31,9 @@ public class DiscussionPoint {
     private boolean confirmed;
 
     private boolean isVotable;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Attachment attachment;
 
     public DiscussionPoint() {
     }

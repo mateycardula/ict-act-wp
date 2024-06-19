@@ -1,17 +1,33 @@
 <div class="container">
   <div class="row justify-content-center m-4 bg-light p-4">
     <div class="col-md-8"> <!-- class="col-md-10" -->
-      <form class="" th:action="@{ ${point != null} ? '/discussion-point/edit/' + ${point.getId()} : '/discussion-point/add?meetingId=' + ${meeting.getId()}}" method="post">
+      <form th:action="@{${point != null} ? '/discussion-point/edit/' + ${point.getId()} : '/discussion-point/add?meetingId=' + ${meeting.getId()}}"
+            method="post"
+            enctype="multipart/form-data">
         <h4 class="mb-3">Create new Discussion Point</h4>
 
         <label for="topic">Topic</label>
         <input th:value="${point?.topic}" name="topic" class="form-control mb-3" type="search" placeholder="Meeting topic" aria-label="Name" id="topic">
 
+        <div class="mb-3">
+          <label for="discussion" class="form-label">Discussion</label>
+          <textarea th:text="${point?.discussion}" class="form-control" id="discussion" rows="3" name="discussionText"></textarea>
+        </div>
+
         <label for="isVotable">Is the discussion point votable?</label>
+        <input th:checked="${point?.isVotable}" name="isVotable" class="form-check-input" type="checkbox" aria-label="Is votable" id="isVotable">
+        <br><br>
 
-        <input th:checked="${point?.isVotable}" name="isVotable" class="form-check-input" type="checkbox"  aria-label="Is votable" id="isVotable">
+        <div class="mb-3">
+          <label for="attachment">Attachment (optional)</label>
+          <input name="attachment" class="form-control mb-3" type="file" aria-label="Attachment" id="attachment">
+          <!-- Display the current attachment if it exists -->
+          <div th:if="${point?.attachment != null}">
+            <p>Current attachment: <a th:href="@{/attachments/download/{id}(id=${point.attachment.id})}" th:text="${point.attachment.fileName}">Download</a></p>
+          </div>
+        </div>
 
-        <input type="hidden" name="meetingId", th:value="${meeting.getId()}">
+        <input type="hidden" name="meetingId" th:value="${meeting.getId()}">
         <button class="btn btn-primary m-1 col-3" type="submit">Submit</button>
       </form>
     </div>

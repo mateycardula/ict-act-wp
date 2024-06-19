@@ -2,17 +2,21 @@ package mk.ukim.finki.wp.ictactproject.Web;
 
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.Attachment;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.*;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/discussion-point")
@@ -45,7 +49,10 @@ public class DiscussionPointController {
     public String createDiscussionPoint(Model model,
                                         @RequestParam Long meetingId,
                                         @RequestParam String topic,
-                                        @RequestParam(required = false) boolean isVotable) {
+                                        @RequestParam(required = false) boolean isVotable,
+                                        @RequestParam("attachment") MultipartFile file,
+                                        @RequestParam(required = false) String discussionText,
+                                        RedirectAttributes redirectAttributes) {
         Meeting meeting;
         try {
             meeting = meetingService.findMeetingById(meetingId);
@@ -55,13 +62,84 @@ public class DiscussionPointController {
             return "master-template";
         }
 
-        System.out.println(isVotable);
+        try {
+            DiscussionPoint discussionPoint = discussionPointsService.create(topic, "", isVotable);
 
-        DiscussionPoint discussionPoint = discussionPointsService.create(topic, "", isVotable);
+            if (!file.isEmpty()) {
+                Attachment attachment = new Attachment(
+                        file.getOriginalFilename(),
+                        file.getContentType(),
+                        file.getBytes()
+                );
+                discussionPoint.setAttachment(attachment);
+                discussionPoint.setDiscussion(discussionText);
+            }
 
-        meetingService.addDiscussionPoint(discussionPoint, meeting);
+            meetingService.addDiscussionPoint(discussionPoint, meeting);
+            redirectAttributes.addFlashAttribute("message", "Discussion Point added successfully!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Failed to add Discussion Point: " + e.getMessage());
+        }
 
         return "redirect:/meetings/details/"+meetingId;
+    }
+
+    @GetMapping("/edit/{id}")
+    public String getEditPageForPoint(Model model, @PathVariable Long id) {
+        DiscussionPoint discussionPoint;
+
+        try {
+            discussionPoint = discussionPointsService.getDiscussionPointById(id);
+        }
+        catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        model.addAttribute("bodyContent", "create-new-discussion-point");
+        model.addAttribute("point", discussionPoint);
+        model.addAttribute("meeting", discussionPointsService.getParentMeetingByDiscussionPointId(id));
+        return "master-template";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editDiscussionPoint(Model model,
+                                      @PathVariable Long id,
+                                      @RequestParam String topic,
+                                      @RequestParam(required = false) boolean isVotable,
+                                      @RequestParam("attachment") MultipartFile file,
+                                      @RequestParam Long meetingId,
+                                      @RequestParam(required = false) String discussionText,
+                                      RedirectAttributes redirectAttributes){
+        try {
+            Attachment attachment = new Attachment();
+            if (!file.isEmpty()) {
+                attachment.setFileName(file.getOriginalFilename());
+                attachment.setFileType(file.getContentType());
+                attachment.setData(file.getBytes());
+            }
+            discussionPointsService.editDiscussionPoint(id, topic, discussionText, attachment, isVotable);
+        }
+        catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+        catch (Exception e){
+            redirectAttributes.addFlashAttribute("message", "Failed to add Discussion Point: " + e.getMessage());
+        }
+
+        return "redirect:/meetings/details/"+meetingId;
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<ByteArrayResource> downloadAttachment(@PathVariable UUID id) {
+        Attachment attachment = discussionPointsService.getAttachmentById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFileName() + "\"")
+                .body(new ByteArrayResource(attachment.getData()));
     }
 
     @PostMapping("/vote/yes/{discussionPointId}")
@@ -109,22 +187,22 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-    @PostMapping("/add/discussion/{discussionPointId}")
-    public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
-        Meeting meeting;
-        DiscussionPoint discussionPoint;
-
-        try {
-            discussionPoint = discussionPointsService.addDiscussion(discussion, discussionPointId);
-            meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
-        } catch (DiscussionPointDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        return "redirect:/meetings/panel/" + meeting.getId();
-    }
+//    @PostMapping("/add/discussion/{discussionPointId}")
+//    public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
+//        Meeting meeting;
+//        DiscussionPoint discussionPoint;
+//
+//        try {
+//            discussionPoint = discussionPointsService.addDiscussion(discussion, discussionPointId);
+//            meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+//        } catch (DiscussionPointDoesNotExist exception) {
+//            model.addAttribute("error", exception.getMessage());
+//            model.addAttribute("bodyContent", "error-404");
+//            return "master-template";
+//        }
+//
+//        return "redirect:/meetings/panel/" + meeting.getId();
+//    }
 
     @GetMapping("/edit/votes/yes/{id}")
     public String getEditPageForVotingYes(Model model, @PathVariable Long id) {
@@ -242,78 +320,39 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-    @GetMapping("/edit/discussion/{id}")
-    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
-        DiscussionPoint discussionPoint;
-        try {
-            discussionPoint = discussionPointsService.getDiscussionPointById(id);
-        } catch (DiscussionPointDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-        String discussionText = discussionPoint.getDiscussion();
+//    @GetMapping("/edit/discussion/{id}")
+//    public String getEditPageForDiscussion(Model model, @PathVariable Long id) {
+//        DiscussionPoint discussionPoint;
+//        try {
+//            discussionPoint = discussionPointsService.getDiscussionPointById(id);
+//        } catch (DiscussionPointDoesNotExist exception) {
+//            model.addAttribute("error", exception.getMessage());
+//            model.addAttribute("bodyContent", "error-404");
+//            return "master-template";
+//        }
+//        String discussionText = discussionPoint.getDiscussion();
+//
+//        model.addAttribute("discussionPoint", discussionPoint);
+//        model.addAttribute("discussionText", discussionText);
+//        model.addAttribute("bodyContent", "edit-discussion");
+//
+//        return "master-template";
+//    }
 
-        model.addAttribute("discussionPoint", discussionPoint);
-        model.addAttribute("discussionText", discussionText);
-        model.addAttribute("bodyContent", "edit-discussion");
-
-        return "master-template";
-    }
-
-    @PostMapping("/edit/discussion/{id}")
-    public String editDiscussion(Model model, @PathVariable Long id,
-                                 @RequestParam(required = false) String discussionText){
-        Meeting meeting;
-        try {
-            meeting = meetingService.findMeetingByDiscussionPoint(id);
-        } catch (DiscussionPointDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        discussionPointsService.editDiscussion(id, discussionText);
-
-        return "redirect:/meetings/panel/"+meeting.getId();
-    }
-
-    @GetMapping("/edit/{id}")
-    public String getEditPageForPoint(Model model, @PathVariable Long id) {
-        DiscussionPoint discussionPoint;
-
-        try {
-            discussionPoint = discussionPointsService.getDiscussionPointById(id);
-        }
-        catch (DiscussionPointDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        model.addAttribute("bodyContent", "create-new-discussion-point");
-        model.addAttribute("point", discussionPoint);
-        model.addAttribute("meeting", discussionPointsService.getParentMeetingByDiscussionPointId(id));
-        return "master-template";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String editDiscussionPoint(Model model,
-                                      @PathVariable Long id,
-                                      @RequestParam String topic,
-                                      @RequestParam(required = false) boolean isVotable,
-                                      @RequestParam Long meetingId
-    ){
-
-        try {
-        discussionPointsService.editDiscussionPoint(id, topic, isVotable);
-        }
-        catch (DiscussionPointDoesNotExist exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
-
-        return "redirect:/meetings/details/"+meetingId;
-    }
+//    @PostMapping("/edit/discussion/{id}")
+//    public String editDiscussion(Model model, @PathVariable Long id,
+//                                 @RequestParam(required = false) String discussionText){
+//        Meeting meeting;
+//        try {
+//            meeting = meetingService.findMeetingByDiscussionPoint(id);
+//        } catch (DiscussionPointDoesNotExist exception) {
+//            model.addAttribute("error", exception.getMessage());
+//            model.addAttribute("bodyContent", "error-404");
+//            return "master-template";
+//        }
+//
+//        discussionPointsService.editDiscussion(id, discussionText);
+//
+//        return "redirect:/meetings/panel/"+meeting.getId();
+//    }
 }
