@@ -21,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Member login(String email, String password) {
+        System.out.println("LOGIN?");
         if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
             throw new InvalidArgumentsException();
         }

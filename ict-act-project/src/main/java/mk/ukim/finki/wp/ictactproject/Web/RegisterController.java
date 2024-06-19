@@ -1,10 +1,12 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
+import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Service.AuthService;
+import mk.ukim.finki.wp.ictactproject.Service.EmailService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RegisterController {
     private final AuthService authService;
     private final MemberService memberService;
+    private final EmailService emailService;
 
-    public RegisterController(AuthService authService, MemberService memberService) {
+    public RegisterController(AuthService authService, MemberService memberService, EmailService emailService) {
         this.authService = authService;
         this.memberService = memberService;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -45,7 +49,8 @@ public class RegisterController {
                            @RequestParam String institution
     ) {
         try {
-            this.memberService.register(email, password, repeatedPassword, name, surname, institution, PositionType.NEW_USER);
+            Member member = this.memberService.register(email, password, repeatedPassword, name, surname, institution, PositionType.NEW_USER);
+            emailService.sendVerificationEmail(member, "http://localhost:9090");
             return "redirect:/login";
         } catch (InvalidEmailOrPasswordException | PasswordDoNotMatchException |
                  UsernameAlreadyExistsException exception) {

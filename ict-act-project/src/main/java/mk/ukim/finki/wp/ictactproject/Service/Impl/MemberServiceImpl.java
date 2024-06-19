@@ -51,8 +51,8 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
+        member.setEnabled(false);
         System.out.println(member.getAuthorities());
-
         return memberRepository.save(member);
     }
 
@@ -67,12 +67,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member editMember(Long id, String name, String surname, String institution, PositionType role) {
         Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
-
         member.setName(name);
         member.setSurname(surname);
         member.setInstitution(institution);
         member.setRole(role);
-
         return memberRepository.save(member);
     }
 

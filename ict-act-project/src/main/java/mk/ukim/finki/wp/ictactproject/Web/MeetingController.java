@@ -7,6 +7,7 @@ import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
+import mk.ukim.finki.wp.ictactproject.Service.EmailService;
 import mk.ukim.finki.wp.ictactproject.Service.MeetingService;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,11 +29,13 @@ public class MeetingController {
     private final MeetingService meetingService;
     private final MemberService memberService;
     private final DiscussionPointsService discussionPointsService;
+    private final EmailService emailService;
 
-    public MeetingController(MeetingService meetingService, MemberService memberService, DiscussionPointsService discussionPointsService) {
+    public MeetingController(MeetingService meetingService, MemberService memberService, DiscussionPointsService discussionPointsService, EmailService emailService) {
         this.meetingService = meetingService;
         this.memberService = memberService;
         this.discussionPointsService = discussionPointsService;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -48,6 +51,7 @@ public class MeetingController {
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
         model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
+//        emailService.sendEmail("ana.kostadinovska6@gmail.com", "YOU ACCESSED THE MEETING PAGE", "IT WORKS!");
         return "master-template";
     }
 
