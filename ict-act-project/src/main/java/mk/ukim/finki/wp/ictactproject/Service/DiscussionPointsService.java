@@ -2,8 +2,9 @@ package mk.ukim.finki.wp.ictactproject.Service;
 
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
+import mk.ukim.finki.wp.ictactproject.Models.Attachment;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface DiscussionPointsService {
     DiscussionPoint create(String topic, String discussion, boolean isVotable);
@@ -18,5 +19,7 @@ public interface DiscussionPointsService {
     void editDiscussion(Long discussionPointId, String discussion);
     void deleteDiscussion(Meeting meeting, Long dpId);
     DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType);
-    DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, boolean isVotable);
+    DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, String discussion, Attachment attachment, boolean isVotable);
+
+    Attachment getAttachmentById(UUID id);
 }

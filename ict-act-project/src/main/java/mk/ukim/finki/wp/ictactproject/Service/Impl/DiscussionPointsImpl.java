@@ -2,7 +2,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.Attachment;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.*;
 import mk.ukim.finki.wp.ictactproject.Repository.DiscussionPointsRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
@@ -10,10 +10,7 @@ import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class DiscussionPointsImpl implements DiscussionPointsService {
@@ -141,10 +138,17 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
     }
 
     @Override
-    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, boolean isVotable) {
+    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, String discussion, Attachment attachment, boolean isVotable) {
         DiscussionPoint pointToEdit = getDiscussionPointById(discussionPointId);
         pointToEdit.setTopic(topic);
+        pointToEdit.setDiscussion(discussion);
+        pointToEdit.setAttachment(attachment);
         pointToEdit.setVotable(isVotable);
         return discussionPointsRepository.save(pointToEdit);
+    }
+
+    @Override
+    public Attachment getAttachmentById(UUID id) {
+        return discussionPointsRepository.findAttachmentById(id);
     }
 }
