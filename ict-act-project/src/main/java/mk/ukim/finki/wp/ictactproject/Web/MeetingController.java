@@ -1,9 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
-import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
-import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
-import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.*;
 import mk.ukim.finki.wp.ictactproject.Models.errors.DiscussionPointError;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
@@ -51,6 +48,8 @@ public class MeetingController {
         model.addAttribute("types", MeetingType.values());
         model.addAttribute("bodyContent", "all-meetings");
         model.addAttribute("attended_meetings", meetingService.getMeetingsUserCheckedAttended());
+        model.addAttribute("maybe_attended_meetings", meetingService.getMeetingsUserMaybeCheckedAttended());
+        model.addAttribute("not_attended_meetings", meetingService.getMeetingsUserNotCheckedAttended());
 //        emailService.sendEmail("ana.kostadinovska6@gmail.com", "YOU ACCESSED THE MEETING PAGE", "IT WORKS!");
         return "master-template";
     }
@@ -194,18 +193,28 @@ public class MeetingController {
         return "redirect:/meetings/details/"+meeting.getId();
     }
 
-    @PostMapping("/change-attendance/{id}")
-    public String changeMeetingsAttendanceStatus(Model model, @PathVariable Long id) {
-        try {
-            Meeting meeting = meetingService.changeLoggedUserAttendanceStatus(id);
-        } catch (MeetingDoesNotExistException exception) {
-            model.addAttribute("error", exception.getMessage());
-            model.addAttribute("bodyContent", "error-404");
-            return "master-template";
-        }
+   @PostMapping("/change-attendance/{id}")
+   public String changeMeetingsAttendanceStatus(Model model, @PathVariable Long id, @RequestParam String status) {
+       AttendanceStatus attendanceStatus;
 
-        return "redirect:/meetings";
-    }
+       if (status.isEmpty()) {
+           attendanceStatus = AttendanceStatus.NONE;
+       } else {
+           attendanceStatus = AttendanceStatus.valueOf(status);
+       }
+
+       try {
+           Meeting meeting = meetingService.changeLoggedUserAttendanceStatus(id, attendanceStatus);
+       } catch (MeetingDoesNotExistException exception) {
+           model.addAttribute("error", exception.getMessage());
+           model.addAttribute("bodyContent", "error-404");
+           return "master-template";
+       }
+
+       return "redirect:/meetings";
+   }
+
+
 
     @GetMapping("/add-attendees/{id}")
     public String addAttendantsForm(Model model, @PathVariable Long id) {
@@ -250,7 +259,7 @@ public class MeetingController {
     }
 
     @GetMapping("/registered-members/{id}")
-    public String registeredMembers(Model model, @PathVariable Long id) {
+    public String registeredMembers(Model model, @PathVariable Long id, @RequestParam(defaultValue = "yes") String tab) {
         Meeting meeting;
 
         try{
@@ -263,7 +272,11 @@ public class MeetingController {
         }
 
         model.addAttribute("meetingId", meeting.getId());
-        model.addAttribute("members", meeting.getRegisteredAttendees());
+//        model.addAttribute("members", meeting.getRegisteredAttendees());
+        model.addAttribute("yesMembers", meeting.getRegisteredAttendees());
+        model.addAttribute("maybeMembers", meeting.getMaybeAttendees());
+        model.addAttribute("noMembers", meeting.getNoAttendees());
+        model.addAttribute("defaultTab", tab);
         model.addAttribute("bodyContent", "meeting-registered-attendees");
         return "master-template";
 

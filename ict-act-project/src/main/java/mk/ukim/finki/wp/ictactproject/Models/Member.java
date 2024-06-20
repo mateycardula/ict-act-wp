@@ -43,6 +43,9 @@ public class Member implements UserDetails {
 
     private String verificationCode;
 
+    @Enumerated(EnumType.STRING)
+    private AttendanceStatus attendanceStatus;
+
     private boolean isAccountNonExpired = true;
     private boolean isAccountNonLocked = true;
     private boolean isCredentialsNonExpired = true;

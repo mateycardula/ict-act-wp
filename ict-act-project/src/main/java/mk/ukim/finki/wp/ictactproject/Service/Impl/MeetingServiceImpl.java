@@ -1,9 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
-import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
-import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
-import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.*;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.DiscussionPointDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MemberDoesNotExist;
@@ -191,8 +188,31 @@ public class MeetingServiceImpl implements MeetingService {
         return meetingRepository.save(meeting);
     }
 
+//    @Override
+//    public Meeting changeLoggedUserAttendanceStatus(Long meetingId) {
+//
+//        Meeting meeting = this.findMeetingById(meetingId);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = null;
+//
+//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//            username = userDetails.getUsername();
+//        }
+//
+//        Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+//        List<Member> possibleAttendees = meeting.getRegisteredAttendees();
+//
+//        if(possibleAttendees.contains(member)) {
+//            possibleAttendees.remove(member);
+//        }
+//        else possibleAttendees.add(member);
+//
+//        return meetingRepository.save(meeting);
+//    }
+
     @Override
-    public Meeting changeLoggedUserAttendanceStatus(Long meetingId) {
+    public Meeting changeLoggedUserAttendanceStatus(Long meetingId, AttendanceStatus status) {
 
         Meeting meeting = this.findMeetingById(meetingId);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -204,14 +224,27 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
-        List<Member> possibleAttendees = meeting.getRegisteredAttendees();
+        member.setAttendanceStatus(status);
 
-        if(possibleAttendees.contains(member)) {
-            possibleAttendees.remove(member);
+        meeting.getRegisteredAttendees().remove(member);
+        meeting.getMaybeAttendees().remove(member);
+        meeting.getNoAttendees().remove(member);
+
+        switch (status) {
+            case YES:
+                meeting.getRegisteredAttendees().add(member);
+                break;
+            case MAYBE:
+                meeting.getMaybeAttendees().add(member);
+                break;
+            case NO:
+                meeting.getNoAttendees().add(member);
+                break;
         }
-        else possibleAttendees.add(member);
 
+        memberRepository.save(member);
         return meetingRepository.save(meeting);
+
     }
 
     @Override
@@ -238,6 +271,50 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         return userAttendanceMeetings;
+
+    }
+
+    //maybe attendees
+    @Override
+    public List<Long> getMeetingsUserMaybeCheckedAttended() {
+        List<Long> userMaybeAttendanceMeetings = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+            List<Meeting> meetings = meetingRepository.findAll();
+
+            userMaybeAttendanceMeetings =  meetings.stream()
+                    .filter(i -> i.getMaybeAttendees().contains(member))
+                    .map(Meeting::getId)
+                    .toList();
+        }
+
+        return userMaybeAttendanceMeetings;
+
+    }
+
+//    no attendees
+    @Override
+    public List<Long> getMeetingsUserNotCheckedAttended() {
+        List<Long> userNoAttendanceMeetings = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            Member member = memberRepository.findByEmail(username).orElseThrow(MemberDoesNotExist::new);
+            List<Meeting> meetings = meetingRepository.findAll();
+
+            userNoAttendanceMeetings =  meetings.stream()
+                    .filter(i -> i.getNoAttendees().contains(member))
+                    .map(Meeting::getId)
+                    .toList();
+        }
+
+        return userNoAttendanceMeetings;
 
     }
 
