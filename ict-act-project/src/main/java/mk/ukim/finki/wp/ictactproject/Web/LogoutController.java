@@ -14,10 +14,4 @@ public class LogoutController {
         request.getSession().invalidate();
         return "redirect:/login";
     }
-
-    @GetMapping("/info")
-    public String info(Model model) {
-        model.addAttribute("bodyContent", "hello");
-        return "master-template";
-    }
 }

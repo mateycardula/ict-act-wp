@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
 <form th:action="@{'/members/delete/' + ${member.getId()}}" th:method = 'POST'>
     <p>Are you sure you want to delete the following member?</p>
     <span >Name: <span th:text = "${member.getName()}"> </span > </span>
