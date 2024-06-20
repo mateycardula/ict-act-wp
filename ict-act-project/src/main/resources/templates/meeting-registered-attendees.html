@@ -1,24 +1,89 @@
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">First name</th>
-        <th scope="col">Last name</th>
-        <th scope="col">Email</th>
-        <th scope="col">Institution</th>
-        <th scope="col">Role</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="member : ${members}">
-        <th  scope="row" th:text="${memberStat.index} + 1"></th>
-        <td th:text="${member.name}"></td>
-        <td th:text="${member.surname}"></td>
-        <td th:text="${member.email}"></td>
-        <td th:text="${member.institution}"></td>
-        <td th:text="${member.role}"></td>
-    </tr>
-    </tbody>
-</table>
-
-<a class="btn btn-primary" th:href="@{/meetings/details/{meetingId}(meetingId=${meetingId})}">Back</a>
+<div class="container mt-5">
+    <h3 class="mb-5">Responses</h3>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="yes-tab" data-bs-toggle="tab" href="#yes" role="tab" aria-controls="yes" th:classappend="${defaultTab == 'yes'} ? 'active'" aria-selected="true">Yes</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="maybe-tab" data-bs-toggle="tab" href="#maybe" role="tab" aria-controls="maybe" th:classappend="${defaultTab == 'maybe'} ? 'active'" aria-selected="false">Maybe</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="no-tab" data-bs-toggle="tab" href="#no" role="tab" aria-controls="no" th:classappend="${defaultTab == 'no'} ? 'active'" aria-selected="false">No</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="yes" role="tabpanel" aria-labelledby="yes-tab" th:classappend="${defaultTab == 'yes'} ? 'show active'">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member, memberStat : ${yesMembers}">
+                    <th scope="row" th:text="${memberStat.index} + 1"></th>
+                    <td th:text="${member.name}"></td>
+                    <td th:text="${member.surname}"></td>
+                    <td th:text="${member.email}"></td>
+                    <td th:text="${member.institution}"></td>
+                    <td th:text="${member.role}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="maybe" role="tabpanel" aria-labelledby="maybe-tab" th:classappend="${defaultTab == 'maybe'} ? 'show active'">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member, memberStat : ${maybeMembers}">
+                    <th scope="row" th:text="${memberStat.index} + 1"></th>
+                    <td th:text="${member.name}"></td>
+                    <td th:text="${member.surname}"></td>
+                    <td th:text="${member.email}"></td>
+                    <td th:text="${member.institution}"></td>
+                    <td th:text="${member.role}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="no" role="tabpanel" aria-labelledby="no-tab" th:classappend="${defaultTab == 'no'} ? 'show active'">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Institution</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member, memberStat : ${noMembers}">
+                    <th scope="row" th:text="${memberStat.index} + 1"></th>
+                    <td th:text="${member.name}"></td>
+                    <td th:text="${member.surname}"></td>
+                    <td th:text="${member.email}"></td>
+                    <td th:text="${member.institution}"></td>
+                    <td th:text="${member.role}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <a class="btn btn-primary mt-5" th:href="@{/meetings/details/{meetingId}(meetingId=${meetingId})}">Back</a>
+</div>

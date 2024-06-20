@@ -35,6 +35,13 @@ public class Meeting {
     @ManyToMany
     private List<Member> attendees;
 
+    // maybe, no
+    @ManyToMany
+    private List<Member> maybeAttendees;
+
+    @ManyToMany
+    private List<Member> noAttendees;
+
     @ManyToMany
     private List<Member> registeredAttendees;
 

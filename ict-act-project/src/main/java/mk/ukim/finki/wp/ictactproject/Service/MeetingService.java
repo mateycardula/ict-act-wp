@@ -1,9 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Service;
 
-import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
-import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
-import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Models.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,11 +37,14 @@ public interface MeetingService {
     List<Meeting> filter(String topic, LocalDateTime dateFrom, LocalDateTime dateTo, List<MeetingType> type);
     void deleteMeeting(Long id);
     Meeting editMeeting(Long id, String topic, String room, LocalDateTime dateAndTime, MeetingType type);
-    Meeting changeLoggedUserAttendanceStatus(Long meetingId);
+//    Meeting changeLoggedUserAttendanceStatus(Long meetingId);
+    Meeting changeLoggedUserAttendanceStatus(Long meetingId, AttendanceStatus status);
     Meeting confirmUserAttendance(Member member, Meeting meeting);
 
     List<DiscussionPoint> getDiscussionPointsSorted(Long meetingId);
     List<Long> getMeetingsUserCheckedAttended();
+    List<Long> getMeetingsUserMaybeCheckedAttended();
+    List<Long> getMeetingsUserNotCheckedAttended();
     void addAttendants(List<Member> attendants, Long meetingId);
     void removeUserAttendance(Member member, Meeting meeting);
 }
