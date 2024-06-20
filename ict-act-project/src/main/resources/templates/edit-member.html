@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
 <form th:action="@{'/members/edit/' + ${member.getId()}}" th:method = 'POST'>
     <label for="name">Name</label>
     <input name="name" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name" id="name" th:value="${member.getName()}">
