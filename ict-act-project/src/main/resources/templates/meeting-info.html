@@ -59,6 +59,8 @@
                             </form>
                             <a th:href="@{/discussion-point/edit/{id}(id=${dp.id})}"
                                class="btn btn-sm btn-outline-primary float-end">Edit point</a>
+                            <p th:if="${dp?.attachment != null}">Current attachment: <a th:href="@{/discussion-point/download/{id}(id=${dp.attachment.id})}" th:text="${dp.attachment.fileName}">Download</a></p>
+
                         </li>
                     </ul>
                     <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
