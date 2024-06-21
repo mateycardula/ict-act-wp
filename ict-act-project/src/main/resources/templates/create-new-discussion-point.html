@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row justify-content-center m-4 bg-light p-4">
-    <div class="col-md-8"> <!-- class="col-md-10" -->
+    <div class="col-md-8">
       <form th:action="@{${point != null} ? '/discussion-point/edit/' + ${point.getId()} : '/discussion-point/add?meetingId=' + ${meeting.getId()}}"
             method="post"
             enctype="multipart/form-data">
@@ -22,11 +22,13 @@
           <label for="attachment">Attachment (optional)</label>
           <input name="attachment" class="form-control mb-3" type="file" aria-label="Attachment" id="attachment">
           <!-- Display the current attachment if it exists -->
-          <div th:if="${point?.attachment != null}">
+          <div id="currentAttachment" th:if="${point?.attachment != null}">
             <p>Current attachment: <a th:href="@{/discussion-point/download/{id}(id=${point.attachment.id})}" th:text="${point.attachment.fileName}">Download</a></p>
+            <button type="submit" class="btn btn-danger btn-sm" onclick="document.getElementById('removeAttachment').value='true'">Remove Attachment</button>
           </div>
         </div>
 
+        <input type="hidden" name="removeAttachment" id="removeAttachment" value="false">
         <input type="hidden" name="meetingId" th:value="${meeting.getId()}">
         <button class="btn btn-primary m-1 col-3" type="submit">Submit</button>
       </form>

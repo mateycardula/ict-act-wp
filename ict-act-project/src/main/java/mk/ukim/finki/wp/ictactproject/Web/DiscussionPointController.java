@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/discussion-point")
+    @RequestMapping("/discussion-point")
 public class DiscussionPointController {
     private final DiscussionPointsService discussionPointsService;
     private final MeetingService meetingService;
@@ -113,26 +113,26 @@ public class DiscussionPointController {
                                       @RequestParam("attachment") MultipartFile file,
                                       @RequestParam Long meetingId,
                                       @RequestParam(required = false) String discussionText,
-                                      RedirectAttributes redirectAttributes){
+                                      @RequestParam(required = false) boolean removeAttachment,
+                                      RedirectAttributes redirectAttributes) {
         try {
-            Attachment attachment = new Attachment();
-            if (!file.isEmpty()) {
-                attachment.setFileName(file.getOriginalFilename());
-                attachment.setFileType(file.getContentType());
-                attachment.setData(file.getBytes());
-            }
-            discussionPointsService.editDiscussionPoint(id, topic, discussionText, attachment, isVotable);
-        }
-        catch (DiscussionPointDoesNotExist exception) {
+
+            discussionPointsService.editDiscussionPoint(id, topic, discussionText, isVotable, file, removeAttachment);
+            redirectAttributes.addFlashAttribute("message", "Discussion Point updated successfully!");
+
+        } catch (DiscussionPointDoesNotExist exception) {
+
             model.addAttribute("error", exception.getMessage());
             model.addAttribute("bodyContent", "error-404");
             return "master-template";
-        }
-        catch (Exception e){
-            redirectAttributes.addFlashAttribute("message", "Failed to add Discussion Point: " + e.getMessage());
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Failed to update Discussion Point: " + e.getMessage());
         }
 
-        return "redirect:/meetings/details/"+meetingId;
+        if (removeAttachment)
+            return "redirect:/discussion-point/edit/" + id;
+        return "redirect:/meetings/details/" + meetingId;
     }
 
     @GetMapping("/download/{id}")
