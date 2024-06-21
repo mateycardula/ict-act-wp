@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service;
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Attachment;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -19,7 +20,8 @@ public interface DiscussionPointsService {
     void editDiscussion(Long discussionPointId, String discussion);
     void deleteDiscussion(Meeting meeting, Long dpId);
     DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType);
-    DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, String discussion, Attachment attachment, boolean isVotable);
+
+    DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, String discussion, boolean isVotable, MultipartFile file, boolean removeAttachment) throws Exception;
 
     Attachment getAttachmentById(UUID id);
 }
