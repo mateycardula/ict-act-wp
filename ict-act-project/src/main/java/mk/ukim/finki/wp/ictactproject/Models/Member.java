@@ -26,7 +26,7 @@ public class Member implements UserDetails {
     private String institution;
 
     @Setter
-    @ManyToMany
+    @OneToMany (mappedBy = "member")
     private List<Position> positions;
 
     @Setter
