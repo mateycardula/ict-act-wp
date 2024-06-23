@@ -235,15 +235,19 @@ public class MeetingController {
         Set<Member> registeredAttendees = new HashSet<>(meeting.getRegisteredAttendees());
         Set<Member> confirmedAttendees = new HashSet<>(meeting.getAttendees());
         Set<Member> otherMembers = new HashSet<>(memberService.getAll());
+        Set<Member> maybeAttendees = new HashSet<>(meeting.getMaybeAttendees());
 
         registeredAttendees.removeAll(confirmedAttendees);
+        maybeAttendees.removeAll(confirmedAttendees);
 
         otherMembers.removeAll(registeredAttendees);
         otherMembers.removeAll(confirmedAttendees);
+        otherMembers.removeAll(maybeAttendees);
 
 
         model.addAttribute("confirmedAttendees", confirmedAttendees.stream().toList());
         model.addAttribute("registeredMembers", registeredAttendees.stream().toList());
+        model.addAttribute("maybeMembers", maybeAttendees.stream().toList());
         model.addAttribute("members", otherMembers.stream().toList());
         model.addAttribute("bodyContent", "add-attendees");
 
