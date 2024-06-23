@@ -1,5 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
+import jakarta.transaction.Transactional;
 import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Attachment;
@@ -9,6 +10,7 @@ import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Service.DiscussionPointsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -137,16 +139,43 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         return discussionPoint;
     }
 
+    @Transactional
     @Override
-    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic, String discussion, Attachment attachment, boolean isVotable) {
+    public DiscussionPoint editDiscussionPoint(Long discussionPointId, String topic,
+                                               String discussion, boolean isVotable,
+                                               MultipartFile file, boolean removeAttachment) throws Exception {
         DiscussionPoint pointToEdit = getDiscussionPointById(discussionPointId);
         pointToEdit.setTopic(topic);
         pointToEdit.setDiscussion(discussion);
-        pointToEdit.setAttachment(attachment);
         pointToEdit.setVotable(isVotable);
-        return discussionPointsRepository.save(pointToEdit);
-    }
 
+        UUID deleteAttachmentUuid = null;
+
+        try {
+            if (!file.isEmpty()) {
+                Attachment attachment = new Attachment(
+                        file.getOriginalFilename(),
+                        file.getContentType(),
+                        file.getBytes()
+                );
+                pointToEdit.setAttachment(attachment);
+            } else if (removeAttachment && pointToEdit.getAttachment() != null) {
+                deleteAttachmentUuid = pointToEdit.getAttachment().getId();
+                pointToEdit.setAttachment(null);
+            }
+
+            DiscussionPoint savedDP = discussionPointsRepository.saveAndFlush(pointToEdit);
+
+            if (deleteAttachmentUuid != null) {
+                discussionPointsRepository.deleteAttachmentById(deleteAttachmentUuid);
+            }
+
+            return savedDP;
+
+        } catch (Exception e) {
+            throw new Exception("File handling error", e);
+        }
+    }
     @Override
     public Attachment getAttachmentById(UUID id) {
         return discussionPointsRepository.findAttachmentById(id);

@@ -19,6 +19,13 @@
         </span>
             </div>
 
+            <div th:each="maybe: ${maybeMembers}">
+                <span>
+                    <input type="checkbox" th:value="${maybe.getId()}" autocomplete="off" name="attendants" th:id="${'member_' + maybe.getId()}">
+                    <label  th:text="${maybe.name} + ' ' + ${maybe.surname} + ', ' + ${maybe.role}" th:for="${'member_' + maybe.getId()}"></label>
+                </span>
+            </div>
+
         <hr>
             <h2 class="mt-2">Other members</h2>
             <div th:each="member: ${members}">
