@@ -21,10 +21,19 @@ public class Position {
 
     private LocalDate toDate;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     public Position(PositionType positionType, LocalDate fromDate) {
         this.positionType = positionType;
         this.fromDate = fromDate;
-        toDate = null;
+    }
+
+    public Position(PositionType positionType, LocalDate fromDate, Member member) {
+        this.positionType = positionType;
+        this.fromDate = fromDate;
+        this.member = member;
     }
 
     @Override

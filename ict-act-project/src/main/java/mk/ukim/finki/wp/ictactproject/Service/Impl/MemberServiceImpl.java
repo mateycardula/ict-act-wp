@@ -80,7 +80,7 @@ public class MemberServiceImpl implements MemberService {
             List<Position> positions = member.getPositions();
 
             if (positions.isEmpty()) {
-                Position newPosition = new Position(role, LocalDate.now());
+                Position newPosition = new Position(role, LocalDate.now(), member);
                 positionRepository.save(newPosition);
                 positions.add(newPosition);
             } else {
@@ -88,7 +88,7 @@ public class MemberServiceImpl implements MemberService {
                 lastPosition.setToDate(LocalDate.now());
                 positionRepository.save(lastPosition);
 
-                Position newPosition = new Position(role, LocalDate.now());
+                Position newPosition = new Position(role, LocalDate.now(), member);
                 positionRepository.save(newPosition);
                 positions.add(newPosition);
             }

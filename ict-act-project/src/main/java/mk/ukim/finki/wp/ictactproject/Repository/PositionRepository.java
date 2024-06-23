@@ -1,6 +1,5 @@
 package mk.ukim.finki.wp.ictactproject.Repository;
 
-import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.Position;
 import org.springframework.data.jpa.repository.JpaRepository;
 
