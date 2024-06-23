@@ -53,7 +53,7 @@ public class MemberController {
                                @RequestParam PositionType role) {
 
         Member member = memberService.findById(id);
-        
+
 
         memberService.editMember(id, name, surname, institution, role);
         return "redirect:/members";
@@ -70,7 +70,7 @@ public class MemberController {
 
     @PostMapping("/delete/{id}")
     public String deleteMember(@PathVariable Long id) {
-        Member member = memberService.deleteMember(id);
+        memberService.deleteMember(id);
 
         return "redirect:/members";
     }
