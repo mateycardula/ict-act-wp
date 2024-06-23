@@ -52,7 +52,6 @@ public class MemberServiceImpl implements MemberService {
 
         Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
         member.setEnabled(false);
-        System.out.println(member.getAuthorities());
         return memberRepository.save(member);
     }
 
