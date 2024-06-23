@@ -20,4 +20,23 @@ public class Position {
     private LocalDate fromDate;
 
     private LocalDate toDate;
+
+    public Position(PositionType positionType, LocalDate fromDate) {
+        this.positionType = positionType;
+        this.fromDate = fromDate;
+        toDate = null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(positionType.name()).append(" (").append(fromDate).append(" - ");
+        if (toDate != null) {
+            sb.append(toDate);
+        } else {
+            sb.append(" ");
+        }
+        sb.append(")");
+        return sb.toString();
+    }
 }

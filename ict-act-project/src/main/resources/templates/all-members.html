@@ -7,6 +7,7 @@
         <th scope="col">Email</th>
         <th scope="col">Institution</th>
         <th scope="col">Role</th>
+        <th scope="col">Positions</th>
         <th scope="col" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')">Actions</th>
 
     </tr>
@@ -19,6 +20,7 @@
         <td th:text="${member.email}"></td>
         <td th:text="${member.institution}"></td>
         <td th:text="${member.role}"></td>
+        <td><a th:href="@{'members/positions/{id}' (id=${member.getId()})}">All positions</a> </td>
         <td>
             <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')">
                 <div th:if="${member.role.toString()} == 'NEW_USER'">
@@ -42,6 +44,7 @@
                 </div>
             </div>
         </td>
+
     </tr>
     </tbody>
 </table>
