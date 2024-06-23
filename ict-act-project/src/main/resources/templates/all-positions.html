@@ -1,0 +1,8 @@
+<div class="container">
+    <h1 th:text="'All positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h1>
+    <ul>
+        <li th:each="position : ${positions}">
+            <span th:text="${position}"></span>
+        </li>
+    </ul>
+</div>

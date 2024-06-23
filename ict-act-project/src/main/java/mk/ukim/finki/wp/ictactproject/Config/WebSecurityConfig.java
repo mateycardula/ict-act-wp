@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/meetings")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/members/positions/*")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()//todo: bazata ne treba da e javna
 
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))

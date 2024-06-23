@@ -75,4 +75,13 @@ public class MemberController {
         return "redirect:/members";
     }
 
+    @GetMapping("positions/{id}")
+    public String getPositionsPage(Model model, @PathVariable Long id){
+        model.addAttribute("positions", memberService.getPositionsByMember(id));
+        model.addAttribute("member", memberService.findById(id));
+        model.addAttribute("bodyContent", "all-positions");
+
+        return "master-template";
+    }
+
 }
