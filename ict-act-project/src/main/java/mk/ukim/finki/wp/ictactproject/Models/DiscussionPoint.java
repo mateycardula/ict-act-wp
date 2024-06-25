@@ -54,4 +54,35 @@ public class DiscussionPoint {
 
     public static Comparator<DiscussionPoint> SORT_BY_TOPIC = Comparator.
             comparing(DiscussionPoint::getTopic);
+
+    public String getDiscussionForReport() {
+        if(this.discussion.isEmpty() || this.discussion.isBlank()) {
+            return "\tПо оваа точка немаше дискусија.\n\n";
+        }
+        else return "\t" + this.discussion + "\n\n";
+    }
+
+    public String getConformationForReport() {
+        if(!isVotable) {
+            return "";
+        } else {
+            if (confirmed) {
+                return "Точката е усвоена.\n\n\n";
+            } else {
+                return "Точката не е усвоена.\n\n\n";
+            }
+        }
+    }
+
+    public String getVotesForReport() {
+        if(!isVotable) {
+            return "Оваа точка не е подобна за гласање и е претставена само за дискусија и повратни информации.\n\n\n";
+        } else {
+            return "Гласови:\n" + "Да: " + votesYes +
+                    "       Не: " + votesNo +
+                    "       Воздржани: " + abstained +
+                    "\n";
+        }
+    }
+
 }
