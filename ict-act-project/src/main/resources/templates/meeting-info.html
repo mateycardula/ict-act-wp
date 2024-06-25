@@ -69,11 +69,7 @@
                                class="btn btn-sm btn-outline-primary float-end">Edit point</a>
                         </li>
                     </ul>
-                    <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a
-                            class="btn btn-danger mt-auto"
-                            th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion
-                        point</a></div>
-
+                    <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
                 </section>
 
             </article>
