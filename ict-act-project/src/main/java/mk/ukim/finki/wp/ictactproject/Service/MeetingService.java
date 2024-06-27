@@ -22,6 +22,9 @@ public interface MeetingService {
 
     Map<Long, Long> getVotesNo(Long id);
 
+    // abstained
+    Map<Long, Long> getVotesAbstained(Long id);
+
     Map<Long, String> getDiscussions(Long id);
 
 //    Map<Long, List<Member>> getAllMembersForMeeting(Long meetingId, Map<Long, List<Member>> membersVotedYes, Map<Long, List<Member>> membersVotedNo);

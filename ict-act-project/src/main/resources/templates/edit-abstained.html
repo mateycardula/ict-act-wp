@@ -1,0 +1,14 @@
+<div class="container">
+    <form th:action="@{'/discussion-point/edit/votes/abstained/' + ${point.getId()}}" method="post">
+        <div class="form-group">
+            <div class="form-control">
+                <label class="form-control" for="votes-abstained">Enter number:</label>
+                <input class="form-control" type="number" id="votes-abstained" name="votes" th:value="${votes}">
+            </div>
+        </div>
+        <button class="btn btn-primary m-1 col-3" type="submit">Edit</button>
+    </form>
+    <block th:if="(${hasError} == true)">
+        <div th:text="${error}" class="text-danger"></div>
+    </block>
+</div>

@@ -189,6 +189,31 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
+//    abstained ---------------------------------------------------
+    @PostMapping("/abstained/{discussionPointId}")
+    public String abstainedForDiscussionPoint(Model model, @RequestParam(required = false) Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
+        DiscussionPoint discussionPoint;
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingByDiscussionPoint(discussionPointId);
+        } catch (DiscussionPointDoesNotExist | DiscussionPointNotVotable exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        try {
+            discussionPoint = discussionPointsService.abstained(votes, discussionPointId);
+        } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers | DiscussionPointNotVotable exception) {
+            redirectAttributes.addFlashAttribute("hasError", true);
+            redirectAttributes.addFlashAttribute("error", new DiscussionPointError(discussionPointId, exception.getMessage(), "abstained"));
+        }
+
+        return "redirect:/meetings/panel/" + meeting.getId();
+    }
+
+    // ------------------------------------------------------------------------------
+
     @PostMapping("/add/discussion/{discussionPointId}")
     public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
         Meeting meeting;
@@ -258,6 +283,35 @@ public class DiscussionPointController {
         return "master-template";
     }
 
+    // deti page for abstained --------------------------
+    @GetMapping("/edit/votes/abstained/{id}")
+    public String getEditPageForAbstained(Model model, @PathVariable Long id) {
+        DiscussionPoint discussionPoint;
+
+        try {
+            discussionPoint = discussionPointsService.getDiscussionPointById(id);
+        } catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        Long abstained = discussionPoint.getAbstained();
+
+        model.addAttribute("point", discussionPoint);
+        model.addAttribute("votes", abstained);
+        model.addAttribute("bodyContent", "edit-abstained");
+
+        if(model.asMap().get("hasError") != null) {
+            model.addAttribute("hasError", (Boolean)model.asMap().get("hasError"));
+            model.addAttribute("error", (String)model.asMap().get("error"));
+        }
+
+        return "master-template";
+    }
+    // -----------------------------------------------------------------------------------------------------
+
+
     @PostMapping("/edit/votes/yes/{id}")
     public String editVotesYes(@PathVariable Long id, @RequestParam(required = false) Long votes, Model model, RedirectAttributes redirectAttributes) {
         Meeting meeting;
@@ -321,6 +375,42 @@ public class DiscussionPointController {
 
         return "redirect:/meetings/panel/" + meeting.getId();
     }
+
+    // edit abstained -------------------------------------------------------------
+    @PostMapping("/edit/votes/abstained/{id}")
+    public String editAbstained(@PathVariable Long id, @RequestParam(required = false) Long votes, Model model, RedirectAttributes redirectAttributes) {
+        Meeting meeting;
+        try {
+            meeting = meetingService.findMeetingByDiscussionPoint(id);
+        } catch (DiscussionPointDoesNotExist exception) {
+            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("bodyContent", "error-404");
+            return "master-template";
+        }
+
+        if(votes == null) {
+            try {
+                DiscussionPoint discussionPoint = discussionPointsService.deleteAbstained(id);
+            } catch (DiscussionPointDoesNotExist exception) {
+                model.addAttribute("error", exception.getMessage());
+                model.addAttribute("bodyContent", "error-404");
+                return "master-template";
+            }
+        } else {
+            try {
+                DiscussionPoint discussionPoint = discussionPointsService.abstained(votes, id);
+            } catch (VotesMustBeZeroOrGreaterException | NumberOfVotesExceedsMembersAttendingException | NumberOfVotesExceedsRemainingMembers exception) {
+                redirectAttributes.addFlashAttribute("hasError", true);
+                redirectAttributes.addFlashAttribute("error", exception.getMessage());
+                return "redirect:/discussion-point/edit/votes/abstained/" + id;
+            }
+        }
+
+        return "redirect:/meetings/panel/" + meeting.getId();
+    }
+    //-----------------------------------------------------------------------------------
+
+
 
     @GetMapping("/edit/discussion/{id}")
     public String getEditPageForDiscussion(Model model, @PathVariable Long id) {

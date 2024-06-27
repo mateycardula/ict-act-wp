@@ -47,6 +47,16 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         return discussionPointsRepository.save(validatedDiscussionPointForVote);
     }
 
+//    abstained ---------------------------------------------------------------------------------
+    @Override
+    public DiscussionPoint abstained(Long votes, Long discussionPointId) {
+        DiscussionPoint validatedDiscussionPointForVote = validateVotes(discussionPointId, votes, "ABSTAINED");
+        validatedDiscussionPointForVote.setAbstained(votes);
+        return discussionPointsRepository.save(validatedDiscussionPointForVote);
+    }
+    // ---------------------------------------------------------------------------------------------------------
+
+
     @Override
     public DiscussionPoint addDiscussion(String discussion, Long discussionPointId) {
         DiscussionPoint discussionPoint = discussionPointsRepository.findById(discussionPointId).orElseThrow(DiscussionPointDoesNotExist::new);
@@ -75,6 +85,16 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         return discussionPointsRepository.save(discussionPoint);
     }
 
+    // --- delete abstained ---------------------------------------------------------------------------------
+    @Override
+    public DiscussionPoint deleteAbstained(Long id) {
+        DiscussionPoint discussionPoint = discussionPointsRepository.findById(id)
+                .orElseThrow(DiscussionPointDoesNotExist::new);
+        discussionPoint.setAbstained(null);
+        return discussionPointsRepository.save(discussionPoint);
+    }
+    // ---------------------------------------------------------------------------------------------------------
+
     @Override
     public Meeting getParentMeetingByDiscussionPointId(Long discussionPointId) {
         DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
@@ -98,7 +118,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         discussionPointsRepository.delete(dp);
     }
 
-    @Override
+    /*@Override
     public DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType) {
         Meeting meeting = getParentMeetingByDiscussionPointId(discussionPointId);
         DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
@@ -133,6 +153,50 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
                 if(votes > remainingMembers) {
                     throw new NumberOfVotesExceedsRemainingMembers();
                 }
+            }
+        }
+
+        return discussionPoint;
+    }*/
+
+    @Override
+    public DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType) {
+        Meeting meeting = getParentMeetingByDiscussionPointId(discussionPointId);
+        DiscussionPoint discussionPoint = getDiscussionPointById(discussionPointId);
+
+        if (!discussionPoint.isVotable()) throw new DiscussionPointNotVotable();
+
+        Integer membersNumber = meeting.getAttendees().size();
+
+        if (votes == null) {
+            votes = 0L;
+        }
+
+        if (votes < 0) {
+            throw new VotesMustBeZeroOrGreaterException();
+        }
+
+        if (votes > membersNumber) {
+            throw new NumberOfVotesExceedsMembersAttendingException();
+        }
+
+        Long votesYes = discussionPoint.getVotesYes() != null ? discussionPoint.getVotesYes() : 0;
+        Long votesNo = discussionPoint.getVotesNo() != null ? discussionPoint.getVotesNo() : 0;
+        Long abstainedVotes = discussionPoint.getAbstained() != null ? discussionPoint.getAbstained() : 0;
+
+        Long totalVotes = votesYes + votesNo + abstainedVotes;
+
+        if (Objects.equals(voteType, "NO")) {
+            if (votesYes + abstainedVotes + votes > membersNumber) {
+                throw new NumberOfVotesExceedsRemainingMembers();
+            }
+        } else if (Objects.equals(voteType, "YES")) {
+            if (votesNo + abstainedVotes + votes > membersNumber) {
+                throw new NumberOfVotesExceedsRemainingMembers();
+            }
+        } else if (Objects.equals(voteType, "ABSTAINED")) {
+            if (votesYes + votesNo + votes > membersNumber) {
+                throw new NumberOfVotesExceedsRemainingMembers();
             }
         }
 

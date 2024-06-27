@@ -106,11 +106,15 @@ public class MeetingController {
 
         Map<Long, Long> membersVotedYes = meetingService.getVotesYes(id);
         Map<Long, Long> membersVotedNo = meetingService.getVotesNo(id);
+//        abstained
+        Map<Long, Long> membersAbstained = meetingService.getVotesAbstained(id);
+
         Map<Long, String> discussions = meetingService.getDiscussions(id);
         List<DiscussionPoint> sortedDiscussions = meetingService.getDiscussionPointsSorted(id);
         model.addAttribute("meeting", meeting);
         model.addAttribute("votesYes", membersVotedYes);
         model.addAttribute("votesNo", membersVotedNo);
+        model.addAttribute("abstained", membersAbstained);
         model.addAttribute("discussions", discussions);
         model.addAttribute("sortedDiscussions", sortedDiscussions);
         model.addAttribute("bodyContent", "meeting-in-progress");
