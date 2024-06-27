@@ -6,8 +6,6 @@
     <table class="table">
         <thead class="thead-dark">
 
-
-
         <tr>
             <th scope="col">Topic</th>
             <th scope="col">Voted Yes</th>
@@ -75,9 +73,6 @@
                     </ul>
                 </div>
             </td>
-
-            <!-- !!! for abstained votes !!! ----------------------------------------------------------------    -->
-
             <td th:if="${abstained[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
                     <form th:action="@{'/discussion-point/abstained/' + ${point.getId()}}" method="post">
@@ -105,43 +100,6 @@
                     </ul>
                 </div>
             </td>
-
-
-
-            <!--                 ---------------------------------------                              -->
-
-
-<!--            <td th:if="${abstained[point.getId()] == null}">-->
-<!--&lt;!&ndash;            <td th:if="${abstained != null and abstained[point.getId()] == null}">&ndash;&gt;-->
-<!--                <div th:if="${point.isVotable}">-->
-<!--                    <form th:action="@{'/discussion-point/vote/abstained/' + ${point.getId()}}" method="post">-->
-<!--                        <div class="form-group" style="width: 60%">-->
-<!--                            <div class="form-control text-center">-->
-<!--                                <label class="form-control" for="votes-abstained">Enter vote number:</label>-->
-<!--                                <div class="d-flex justify-content-center">-->
-<!--                                    <input class="form-control" type="number" id="votes-abstained" name="votes" style="width: 40%">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <button class="btn btn-primary m-1 col-3" type="submit">Abstained</button>-->
-<!--                    </form>-->
-<!--                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'abstained')">-->
-<!--                        <div th:text="${error.getErrorMessage()}" class="text-danger"></div>-->
-<!--                    </block>-->
-<!--                </div>-->
-<!--            </td>-->
-<!--            <td th:unless="${abstained[point.getId()] == null}">-->
-<!--                <div th:if="${point.isVotable}">-->
-<!--                    <a th:href="@{'/discussion-point/edit/votes/abstained/' + ${point.getId()}}">Edit</a>-->
-<!--                    <ul>-->
-<!--                        <li th:text="@{${abstained[point.getId()]} + ' people abstained from voting.'}"></li>-->
-<!--                    </ul>-->
-<!--                </div>-->
-<!--            </td>-->
-
-            <!-- do tuka !!! (for abstained votes) ----------------------------------------------------------------    -->
-
-
             <td th:if="${#strings.isEmpty(discussions[point.getId()])}">
                 <div >
                     <form th:action="@{'/discussion-point/add/discussion/' + ${point.getId()}}" method="post">
