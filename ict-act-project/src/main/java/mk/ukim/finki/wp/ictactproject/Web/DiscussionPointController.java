@@ -189,7 +189,6 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-//    abstained ---------------------------------------------------
     @PostMapping("/abstained/{discussionPointId}")
     public String abstainedForDiscussionPoint(Model model, @RequestParam(required = false) Long votes, @PathVariable Long discussionPointId, RedirectAttributes redirectAttributes) {
         DiscussionPoint discussionPoint;
@@ -212,7 +211,6 @@ public class DiscussionPointController {
         return "redirect:/meetings/panel/" + meeting.getId();
     }
 
-    // ------------------------------------------------------------------------------
 
     @PostMapping("/add/discussion/{discussionPointId}")
     public String addDiscussionToDiscussionPoint(Model model, @RequestParam String discussion, @PathVariable Long discussionPointId) {
