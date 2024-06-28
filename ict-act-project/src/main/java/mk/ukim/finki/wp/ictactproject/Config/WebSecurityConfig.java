@@ -68,7 +68,7 @@ public class WebSecurityConfig {
                         // .loginPage("/login")
                         .permitAll()
                         .failureUrl("/login?error=BadCredentials")
-                        .defaultSuccessUrl("/meetings", true)//todo: redirect to home page
+                        .defaultSuccessUrl("/", true)//todo: redirect to home page
                 )
                 .logout((logout) -> logout
                         .logoutUrl("/logout")

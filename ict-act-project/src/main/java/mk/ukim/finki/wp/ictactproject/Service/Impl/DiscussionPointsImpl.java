@@ -112,7 +112,7 @@ public class DiscussionPointsImpl implements DiscussionPointsService {
         meetingRepository.save(meeting);
         discussionPointsRepository.delete(dp);
     }
-    
+
     @Override
     public DiscussionPoint validateVotes(Long discussionPointId, Long votes, String voteType) {
         Meeting meeting = getParentMeetingByDiscussionPointId(discussionPointId);
