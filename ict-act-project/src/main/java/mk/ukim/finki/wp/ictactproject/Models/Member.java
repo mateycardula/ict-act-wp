@@ -7,10 +7,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +26,7 @@ public class Member implements UserDetails {
     private String institution;
 
     @Setter
-    @ManyToMany
+    @OneToMany (mappedBy = "member")
     private List<Position> positions;
 
     @Setter
@@ -58,6 +55,7 @@ public class Member implements UserDetails {
         this.surname = surname;
         this.institution = institution;
         this.role = role;
+        positions = new ArrayList<>();
     }
 
     @Override
@@ -90,14 +88,13 @@ public class Member implements UserDetails {
         return isEnabled;
     }
 
-    public void setRole(PositionType role){
+    public void setRole(PositionType role) {
         this.role = role;
         isEnabled = role != PositionType.NEW_USER;
     }
 
     public static final Comparator<Member> SORT_BY_NAME = Comparator
             .comparing(Member::getName);
-
 
 
 }

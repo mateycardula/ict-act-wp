@@ -10,7 +10,7 @@
 
 
     <div th:each="type: ${types}" class="form-check form-check-inline">
-            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}">
+            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}" th:checked="${type.name() == member?.role?.name()}">
             <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
     </div>
     <br>

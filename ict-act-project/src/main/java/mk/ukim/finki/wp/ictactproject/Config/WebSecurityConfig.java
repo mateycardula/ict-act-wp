@@ -42,8 +42,10 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/meetings")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/members/positions/*")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()//todo: bazata ne treba da e javna
 
+                        //todo: add /report restrictions
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/meetings/delete/**"))
@@ -75,7 +77,7 @@ public class WebSecurityConfig {
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/meetings")
                 )
                 .exceptionHandling((ex) -> ex
                         .accessDeniedPage("/access_denied")

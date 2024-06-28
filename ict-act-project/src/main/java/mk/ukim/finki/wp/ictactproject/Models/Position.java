@@ -20,4 +20,39 @@ public class Position {
     private LocalDate fromDate;
 
     private LocalDate toDate;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Position(PositionType positionType, LocalDate fromDate) {
+        this.positionType = positionType;
+        this.fromDate = fromDate;
+    }
+
+    public Position(PositionType positionType, LocalDate fromDate, Member member) {
+        this.positionType = positionType;
+        this.fromDate = fromDate;
+        this.member = member;
+    }
+
+    public Position(PositionType positionType, LocalDate dateFrom, LocalDate dateTo, Member member) {
+        this.positionType = positionType;
+        this.fromDate = dateFrom;
+        this.toDate = dateTo;
+        this.member = member;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(positionType.name()).append(" (").append(fromDate).append(" - ");
+        if (toDate != null) {
+            sb.append(toDate);
+        } else {
+            sb.append(" ");
+        }
+        sb.append(")");
+        return sb.toString();
+    }
 }
