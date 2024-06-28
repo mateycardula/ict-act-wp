@@ -36,6 +36,13 @@ public class Position {
         this.member = member;
     }
 
+    public Position(PositionType positionType, LocalDate dateFrom, LocalDate dateTo, Member member) {
+        this.positionType = positionType;
+        this.fromDate = dateFrom;
+        this.toDate = dateTo;
+        this.member = member;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

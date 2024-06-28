@@ -5,6 +5,7 @@ import mk.ukim.finki.wp.ictactproject.Models.Position;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Stack;
 
@@ -16,4 +17,7 @@ public interface MemberService extends UserDetailsService {
     Member editMember(Long id, String name, String surname, String institution, PositionType role);
     List<Member> getMultipleByIds(List<Long> ids);
     List<Position> getPositionsByMember(Long id);
+    Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo);
+    Member editPosition(Long member_id, Long position_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo);
+    Member deletePosition(Long member_id, Long position_id);
 }

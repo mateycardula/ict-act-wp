@@ -5,6 +5,7 @@ import mk.ukim.finki.wp.ictactproject.Models.Position;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.PositionDoesNotExist;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.PositionRepository;
@@ -114,6 +115,37 @@ public class MemberServiceImpl implements MemberService {
         Member member = findById(id);
 
         return member.getPositions();
+    }
+
+    @Override
+    public Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
+        Member member = findById(member_id);//todo exception
+        Position position = new Position(positionType, dateFrom, dateTo, member);
+        position = positionRepository.save(position);
+        member.getPositions().add(position);
+        return memberRepository.save(member);
+    }
+
+    @Override
+    public Member editPosition(Long member_id, Long position_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
+        Member member = findById(member_id);//todo exception
+        Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
+        member.getPositions().remove(position);
+        position.setPositionType(positionType);
+        position.setFromDate(dateFrom);
+        position.setToDate(dateTo);
+        position = positionRepository.save(position);
+        member.getPositions().add(position);
+        return memberRepository.save(member);
+    }
+
+    @Override
+    public Member deletePosition(Long member_id, Long position_id) {
+        Member member = findById(member_id);//todo exception
+        Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
+        member.getPositions().remove(position);
+        positionRepository.delete(position);
+        return memberRepository.save(member);
     }
 
     @Override

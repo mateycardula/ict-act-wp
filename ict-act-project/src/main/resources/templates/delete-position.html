@@ -1,0 +1,15 @@
+<div>
+    <form th:action="@{'/members/' + ${member.getId()} + '/positions/' + ${position.getId()} + '/delete'}"
+          method="post">
+        <p th:text="'Are you sure you want to delete the following position for member ' + ${member.name} + ' ' + ${member.surname} + '?'"></p>
+        <span >Position: <span th:text = "${position.positionType.name}"> </span > </span>
+        <br>
+        <span >Strating date: <span th:text = "${position.getFromDate()}"> </span > </span>
+        <br>
+
+        <span >Ending date: <span th:text = "${position.getToDate()}"> </span > </span>
+        <br>
+
+        <button class="btn btn-danger m-1 col-1" type="submit">Delete</button>
+    </form>
+</div>
