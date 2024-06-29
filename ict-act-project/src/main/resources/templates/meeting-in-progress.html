@@ -7,11 +7,11 @@
         <thead class="thead-dark">
 
         <tr>
-            <th scope="col">Topic</th>
-            <th scope="col">Voted Yes</th>
-            <th scope="col">Voted No</th>
-            <th scope="col">Abstained</th>
-            <th scope="col">Discussion</th>
+            <th scope="col" style="width: 20%;">Topic</th>
+            <th scope="col" style="width: 18%;">Voted Yes</th>
+            <th scope="col" style="width: 18%;">Voted No</th>
+            <th scope="col" style="width: 18%;">Abstained</th>
+            <th scope="col" style="width: 26%;">Discussion</th>
         </tr>
         </thead>
         <tbody>
@@ -19,72 +19,71 @@
             <td th:text="${point.getTopic()}"></td>
             <td th:if="${votesYes[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
-                    <form th:action="@{'/discussion-point/vote/yes/' + ${point.getId()}}" method="post">
-                        <div class="form-group" style="width: 60%">
-                            <div class="form-control text-center ">
-                                <label class="form-control" for="votes-yes">Enter vote number:</label>
-                                <div class="d-flex justify-content-center">
-                                    <input class="form-control" type="number" id="votes-yes" name="votes" style="width: 40%">
+                    <form th:action="@{'/discussion-point/vote/yes/' + ${point.getId()}}" method="post" class="w-100">
+                        <div class="form-group" style="width: 80%">
+                            <div class="form-control text-center">
+                                <label class="form-control w-100" for="votes-yes">Enter vote number:</label>
+                                <div class="d-flex justify-content-center w-100">
+                                    <input class="form-control" type="number" id="votes-yes" name="votes" style="width: 45%">
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary m-1 col-3" type="submit">Vote Yes</button>
-
+                        <button class="btn btn-primary m-1 col-5" type="submit">Vote Yes</button>
                     </form>
-                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'yes')">
+                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'yes')" class="w-100">
                         <div th:text="${error.getErrorMessage()}" class="text-danger"></div>
                     </block>
                 </div>
             </td>
             <td th:unless="${votesYes[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
-                    <a th:href="@{'/discussion-point/edit/votes/yes/' + ${point.getId()}}">Edit</a>
                     <ul>
                         <li th:text="@{${votesYes[point.getId()]} + ' people voted yes.'}"></li>
                     </ul>
+                    <a th:href="@{'/discussion-point/edit/votes/yes/' + ${point.getId()}}" class="btn btn-primary">Edit</a>
                 </div>
             </td>
             <td th:if="${votesNo[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
                     <form th:action="@{'/discussion-point/vote/no/' + ${point.getId()}}" method="post">
-                        <div class="form-group" style="width: 60%">
+                        <div class="form-group" style="width: 80%">
 <!--                            <div class="form-control text-center d-flex justify-content-center">-->
                             <div class="form-control text-center">
-                                <label class="form-control" for="votes-no">Enter vote number:</label>
-                                <div class="d-flex justify-content-center">
-                                    <input class="form-control" type="number" id="votes-no" name="votes" style="width: 40%">
+                                <label class="form-control w-100" for="votes-no">Enter vote number:</label>
+                                <div class="d-flex justify-content-center w-100">
+                                    <input class="form-control" type="number" id="votes-no" name="votes" style="width: 45%">
                                 </div>
 
                             </div>
                         </div>
-                        <button class="btn btn-primary m-1 col-3" type="submit">Vote No</button>
+                        <button class="btn btn-primary m-1 col-5" type="submit">Vote No</button>
 
                     </form>
-                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'no')">
-                        <div th:text="${error.getErrorMessage()}" class="text-danger"></div>
+                    <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'no')" class="w-100">
+                        <div th:text="${error.getErrorMessage()}" class="text-danger w-100"></div>
                     </block>
                 </div>
             </td>
             <td th:unless="${votesNo[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
-                    <a th:href="@{'/discussion-point/edit/votes/no/' + ${point.getId()}}">Edit</a>
                     <ul>
                         <li th:text="@{${votesNo[point.getId()]} + ' people voted no.'}"></li>
                     </ul>
+                    <a th:href="@{'/discussion-point/edit/votes/no/' + ${point.getId()}}" class="btn btn-primary">Edit</a>
                 </div>
             </td>
             <td th:if="${abstained[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
                     <form th:action="@{'/discussion-point/abstained/' + ${point.getId()}}" method="post">
-                        <div class="form-group" style="width: 60%">
+                        <div class="form-group" style="width: 80%">
                             <div class="form-control text-center">
-                                <label class="form-control" for="votes-abstained">Enter vote number:</label>
-                                <div class="d-flex justify-content-center">
-                                    <input class="form-control" type="number" id="votes-abstained" name="votes" style="width: 40%">
+                                <label class="form-control w-100" for="votes-abstained">Enter vote number:</label>
+                                <div class="d-flex justify-content-center w-100">
+                                    <input class="form-control" type="number" id="votes-abstained" name="votes" style="width: 45%">
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary m-1 col-3" type="submit">Abstained</button>
+                        <button class="btn btn-primary m-1 col-6" type="submit">Abstained</button>
 
                     </form>
                     <block th:if="(${hasError} == true) and (${error.getDiscussionPoint} == ${point.getId}) and (${error.getType} == 'abstained')">
@@ -94,32 +93,33 @@
             </td>
             <td th:unless="${abstained[point.getId()] == null}">
                 <div th:if="${point.isVotable}">
-                    <a th:href="@{'/discussion-point/edit/votes/abstained/' + ${point.getId()}}">Edit</a>
                     <ul>
                         <li th:text="@{${abstained[point.getId()]} + ' people abstained from voting.'}"></li>
                     </ul>
+                    <a th:href="@{'/discussion-point/edit/votes/abstained/' + ${point.getId()}}" class="btn btn-primary">Edit</a>
                 </div>
             </td>
             <td th:if="${#strings.isEmpty(discussions[point.getId()])}">
                 <div >
                     <form th:action="@{'/discussion-point/add/discussion/' + ${point.getId()}}" method="post">
-                        <div class="form-group">
-                            <label for="discussion">Discussion</label>
-                            <textarea class="form-control" id="discussion" rows="3" name="discussion"></textarea>
+                        <div class="form-group w-100">
+<!--                            <label for="discussion">Discussion</label>-->
+                            <textarea class="form-control w-100" id="discussion" rows="3" name="discussion"></textarea>
                         </div>
                         <button class="btn btn-primary m-1 col-8" type="submit">Save discussion</button>
                     </form>
                 </div>
             </td>
             <td th:unless="${#strings.isEmpty(discussions[point.getId()])}">
-                <a th:href="@{'/discussion-point/edit/discussion/' + ${point.getId()}}">Edit</a>
                 <div>
                     <textarea th:text="${discussions[point.getId()]}" class="form-control"></textarea>
                 </div>
+                <a th:href="@{'/discussion-point/edit/discussion/' + ${point.getId()}}" class="btn btn-primary mt-2">Edit</a>
             </td>
         </tr>
         </tbody>
     </table>
+
     <form th:action="@{'/meetings/finish/' + ${meeting.getId()}}" method="post">
         <div class="text-center p-2">
             <button class="btn btn-success mt-auto" type="submit">Finish meeting</button>

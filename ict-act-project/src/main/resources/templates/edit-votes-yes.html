@@ -1,14 +1,19 @@
-<div class="container">
-    <form th:action="@{'/discussion-point/edit/votes/yes/' + ${point.getId()}}" method="post">
-        <div class="form-group">
-            <div class="form-control">
-                <input class="form-control" type="number" id="votes-yes" name="votes" th:value="${votes}">
-                <label class="form-control" for="votes-yes">Enter vote number:</label>
+<div class="container text-center">
+    <h4 class="mb-5 fw-normal">Edit vote number for Yes</h4>
+    <div class="d-flex justify-content-center">
+        <form th:action="@{'/discussion-point/edit/votes/yes/' + ${point.getId()}}" method="post" class="text-center" style="width: 20%;">
+            <div class="form-group">
+                <div class="form-control text-center">
+                    <label class="form-control" for="votes-yes">Enter vote number:</label>
+                    <div class="d-flex justify-content-center">
+                        <input class="form-control" type="number" id="votes-yes" name="votes" th:value="${votes}" style="width: 30%;">
+                    </div>
+                </div>
             </div>
-        </div>
-        <button class="btn btn-primary m-1 col-3" type="submit">Edit votes</button>
-    </form>
+            <button class="btn btn-primary mt-2" type="submit">Edit votes</button>
+        </form>
+    </div>
     <block th:if="(${hasError} == true)">
-        <div th:text="${error}" class="text-danger"></div>
+        <div th:text="${error}" class="text-danger text-center mt-2"></div>
     </block>
 </div>
