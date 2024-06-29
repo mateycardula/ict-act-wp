@@ -1,18 +1,30 @@
-<form th:action="@{'/members/edit/' + ${member.getId()}}" th:method = 'POST'>
-    <label for="name">Name</label>
-    <input name="name" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name" id="name" th:value="${member.getName()}">
+<div class="container w-55">
+    <div class="row justify-content-center m-4 bg-light p-4">
+        <div class="col-md-8">
+            <form th:action="@{'/members/edit/' + ${member.getId()}}" th:method='POST'>
+                <label for="name">Name</label>
+                <input name="name" class="form-control mb-3" type="text" placeholder="Member name" aria-label="Name"
+                       id="name" th:value="${member.getName()}">
 
-    <label for="surname">Surname</label>
-    <input name="surname" class="form-control mb-3" type="text" placeholder="Member surname" aria-label="Name" id="surname" th:value="${member.getSurname()}">
+                <label for="surname">Surname</label>
+                <input name="surname" class="form-control mb-3" type="text" placeholder="Member surname"
+                       aria-label="Name" id="surname" th:value="${member.getSurname()}">
 
-    <label for="institution">Institution</label>
-    <input name="institution" class="form-control mb-3" type="text" placeholder="Institution" aria-label="Name" id="institution" th:value="${member.getInstitution()}">
+                <label for="institution">Institution</label>
+                <input name="institution" class="form-control mb-3" type="text" placeholder="Institution"
+                       aria-label="Name" id="institution" th:value="${member.getInstitution()}">
 
 
-    <div th:each="type: ${types}" class="form-check form-check-inline">
-            <input class="form-check-input" name="role" type="radio"  th:value="${type.name()}" autocomplete="off" th:id="${'type_' + type.name()}" th:checked="${type.name() == member?.role?.name()}">
-            <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
+                <div th:each="type: ${types}" class="form-check form-check-inline">
+                    <input class="form-check-input" name="role" type="radio" th:value="${type.name()}"
+                           autocomplete="off" th:id="${'type_' + type.name()}"
+                           th:checked="${type.name() == member?.role?.name()}">
+                    <label class="btn btn-outline-primary" th:text="${type.name()}"
+                           th:for="${'type_' + type.name()}"></label>
+                </div>
+                <br>
+                <button class="btn btn-primary m-1 col-3" type="submit">Edit</button>
+            </form>
+        </div>
     </div>
-    <br>
-    <button class="btn btn-primary m-1 col-3" type="submit">Edit</button>
-</form>
+</div>

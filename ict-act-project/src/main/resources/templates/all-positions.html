@@ -1,4 +1,4 @@
-<h1 class="container" th:text="'All positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h1>
+<h3 class="container" th:text="'All positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h3>
 <table class="table container">
     <thead>
     <tr>
@@ -13,8 +13,10 @@
     <tr th:each="position : ${positions}">
         <th scope="row" th:text="${positionStat.index} + 1"></th>
         <td th:text="${position.positionType}"></td>
-        <td th:text="${position.fromDate}"></td>
-        <td th:text="${position.toDate}"></td>
+        <!-- Assuming position.fromDate is a java.time.LocalDate -->
+        <td th:text="${#temporals.format(position.fromDate, 'dd.MM.yyyy')}"></td>
+        <td th:if="${position.toDate != null}" th:text="${#temporals.format(position.toDate, 'dd.MM.yyyy')}"></td>
+        <td th:unless="${position.toDate != null}">Present</td>
         <td>
             <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')">
                 <div class="text-center p-2" style="display: inline-block"><a class="mt-auto" th:href="@{'/members/' + ${member.getId()} + '/positions/' + ${position.getId()} + '/edit'}">

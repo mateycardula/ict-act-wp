@@ -97,7 +97,7 @@ public class MemberController {
     public String addPosition(@PathVariable Long member_id,
                               @RequestParam PositionType role,
                               @RequestParam LocalDate dateFrom,
-                              @RequestParam LocalDate dateTo) {
+                              @RequestParam(required = false) LocalDate dateTo) {
         this.memberService.addPosition(member_id, role, dateFrom, dateTo);
 
         return "redirect:/members/positions/" + member_id;
@@ -119,7 +119,7 @@ public class MemberController {
                                @PathVariable Long position_id,
                                @RequestParam PositionType role,
                                @RequestParam LocalDate dateFrom,
-                               @RequestParam LocalDate dateTo) {
+                               @RequestParam(required = false) LocalDate dateTo) {
         this.memberService.editPosition(member_id, position_id, role, dateFrom, dateTo);
 
         return "redirect:/members/positions/" + member_id;
