@@ -1,31 +1,36 @@
-<div class="container">
-    <h1 th:if="${position != null}"
-        th:text="'Edit positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h1>
-    <h1 th:if="${position == null}"
-        th:text="'Add positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h1>
+<div class="container w-55">
+    <div class="row justify-content-center m-4 bg-light p-4">
+        <div class="col-md-8">
 
-        <form th:action="@{${position != null} ? '/members/' + ${member.getId()} + '/positions/' + ${position.getId()} + '/edit' : '/members/' + ${member_id} + '/positions/add' }"
-              th:method='POST'>
+            <form th:action="@{${position != null} ? '/members/' + ${member.getId()} + '/positions/' + ${position.getId()} + '/edit' : '/members/' + ${member_id} + '/positions/add' }"
+                  th:method='POST'>
+                <h4 th:if="${position != null}"
+                    th:text="'Edit positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h4>
+                <h4 th:if="${position == null}"
+                    th:text="'Add positions for member: ' + ${member.name} + ' ' + ${member.surname}"></h4>
 
-            <div th:each="type: ${types}" class="form-check form-check-inline">
-                <label class="btn btn-outline-primary" th:text="${type.name()}"
-                       th:for="${'type_' + type.name()}"></label>
-                <input class="form-check-input" name="role" type="radio" th:value="${type.name()}" autocomplete="off"
-                       th:id="${'type_' + type.name()}" th:checked="${type.name() == position?.positionType?.name()}">
-            </div>
-            <br>
-
-            <div style="max-width: 50%">
                 <label for="dateFrom">Starting date</label>
                 <input name="dateFrom" class="form-control mb-3" type="date" id="dateFrom"
-                       th:value="${position?.getFromDate()}">
+                       th:value="${position?.getFromDate()}" required>
 
                 <label for="dateTo">Ending date</label>
                 <input name="dateTo" class="form-control mb-3" type="date" placeholder="dateTo" id="dateTo"
                        th:value="${position?.getToDate()}">
-            </div>
 
+                <div th:each="type: ${types}" class="form-check form-check-inline">
+                    <label class="btn btn-outline-primary" th:text="${type.name()}"
+                           th:for="${'type_' + type.name()}"></label>
+                    <input class="form-check-input" name="role" type="radio" th:value="${type.name()}"
+                           autocomplete="off"
+                           th:id="${'type_' + type.name()}"
+                           th:checked="${type.name() == position?.positionType?.name()}" required>
+                </div>
 
-            <button class="btn btn-primary m-1 col-3" type="submit">Edit</button>
-        </form>
+                <br>
+
+                <button th:if="${position != null}" class="btn btn-primary m-1 col-3" type="submit">Edit</button>
+                <button th:if="${position == null}" class="btn btn-primary m-1 col-3" type="submit">Add</button>
+            </form>
+        </div>
     </div>
+</div>

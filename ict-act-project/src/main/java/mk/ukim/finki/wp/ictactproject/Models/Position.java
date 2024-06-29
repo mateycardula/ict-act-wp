@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 @Data
 @NoArgsConstructor
@@ -55,4 +56,7 @@ public class Position {
         sb.append(")");
         return sb.toString();
     }
+
+    public static final Comparator<Position> COMPARATOR = Comparator
+            .comparing(Position::getFromDate);
 }

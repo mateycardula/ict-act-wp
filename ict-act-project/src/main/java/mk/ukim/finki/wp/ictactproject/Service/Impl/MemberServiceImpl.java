@@ -114,13 +114,17 @@ public class MemberServiceImpl implements MemberService {
     public List<Position> getPositionsByMember(Long id) {
         Member member = findById(id);
 
-        return member.getPositions();
+        return member.getPositions().stream().sorted(Position.COMPARATOR).toList();
     }
 
     @Override
     public Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
         Member member = findById(member_id);//todo exception
-        Position position = new Position(positionType, dateFrom, dateTo, member);
+        Position position;
+        if (dateTo!=null)
+            position = new Position(positionType, dateFrom, dateTo, member);
+        else
+            position = new Position(positionType, dateFrom, member);
         position = positionRepository.save(position);
         member.getPositions().add(position);
         return memberRepository.save(member);
@@ -133,7 +137,8 @@ public class MemberServiceImpl implements MemberService {
         member.getPositions().remove(position);
         position.setPositionType(positionType);
         position.setFromDate(dateFrom);
-        position.setToDate(dateTo);
+        if (dateTo!=null)
+            position.setToDate(dateTo);
         position = positionRepository.save(position);
         member.getPositions().add(position);
         return memberRepository.save(member);
