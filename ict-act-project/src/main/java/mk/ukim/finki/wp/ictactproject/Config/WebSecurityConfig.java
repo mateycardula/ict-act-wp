@@ -48,6 +48,8 @@ public class WebSecurityConfig {
                         //todo: add /report restrictions
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
+                        .requestMatchers(new AntPathRequestMatcher("/meetings/add"))
+                        .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/meetings/delete/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/meetings/edit/*"))
@@ -77,7 +79,7 @@ public class WebSecurityConfig {
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/meetings")
+                        .logoutSuccessUrl("/")
                 )
                 .exceptionHandling((ex) -> ex
                         .accessDeniedPage("/access_denied")
