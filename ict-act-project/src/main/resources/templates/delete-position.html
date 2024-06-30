@@ -1,0 +1,19 @@
+<div class="container w-50">
+    <div class="row justify-content-center m-4 bg-light p-4">
+        <div class="col-md-8">
+            <form th:action="@{'/members/' + ${member.getId()} + '/positions/' + ${position.getId()} + '/delete'}"
+                  method="post">
+                <p th:text="'Are you sure you want to delete the following position for member ' + ${member.name} + ' ' + ${member.surname} + '?'"></p>
+                <span>Position: <span th:text="${position.positionType.name}"> </span> </span>
+                <br>
+                <span>Starting date: <span th:text="${position.getFromDate()}"> </span> </span>
+                <br>
+
+                <span>Ending date: <span th:text="${position.getToDate()}"> </span> </span>
+                <br>
+
+                <button class="btn btn-danger m-1 w-100" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

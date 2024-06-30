@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.DS_Store
+ict-act-project/.DS_Store
+ict-act-project/src/.DS_Store
+ict-act-project/src/main/.DS_Store

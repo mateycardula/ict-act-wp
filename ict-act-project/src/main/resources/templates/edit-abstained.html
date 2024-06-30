@@ -1,0 +1,19 @@
+<div class="container text-center">
+    <h4 class="mb-5 fw-normal">Edit number for Abstained</h4>
+    <div class="d-flex justify-content-center">
+        <form th:action="@{'/discussion-point/edit/votes/abstained/' + ${point.getId()}}" method="post" style="width: 20%">
+            <div class="form-group">
+                <div class="form-control text-center">
+                    <label class="form-control" for="votes-abstained">Enter number:</label>
+                    <div class="d-flex justify-content-center">
+                        <input class="form-control" type="number" id="votes-abstained" name="votes" th:value="${votes}" style="width: 30%">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-2" type="submit">Edit</button>
+        </form>
+    </div>
+    <block th:if="(${hasError} == true)">
+        <div th:text="${error}" class="text-danger text-center mt-2"></div>
+    </block>
+</div>

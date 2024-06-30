@@ -42,9 +42,13 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/meetings")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/members/positions/*")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()//todo: bazata ne treba da e javna
 
+                        //todo: add /report restrictions
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))
+                        .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
+                        .requestMatchers(new AntPathRequestMatcher("/meetings/add"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/meetings/delete/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
@@ -68,14 +72,14 @@ public class WebSecurityConfig {
                         // .loginPage("/login")
                         .permitAll()
                         .failureUrl("/login?error=BadCredentials")
-                        .defaultSuccessUrl("/meetings", true)//todo: redirect to home page
+                        .defaultSuccessUrl("/", true)//todo: redirect to home page
                 )
                 .logout((logout) -> logout
                         .logoutUrl("/logout")
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/")
                 )
                 .exceptionHandling((ex) -> ex
                         .accessDeniedPage("/access_denied")

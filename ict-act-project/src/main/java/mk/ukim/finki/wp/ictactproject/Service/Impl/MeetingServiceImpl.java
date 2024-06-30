@@ -49,7 +49,6 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Meeting addDiscussionPoint(DiscussionPoint discussionPoint, Meeting meeting) {
-        System.out.println("TUKA");
         List<DiscussionPoint> discussionPointList = meeting.getDiscussionPoints();
         discussionPointList.add(discussionPoint);
         discussionPoint.setTopic((discussionPointList.size() + ". " + discussionPoint.getTopic()));
@@ -92,6 +91,20 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public Map<Long, Long> getVotesAbstained(Long id) {
+        Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
+        List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints();
+        Map<Long, Long> mapOfVotes = new HashMap<>();
+        for (DiscussionPoint discussionPoint : discussionPoints) {
+            Long discussionPointId = discussionPoint.getId();
+            Long votesAbstained = discussionPoint.getAbstained();
+            mapOfVotes.put(discussionPointId, votesAbstained);
+        }
+
+        return mapOfVotes;
+    }
+
+    @Override
     public Map<Long, String> getDiscussions(Long id) {
         Meeting meeting = meetingRepository.findById(id).orElseThrow(MeetingDoesNotExistException::new);
         List<DiscussionPoint> discussionPoints = meeting.getDiscussionPoints().stream().sorted(DiscussionPoint.SORT_BY_TOPIC).toList();
@@ -125,13 +138,17 @@ public class MeetingServiceImpl implements MeetingService {
                     membersVotedNo = 0L;
                     discussionPoint.setVotesNo(membersVotedNo);
                 }
-                Long membersAbstained = members - membersVotedNo - membersVotedYes;
-                if (membersAbstained < 0L) {
-                    membersAbstained = 0L;
-                }
-                discussionPoint.setAbstained(membersAbstained);
 
-                discussionPoint.setConfirmed(membersVotedYes > membersVotedNo);
+                Long membersAbstained = discussionPoint.getAbstained();
+                if (membersAbstained == null || membersAbstained < 0L) {
+                    membersAbstained = 0L;
+                    discussionPoint.setAbstained(membersAbstained);
+                }
+
+                boolean isConfirmed = membersVotedYes > (membersVotedNo + membersAbstained);
+
+                discussionPoint.setConfirmed(isConfirmed);
+
             }
         }
 
@@ -340,7 +357,6 @@ public class MeetingServiceImpl implements MeetingService {
     public void removeUserAttendance(Member member, Meeting meeting) {
         List<Member> attendees = meeting.getAttendees();
         if(attendees.contains(member)) {
-            System.out.println("Remove attendant " + member.getUsername());
             attendees.remove(member);
         }
 
@@ -352,7 +368,6 @@ public class MeetingServiceImpl implements MeetingService {
     public Meeting confirmUserAttendance(Member member, Meeting meeting) {
         List<Member> attendees = meeting.getAttendees();
         if(!attendees.contains(member)) {
-            System.out.println("Adding attendant " + member.getUsername());
             attendees.add(member);
         }
         return meetingRepository.save(meeting);

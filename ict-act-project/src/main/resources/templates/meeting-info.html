@@ -1,5 +1,4 @@
-
-<div class="container mt-5">
+<div class="container mt-5" xmlns="http://www.w3.org/1999/html">
     <div class="row">
         <div class="col-lg-8">
             <!-- Post content-->
@@ -12,17 +11,34 @@
                     <div class="text-muted fst-italic mb-2"><span th:text="${meeting.getDateOfMeeting}">MEETING DATE; TIME;</span>
                         <span th:text="${meeting.getRoom()}">LOCATION - PLACEHOLDER</span></div>
                     <!-- Post categories-->
-                    <p class="badge bg-secondary text-decoration-none light" href="#!" th:text="${meeting.meetingType}">TYPE PLACEHOLDER</p>
+                    <p class="badge bg-secondary text-decoration-none light" href="#!" th:text="${meeting.meetingType}">
+                        TYPE PLACEHOLDER</p>
                 </header>
                 <!--                TODO:If Not started/In progress-->
                 <div class="col-lg-8 mb-5">
-                    <a  th:unless="${meeting.finished}" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="btn btn-success col-4 btn-sm" th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
+                    <a th:unless="${meeting.finished}" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                       class="btn btn-success col-4 btn-sm"
+                       th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
                         Start meeting
                     </a>
-                    <a  th:if="${meeting.finished}" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="btn btn-warning col-4 btn-sm" th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
-                        Modify meeting
-                    </a>
-
+                    <div class="row" th:if="${meeting.finished}">
+                        <div class="col-auto">
+                            <a sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                               class="btn btn-warning btn-sm"
+                               th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                                Modify meeting
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <th:block
+                                    sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                                    th:href="@{'/report/generate/' + ${meeting.getId()}}">
+                                <form method="post" th:action="@{'/report/generate/' + ${meeting.getId()}}">
+                                    <button class="btn btn-success btn-sm" type="submit">Get report</button>
+                                </form>
+                            </th:block>
+                        </div>
+                    </div>
                 </div>
                 <!-- Post content-->
                 <section class="mb-5">
@@ -55,8 +71,7 @@
 
                         </li>
                     </ul>
-                    <div sec:authorize="hasAuthority('PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
-
+                    <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
                 </section>
 
             </article>
@@ -67,8 +82,10 @@
                 <li class="list-group-item">
                     <!--<a th:href="@{/meetings/registered-members/{meetingId}(meetingId=${meeting.getId()}, tab='yes')}" th:text="${#lists.size(meeting.getRegisteredAttendees())} + ' members'"></a>-->
                     <span th:text="'See attendance list'"></span>
-                    <a th:href="@{/meetings/registered-members/{meetingId}(meetingId=${meeting.getId()}, tab='yes')}" style="margin-left: 10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                    <a th:href="@{/meetings/registered-members/{meetingId}(meetingId=${meeting.getId()}, tab='yes')}"
+                       style="margin-left: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                             class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                             <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
                         </svg>
                     </a>

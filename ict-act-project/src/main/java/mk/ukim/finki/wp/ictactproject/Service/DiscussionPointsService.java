@@ -11,10 +11,12 @@ public interface DiscussionPointsService {
     DiscussionPoint create(String topic, String discussion, boolean isVotable);
     DiscussionPoint voteYes(Long votes, Long discussionPointId);
     DiscussionPoint voteNo(Long votes, Long discussionPointId);
+    DiscussionPoint abstained(Long votes, Long discussionPointId);
     DiscussionPoint addDiscussion(String discussion, Long discussionPointId);
     DiscussionPoint getDiscussionPointById(Long id);
     DiscussionPoint deleteVotesYes(Long id);
     DiscussionPoint deleteVotesNo(Long id);
+    DiscussionPoint deleteAbstained(Long id);
 
     Meeting getParentMeetingByDiscussionPointId(Long discussionPointId);
     void editDiscussion(Long discussionPointId, String discussion);
