@@ -1,0 +1,26 @@
+<div class="container w-50">
+    <div class="row justify-content-center m-4 bg-light p-4">
+        <div class="col-md-8">
+            <form th:action="@{'/meetings/delete/' + ${meeting.getId()}}" th:method='POST'>
+                <p>Are you sure you want to delete the following meeting?</p>
+
+                <span>Topic: <span th:text="${meeting.getTopic()}"> </span> </span>
+                <br>
+
+                <span>Date: <span th:text="${meeting.dateOfMeeting.dayOfMonth} + ' ' + ${#temporals.format(meeting.dateOfMeeting, 'MMMM')} + ' ' + ${meeting.dateOfMeeting.year}"> </span> </span>
+                <br>
+
+                <span>Time: <span th:text="${#temporals.format(meeting.dateOfMeeting, 'HH:mm')}"> </span> </span>
+                <br>
+
+                <span>Location: <span th:text="${meeting.getRoom()}"> </span> </span>
+                <br>
+
+                <span>Type: <span th:text="${meeting.getMeetingType()}"> </span> </span>
+                <br>
+
+                <button class="btn btn-danger m-1 w-100" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

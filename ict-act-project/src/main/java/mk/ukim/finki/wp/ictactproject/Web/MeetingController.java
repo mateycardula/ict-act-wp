@@ -139,6 +139,14 @@ public class MeetingController {
     }
 
     @GetMapping("/delete/{id}")
+    public String getDeleteMeetingPage(@PathVariable Long id, Model model) {
+        model.addAttribute("meeting", meetingService.findMeetingById(id));
+        model.addAttribute("bodyContent", "delete-meeting");
+
+        return "master-template";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteMeeting(Model model, @PathVariable Long id) {
         try {
             meetingService.findMeetingById(id);

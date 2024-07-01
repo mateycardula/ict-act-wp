@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -29,12 +30,18 @@ public class CustomUsernamePasswordAuthenticationProvider implements Authenticat
             throw new BadCredentialsException("Empty credentials!");
         }
 
-        UserDetails userDetails = this.userService.loadUserByUsername(username);
-
-        if(!userDetails.isEnabled()) {
-            throw new BadCredentialsException("Your account isn't approved yet");
+        UserDetails userDetails;
+        try {
+            userDetails = this.userService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            throw new BadCredentialsException("Username not found!");
         }
-        if (!passwordEncoder.matches(password, userDetails.getPassword()) ) {
+
+        if (!userDetails.isEnabled()) {
+            throw new BadCredentialsException("Your account isn't approved yet!");
+        }
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Password is incorrect!");
         }
 

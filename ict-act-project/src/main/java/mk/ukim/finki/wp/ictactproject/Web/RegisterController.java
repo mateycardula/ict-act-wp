@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Web;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidUsernameException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
 import mk.ukim.finki.wp.ictactproject.Service.AuthService;
@@ -52,7 +53,7 @@ public class RegisterController {
             Member member = this.memberService.register(email, password, repeatedPassword, name, surname, institution, PositionType.NEW_USER);
             return "redirect:/login";
         } catch (InvalidEmailOrPasswordException | PasswordDoNotMatchException |
-                 UsernameAlreadyExistsException exception) {
+                 UsernameAlreadyExistsException |InvalidUsernameException exception) {
             return "redirect:/register?error=" + exception.getMessage();
         }
     }
