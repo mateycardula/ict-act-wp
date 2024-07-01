@@ -2,7 +2,7 @@
     <div class="row justify-content-center m-4 bg-light p-4">
         <div class="col-md-8">
             <form th:action="@{'/email/reset-draft/' + ${meeting.getId()}}" th:method='POST'>
-                <p>Are you sure you want the draft notification of the meeting:</p>
+                <p>Are you sure you want to reset to the default notification template for the meeting:</p>
                 <b>Subject</b>
                 <p th:text="${meeting.getTopic()}"></p>
 
