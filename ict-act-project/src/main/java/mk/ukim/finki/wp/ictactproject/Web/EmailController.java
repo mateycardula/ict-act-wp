@@ -1,7 +1,6 @@
 package mk.ukim.finki.wp.ictactproject.Web;
 
 import mk.ukim.finki.wp.ictactproject.Models.Meeting;
-import mk.ukim.finki.wp.ictactproject.Models.MeetingType;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
 import mk.ukim.finki.wp.ictactproject.Models.exceptions.MeetingDoesNotExistException;
 import mk.ukim.finki.wp.ictactproject.Service.EmailService;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +91,7 @@ public class EmailController {
             recipientRoles = PositionType.excludeRoles(Collections.singletonList(PositionType.NEW_USER));
         }
 
+
         Meeting meeting;
         try {
             meeting = meetingService.findMeetingById(meetingId);
@@ -100,7 +99,12 @@ public class EmailController {
             return "redirect:/meetings";
         }
 
-        emailService.sendBatchMail(memberService.getEmailsByRole(recipientRoles), subject, email_body, meeting);
+
+        if(subject != null && email_body != null){
+            emailService.saveMeetingDraft(subject, email_body, meeting);
+        }
+
+        emailService.sendBatchEmailMeetingNotifications(memberService.getEmailsByRole(recipientRoles), meeting);
         return "redirect:/meetings/details/" + meetingId;
     }
 

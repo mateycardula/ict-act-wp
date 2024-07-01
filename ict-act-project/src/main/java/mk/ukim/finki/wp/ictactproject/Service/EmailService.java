@@ -14,7 +14,7 @@ public interface EmailService {
 
     public Map<String, String> getMeetingNotificationPlaceholder(Meeting meeting);
 
-    public void sendBatchMail(List<String> mails, String subject, String body, Meeting meeting);
+    public void sendBatchEmailMeetingNotifications(List<String> addresses, Meeting meeting);
 
     public void saveMeetingDraft(String subject, String body,  Meeting meeting);
     public void resetMeetingDraft(Meeting meeting);

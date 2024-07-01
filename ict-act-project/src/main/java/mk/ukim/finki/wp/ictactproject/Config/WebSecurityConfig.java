@@ -65,7 +65,8 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/discussion-point/download/*")).authenticated()
                         .requestMatchers(new AntPathRequestMatcher("/discussion-point/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
-
+                        .requestMatchers(new AntPathRequestMatcher("/email/**"))
+                        .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
