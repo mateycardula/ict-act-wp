@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity
@@ -21,6 +19,14 @@ public class Meeting {
     private String room;
 
     private LocalDateTime dateOfMeeting;
+
+    private String initialSubject = null;
+    private String initialBody = null;
+
+    private String draftSubject = "";
+
+    @Column(name = "draft_body", length = 2000) // Adjust the length as per your requirement
+    private String draftBody = "";
 
     @Enumerated(EnumType.STRING)
     private MeetingType meetingType;

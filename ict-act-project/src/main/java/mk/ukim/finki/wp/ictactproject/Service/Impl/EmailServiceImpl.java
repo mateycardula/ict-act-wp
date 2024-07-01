@@ -1,13 +1,25 @@
 package mk.ukim.finki.wp.ictactproject.Service.Impl;
 
+import jakarta.mail.Address;
+import jakarta.mail.SendFailedException;
+import mk.ukim.finki.wp.ictactproject.Models.DiscussionPoint;
+import mk.ukim.finki.wp.ictactproject.Models.Meeting;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
+import mk.ukim.finki.wp.ictactproject.Repository.MeetingRepository;
 import mk.ukim.finki.wp.ictactproject.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.AccessType;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.retry.annotation.Retryable;
+
+
+import java.util.*;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -15,9 +27,16 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    private final MeetingRepository meetingRepository;
+
+    public EmailServiceImpl(MeetingRepository meetingRepository) {
+        this.meetingRepository = meetingRepository;
+    }
+
 
     @Override
     @Async
+    @Retryable(value = { MailException.class }, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -26,6 +45,8 @@ public class EmailServiceImpl implements EmailService {
         message.setFrom("iktakttest@gmail.com");
         mailSender.send(message);
     }
+
+
 
     @Override
     @Async
@@ -45,5 +66,85 @@ public class EmailServiceImpl implements EmailService {
 
         message.setText(template);
         mailSender.send(message);
+    }
+
+    @Override
+    public Map<String, String> getMeetingNotificationPlaceholder(Meeting meeting) {
+
+        Map<String, String> placeholders = new HashMap<>();
+
+        if(meeting.getDraftSubject().isEmpty()  || meeting.getDraftBody().isEmpty()) {
+            resetMeetingDraft(meeting);
+        }
+
+        placeholders.put("body", meeting.getDraftBody());
+        placeholders.put("subject", meeting.getDraftSubject());
+        return placeholders;
+    }
+
+
+
+
+    @Override
+    @Async
+    public void sendBatchMail(List<String> mails, String subject, String body, Meeting meeting) {
+
+        meeting.setDraftSubject(subject);
+        meeting.setDraftBody(body);
+        for (String mail : mails) {
+            try {
+                sendEmail(mail, subject, body);
+            } catch (MailException e) {
+                String errorMessage = "Failed to send email: " + e.getMessage();
+                if (e instanceof MailSendException) {
+                    MailSendException sendException = (MailSendException) e;
+                    for (Exception nestedException : sendException.getMessageExceptions()) {
+                        if(nestedException instanceof SendFailedException) {
+                            List<Address> failedToSend = new ArrayList<>();
+
+                            Collections.addAll(failedToSend, ((SendFailedException) nestedException).getInvalidAddresses());
+                            Collections.addAll(failedToSend, ((SendFailedException) nestedException).getValidUnsentAddresses());
+                        }
+                    }
+                }
+                throw new RuntimeException(errorMessage, e);
+            }
+
+        }
+    }
+
+    @Override
+    public void saveMeetingDraft(String subject, String body, Meeting meeting) {
+        meeting.setDraftBody(body);
+        meeting.setDraftSubject(subject);
+        meetingRepository.save(meeting);
+
+    }
+
+    @Override
+    public void resetMeetingDraft(Meeting meeting) {
+        meeting.setDraftSubject("Meeting Notification: " + meeting.getTopic() + " - " + meeting.getDateOfMeeting().toLocalDate() + ", " + meeting.getDateOfMeeting().toLocalTime());
+
+        StringBuilder sb = new StringBuilder();
+
+        String body = "Dear Members,\n\n" +
+                "I hope this message finds you well.\n\n" +
+                "We are scheduled to have a meeting " + meeting.getTopic() + " at " + meeting.getRoom() + " on " + meeting.getDateOfMeeting().toLocalDate() + " at " + meeting.getDateOfMeeting().toLocalTime() + "\n\n" +
+                "Please confirm your attendance by responding on the website as soon as possible. Your timely response helps us ensure proper arrangements.\n\n" +
+                "During the meeting the following points will be discussed: \n\n";
+
+        sb.append(body);
+
+        for (DiscussionPoint dp : meeting.getDiscussionPoints()) {
+            sb.append(dp.getTopic()).append("\n");
+        }
+
+        sb.append("\nThank you, and I look forward to seeing you there.\n" +
+                "\n" +
+                "Best regards");
+
+        meeting.setDraftBody(sb.toString());
+
+        meetingRepository.save(meeting);
     }
 }

@@ -50,7 +50,6 @@ public class RegisterController {
     ) {
         try {
             Member member = this.memberService.register(email, password, repeatedPassword, name, surname, institution, PositionType.NEW_USER);
-            emailService.sendVerificationEmail(member, "http://localhost:9090");
             return "redirect:/login";
         } catch (InvalidEmailOrPasswordException | PasswordDoNotMatchException |
                  UsernameAlreadyExistsException exception) {
