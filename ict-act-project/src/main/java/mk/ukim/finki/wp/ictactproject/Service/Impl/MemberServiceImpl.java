@@ -3,10 +3,7 @@ package mk.ukim.finki.wp.ictactproject.Service.Impl;
 import mk.ukim.finki.wp.ictactproject.Models.Member;
 import mk.ukim.finki.wp.ictactproject.Models.Position;
 import mk.ukim.finki.wp.ictactproject.Models.PositionType;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.InvalidEmailOrPasswordException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.PasswordDoNotMatchException;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.PositionDoesNotExist;
-import mk.ukim.finki.wp.ictactproject.Models.exceptions.UsernameAlreadyExistsException;
+import mk.ukim.finki.wp.ictactproject.Models.exceptions.*;
 import mk.ukim.finki.wp.ictactproject.Repository.MemberRepository;
 import mk.ukim.finki.wp.ictactproject.Repository.PositionRepository;
 import mk.ukim.finki.wp.ictactproject.Service.MemberService;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -31,15 +29,21 @@ public class MemberServiceImpl implements MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public static boolean patternMatches(String emailAddress) {
+        return !Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
+                .matcher(emailAddress)
+                .matches();
+    }
+
     @Override
     public List<Member> getAll() {
-        return memberRepository.findAll();
+        return memberRepository.findAll().stream().sorted(Member.SORT_BY_NAME).toList();
     }
 
     @Override
     public Member findById(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception
-        return member;
+        return memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
     }
 
     @Override
@@ -56,6 +60,10 @@ public class MemberServiceImpl implements MemberService {
             throw new UsernameAlreadyExistsException();
         }
 
+        if (patternMatches(email)){
+            throw new InvalidUsernameException();
+        }
+
         Member member = new Member(email, passwordEncoder.encode(password), name, surname, institution, PositionType.NEW_USER);
         member.setEnabled(false);
         return memberRepository.save(member);
@@ -63,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member deleteMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        Member member = memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
         memberRepository.deleteById(id);
 
         return member;
@@ -71,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member editMember(Long id, String name, String surname, String institution, PositionType role) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        Member member = memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
         member.setName(name);
         member.setSurname(surname);
         member.setInstitution(institution);
@@ -119,9 +127,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position;
-        if (dateTo!=null)
+        if (dateTo != null)
             position = new Position(positionType, dateFrom, dateTo, member);
         else
             position = new Position(positionType, dateFrom, member);
@@ -132,12 +140,12 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member editPosition(Long member_id, Long position_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
         member.getPositions().remove(position);
         position.setPositionType(positionType);
         position.setFromDate(dateFrom);
-        if (dateTo!=null)
+        if (dateTo != null)
             position.setToDate(dateTo);
         position = positionRepository.save(position);
         member.getPositions().add(position);
@@ -146,7 +154,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member deletePosition(Long member_id, Long position_id) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
         member.getPositions().remove(position);
         positionRepository.delete(position);
