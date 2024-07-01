@@ -43,8 +43,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findById(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception
-        return member;
+        return memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member deleteMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        Member member = memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
         memberRepository.deleteById(id);
 
         return member;
@@ -80,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member editMember(Long id, String name, String surname, String institution, PositionType role) {
-        Member member = memberRepository.findById(id).orElseThrow(InvalidEmailOrPasswordException::new); //TODO: New exception for this
+        Member member = memberRepository.findById(id).orElseThrow(MemberDoesNotExist::new);
         member.setName(name);
         member.setSurname(surname);
         member.setInstitution(institution);
@@ -128,7 +127,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position;
         if (dateTo != null)
             position = new Position(positionType, dateFrom, dateTo, member);
@@ -141,7 +140,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member editPosition(Long member_id, Long position_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
         member.getPositions().remove(position);
         position.setPositionType(positionType);
@@ -155,7 +154,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member deletePosition(Long member_id, Long position_id) {
-        Member member = findById(member_id);//todo exception
+        Member member = findById(member_id);
         Position position = positionRepository.findById(position_id).orElseThrow(PositionDoesNotExist::new);
         member.getPositions().remove(position);
         positionRepository.delete(position);
