@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row justify-content-center m-4 bg-light p-4">
+        <div class="col-md-8">
+            <form th:action="@{'/email/send-notification/' + ${meetingId}}"
+                  method="get">
+                <h4 class="mb-3">Send meeting notification</h4>
+
+                <label for="subject">Subject</label>
+                <input th:value="${subject}" name="subject" class="form-control mb-3" type="search" placeholder="Subject" aria-label="Subject" id="subject">
+
+                <div class="mb-3">
+                    <label for="email_body" class="form-label">Body</label>
+                    <textarea th:text="${email_body}" class="form-control" id="email_body" rows="6" name="email_body"></textarea>
+                </div>
+
+
+                <a  th:href="@{'/email/reset-draft/' + ${meetingId}}">Reset</a>
+
+
+                <p>Select member positions to send the mail to: </p>
+                <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
+
+                    <div th:each="type: ${types}">
+                        <input type="checkbox" class="btn-check" th:value="${type.name()}" autocomplete="off" name="recipientRoles" th:id="${'type_' + type.name()}">
+                        <label class="btn btn-outline-primary" th:text="${type.name()}" th:for="${'type_' + type.name()}"></label>
+                    </div>
+                </div>
+
+                <div class="btn-group mb-3" role="group" aria-label="Basic checkbox toggle button group">
+                    <button class="btn btn-primary m-1 col-3" type="submit">Send</button>
+                    <a class="btn btn-danger m-1 col-3" th:href="@{'/meetings/details/' + ${meetingId}}">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+ </div>

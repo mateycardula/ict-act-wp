@@ -21,6 +21,14 @@
                        th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
                         Start meeting
                     </a>
+
+                    <a  th:href="@{'/email/meeting-notification/' + ${meeting.getId()}}"
+                            class="btn btn-success col-4 btn-sm"
+                            sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                    >
+                        Send notification</a>
+
+
                     <div class="row" th:if="${meeting.finished}">
                         <div class="col-auto">
                             <a sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
@@ -63,6 +71,8 @@
                             <a th:href="@{/discussion-point/edit/{id}(id=${dp.id})}"
                                sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
                                class="btn btn-sm btn-outline-primary float-end">Edit point</a>
+                            <p th:if="${dp?.attachment != null}">Attachment: <a th:href="@{/discussion-point/download/{id}(id=${dp.attachment.id})}" th:text="${dp.attachment.fileName}">Download</a></p>
+
                         </li>
                     </ul>
                     <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>

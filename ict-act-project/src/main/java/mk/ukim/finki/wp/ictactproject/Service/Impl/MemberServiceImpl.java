@@ -162,6 +162,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public List<String> getEmailsByRole(List<PositionType> roles) {
+        return memberRepository.findEmailsByRoleIn(roles);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }

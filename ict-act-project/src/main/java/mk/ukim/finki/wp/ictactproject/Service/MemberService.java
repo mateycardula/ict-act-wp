@@ -20,4 +20,5 @@ public interface MemberService extends UserDetailsService {
     Member addPosition(Long member_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo);
     Member editPosition(Long member_id, Long position_id, PositionType positionType, LocalDate dateFrom, LocalDate dateTo);
     Member deletePosition(Long member_id, Long position_id);
+    List<String> getEmailsByRole(List<PositionType> roles);
 }
