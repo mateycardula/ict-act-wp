@@ -91,11 +91,17 @@ public class EmailController {
             recipientRoles = PositionType.excludeRoles(Collections.singletonList(PositionType.NEW_USER));
         }
 
+
         Meeting meeting;
         try {
             meeting = meetingService.findMeetingById(meetingId);
         } catch (MeetingDoesNotExistException exception) {
             return "redirect:/meetings";
+        }
+
+
+        if(subject != null && email_body != null){
+            emailService.saveMeetingDraft(subject, email_body, meeting);
         }
 
         emailService.sendBatchEmailMeetingNotifications(memberService.getEmailsByRole(recipientRoles), meeting);
