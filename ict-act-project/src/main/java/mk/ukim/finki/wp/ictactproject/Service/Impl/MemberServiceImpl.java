@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<Member> getAll() {
-        return memberRepository.findAll();
+        return memberRepository.findAll().stream().sorted(Member.SORT_BY_NAME).toList();
     }
 
     @Override
