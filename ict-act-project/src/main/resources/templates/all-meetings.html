@@ -33,7 +33,6 @@
         <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 row-cols-sm-1 justify-content-start bg-light pt-4">
             <div class="col mb-5" th:each="meeting: ${meetings}">
                 <div class="card h-100">
-                    <!-- TODO: If finished/in_progress show this badge-->
                     <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem"
                          th:if="${meeting.finished}">Finished</div>
                     <div class="card-body p-4">
