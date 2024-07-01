@@ -87,29 +87,25 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendBatchMail(List<String> mails, String subject, String body, Meeting meeting) {
-
-        meeting.setDraftSubject(subject);
-        meeting.setDraftBody(body);
+    public void sendBatchEmailMeetingNotifications(List<String> mails, Meeting meeting) {
         for (String mail : mails) {
             try {
-                sendEmail(mail, subject, body);
+                sendEmail(mail, meeting.getDraftSubject(), meeting.getDraftBody());
             } catch (MailException e) {
-                String errorMessage = "Failed to send email: " + e.getMessage();
+                String errorMessage = "Failed to send email to " + mail + ": " + e.getMessage();
                 if (e instanceof MailSendException) {
                     MailSendException sendException = (MailSendException) e;
                     for (Exception nestedException : sendException.getMessageExceptions()) {
-                        if(nestedException instanceof SendFailedException) {
+                        if (nestedException instanceof SendFailedException) {
                             List<Address> failedToSend = new ArrayList<>();
-
                             Collections.addAll(failedToSend, ((SendFailedException) nestedException).getInvalidAddresses());
                             Collections.addAll(failedToSend, ((SendFailedException) nestedException).getValidUnsentAddresses());
+                            failedToSend.forEach(address -> System.err.println("Failed to send to: " + address));
                         }
                     }
                 }
-                throw new RuntimeException(errorMessage, e);
+                System.err.println(errorMessage);
             }
-
         }
     }
 
