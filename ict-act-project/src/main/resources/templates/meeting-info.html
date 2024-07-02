@@ -14,40 +14,42 @@
                     <p class="badge bg-secondary text-decoration-none light" href="#!" th:text="${meeting.meetingType}">
                         TYPE PLACEHOLDER</p>
                 </header>
-                <!--                TODO:If Not started/In progress-->
-                <div class="col-lg-8 mb-5">
-                    <a th:unless="${meeting.finished}" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
-                       class="btn btn-success col-4 btn-sm"
-                       th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
-                        Start meeting
-                    </a>
+                <div class="btn-group w-50" role="group" >
+<!--                    <div class="col-lg-8 mb-5">-->
+                        <a th:unless="${meeting.finished}" sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                           class="btn btn-success col-4 btn-sm rounded border "
+                           th:href="@{'/meetings/add-attendees/' + ${meeting.getId()}}">
+                            Start meeting
+                        </a>
 
-                    <a  th:href="@{'/email/meeting-notification/' + ${meeting.getId()}}"
-                            class="btn btn-success col-4 btn-sm"
-                            sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
-                    >
-                        Send notification</a>
+                        <a th:href="@{'/email/meeting-notification/' + ${meeting.getId()}}"
+                           class="btn btn-success col-4 btn-sm rounded border"
+                           sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                        >
+                            Send notification</a>
 
 
-                    <div class="row" th:if="${meeting.finished}">
-                        <div class="col-auto">
-                            <a sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
-                               class="btn btn-warning btn-sm"
-                               th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
-                                Modify meeting
-                            </a>
+                        <div class="row" th:if="${meeting.finished}">
+                            <div class="col-auto">
+                                <a sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                                   class="btn btn-warning btn-sm rounded border"
+                                   th:href="@{'/meetings/panel/' + ${meeting.getId()}}">
+                                    Modify meeting
+                                </a>
+                            </div>
+                            <div class="col-auto">
+                                <th:block
+                                        sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
+                                        th:href="@{'/report/generate/' + ${meeting.getId()}}">
+                                    <form method="post" th:action="@{'/report/generate/' + ${meeting.getId()}}">
+                                        <button class="btn btn-success btn-sm rounded border" type="submit">Get report</button>
+                                    </form>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <th:block
-                                    sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
-                                    th:href="@{'/report/generate/' + ${meeting.getId()}}">
-                                <form method="post" th:action="@{'/report/generate/' + ${meeting.getId()}}">
-                                    <button class="btn btn-success btn-sm" type="submit">Get report</button>
-                                </form>
-                            </th:block>
-                        </div>
-                    </div>
+<!--                    </div>-->
                 </div>
+
                 <!-- Post content-->
                 <section class="mb-5">
                     <h4 class="fw-bolder mb-4 mt-5">Discussion points</h4>
@@ -71,11 +73,16 @@
                             <a th:href="@{/discussion-point/edit/{id}(id=${dp.id})}"
                                sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')"
                                class="btn btn-sm btn-outline-primary float-end">Edit point</a>
-                            <p th:if="${dp?.attachment != null}">Attachment: <a th:href="@{/discussion-point/download/{id}(id=${dp.attachment.id})}" th:text="${dp.attachment.fileName}">Download</a></p>
+                            <p th:if="${dp?.attachment != null}">Attachment: <a
+                                    th:href="@{/discussion-point/download/{id}(id=${dp.attachment.id})}"
+                                    th:text="${dp.attachment.fileName}">Download</a></p>
 
                         </li>
                     </ul>
-                    <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="text-center p-2"><a class="btn btn-danger mt-auto" th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion point</a></div>
+                    <div sec:authorize="hasAnyAuthority('PRESIDENT','VICE_PRESIDENT')" class="text-center p-2"><a
+                            class="btn btn-danger mt-auto"
+                            th:href="@{'/discussion-point/add?meetingId=' + ${meeting.getId()}}">Add discussion
+                        point</a></div>
                 </section>
 
             </article>

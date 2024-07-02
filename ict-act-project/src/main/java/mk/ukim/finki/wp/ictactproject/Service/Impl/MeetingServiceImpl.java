@@ -33,7 +33,6 @@ public class MeetingServiceImpl implements MeetingService {
         return meetingRepository.findAll();
     }
 
-    // TODO: Discussion points treba da e lista od IDs
     @Override
     public Meeting create(String topic, String room, LocalDateTime dateAndTime, MeetingType meetingType) {
         List<DiscussionPoint> discussionPointList = new ArrayList<>();

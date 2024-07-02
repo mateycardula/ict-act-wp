@@ -43,9 +43,8 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members/positions/*")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()//todo: bazata ne treba da e javna
+                        .requestMatchers(new AntPathRequestMatcher("/h2/**")).permitAll()
 
-                        //todo: add /report restrictions
                         .requestMatchers(new AntPathRequestMatcher("/members/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/meetings/add"))
@@ -66,6 +65,8 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/discussion-point/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .requestMatchers(new AntPathRequestMatcher("/email/**"))
+                        .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
+                        .requestMatchers(new AntPathRequestMatcher("/report/**"))
                         .hasAnyAuthority("PRESIDENT","VICE_PRESIDENT")
                         .anyRequest().authenticated()
                 )
